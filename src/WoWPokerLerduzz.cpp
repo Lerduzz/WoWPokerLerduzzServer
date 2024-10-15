@@ -1,7 +1,7 @@
 #include "Chat.h"
+#include "Log.h"
 #include "Player.h"
 #include "ScriptMgr.h"
-#include "World.h"
 
 class WPL_Player : public PlayerScript
 {
@@ -15,13 +15,23 @@ public:
 
     void OnChat(Player* player, uint32 type, uint32 lang, std::string& msg, Player* receiver) override
     {
-        if (lang == LANG_ADDON)
+        if (player != receiver || lang != LANG_ADDON)
+            return;
+        std::string prefix = "PokerLerduzz\tFHS_v8.1.0_";
+        size_t prefix_length = prefix.length();
+        size_t msg_length = msg.length();
+        if (msg_length <= prefix_length or msg.substr(0, prefix_length) != prefix)
+            return;
+        std::string message = msg.substr(prefix_length, msg_length - prefix_length);
+        if (message == "!seat")
         {
-            std::ostringstream ann;
-            ann << "Desde: " << ChatHandler(player->GetSession()).GetNameLink(player) << "; ";
-            ann << "Hasta: " << ChatHandler(receiver->GetSession()).GetNameLink(receiver) << ": " << msg;
-            sWorld->SendServerMessage(SERVER_MSG_STRING, ann.str().c_str());
+            std::ostringstream resp;
+            resp << prefix << "seat_5";
+            msg = resp.str();
         }
+        std::ostringstream ann;
+        ann << "WoWPokerLerduzz:: [" << receiver->GetName() << "]: " << message;
+        LOG_ERROR("poker", ann.str().c_str());
     }
 };
 
