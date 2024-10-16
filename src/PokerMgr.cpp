@@ -120,6 +120,45 @@ void PokerMgr::BroadcastToTableDeal(uint32 seat)
     }
 }
 
+void PokerMgr::BroadcastToTablePlayerTurn(uint32 seat, uint32 maxBet)
+{
+    for (PokerTable::iterator it = table.begin(); it != table.end(); ++it)
+    {
+        if (it->second && it->second->GetPlayer() && it->first != seat)
+        {
+            int32 delta = 5 - it->first;
+            int32 fakeseat = seat + delta;
+            if (fakeseat > POKER_MAX_SEATS)
+                fakeseat -= POKER_MAX_SEATS;
+            if (fakeseat < 1)
+                fakeseat += POKER_MAX_SEATS;
+            std::ostringstream resp;
+            resp << POKER_PREFIX << "go_" << fakeseat << "_" << maxBet;
+            it->second->GetPlayer()->Whisper(resp.str(), LANG_ADDON, it->second->GetPlayer());
+        }
+    }
+}
+
+void PokerMgr::BroadcastToTablePlayerStatus(uint32 seat, std::string status)
+{
+    for (PokerTable::iterator it = table.begin(); it != table.end(); ++it)
+    {
+        if (it->second && it->second->GetPlayer() && it->first != seat)
+        {
+            int32 delta = 5 - it->first;
+            int32 fakeseat = seat + delta;
+            if (fakeseat > POKER_MAX_SEATS)
+                fakeseat -= POKER_MAX_SEATS;
+            if (fakeseat < 1)
+                fakeseat += POKER_MAX_SEATS;
+            std::ostringstream resp;
+            resp << POKER_PREFIX << "st_" << fakeseat << "_" << table[seat]->GetChips();
+            resp << "_" << table[seat]->GetBet() << "_" << status < "_1";
+            it->second->GetPlayer()->Whisper(resp.str(), LANG_ADDON, it->second->GetPlayer());
+        }
+    }
+}
+
 void PokerMgr::BroadcastToTableButton()
 {
     for (PokerTable::iterator it = table.begin(); it != table.end(); ++it)
@@ -220,6 +259,7 @@ void PokerMgr::NextLevel()
         // TODO: Marcar jugadores activos para que tengan turno y colocar ciegas.
         // FHS_SetupBets():: Aparentemente innecesario ya que se efectua al repartirle las cartas.
 	    // FHS_PostBlinds()
+        PostBlinds();
 
         // TODO: Separar esto en una funcion independiente: function FHS_DealHoleCards().
     }
@@ -227,7 +267,39 @@ void PokerMgr::NextLevel()
 
 void PokerMgr::PlayerBet(uint32 seat, uint32 size, std::string status)
 {
-    // TODO: no implementado todavia.
+    if (table[seat]->GetChips() < size)
+    {
+        size = table[seat]->GetChips();
+        status = "All In";
+    }
+
+    table[seat]->SetChips(table[seat]->GetChips() - size);
+    table[seat]->SetBet(table[seat]->GetBet() + size);
+
+    BroadcastToTablePlayerStatus(seat, status);
+
+    // TODO: Sidepot ...
+    /*
+    --Pots
+	if (Seats[j].chips==0) then
+		--Mark the curent pot as a side pot.
+		found=0;
+		bets=FHS_SidePot(Seats[j].bet);
+		for r=1,getn(SidePot) do
+			if (SidePot[r].bet==Seats[j].bet) then found=1; end;
+		end;
+		if (found==0) then 
+			SidePot[getn(SidePot)+1]={bet=Seats[j].bet,pot=bets}; 
+		end;
+	end;
+
+	--Check the existing sidepots, if our bet is < a sidepot, that sidepot needs to be rebuilt
+	for j=1,getn(SidePot) do
+	--if (Seats[j].bet<=SidePot[j].bet) then
+			SidePot[j].pot=FHS_SidePot(SidePot[j].bet);
+	--	end;
+	end;
+    */
 }
 
 uint32 PokerMgr::GetSeatAvailable()
@@ -271,7 +343,7 @@ uint32 PokerMgr::WhosBetAfter(uint32 start)
                 if (table[j]->GetBet() < maxBet || table[j]->IsForcedBet())
                     return j;
     }
-    return start;
+    return 0;
 }
 
 void PokerMgr::PostBlinds()
@@ -336,4 +408,21 @@ uint32 PokerMgr::HighestBet()
 void PokerMgr::GoNextPlayerTurn()
 {
     turn = WhosBetAfter(turn);
+
+    if (turn == 0)
+    {
+        NextLevel();
+        return;
+    }
+
+    if (GetPlayingPlayers() == 1)
+    {
+        NextLevel();
+    }
+
+    uint32 maxBet = HighestBet();
+    BroadcastToTablePlayerTurn(turn, maxBet);
+
+    // TODO: Init playtime limit.
+    // PlayerTurnEndTime = GetTime() + AFKTimeLimit;
 }
