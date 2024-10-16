@@ -2,77 +2,82 @@
 
 PokerMgr::PokerMgr()
 {
-    mesa.clear();
-    estado = POKER_INACTIVE;
+    table.clear();
+    status = POKER_STATUS_INACTIVE;
 }
 
 PokerMgr::~PokerMgr()
 {
-    mesa.clear();
-    estado = POKER_INACTIVE;
+    table.clear();
+    status = POKER_STATUS_INACTIVE;
 }
 
-bool PokerMgr::JugadorEntrando(Player *player, uint32 gold)
+bool PokerMgr::PlayerJoin(Player *player, uint32 gold)
 {
     if (!player)
         return false;
-    if (gold < POKER_ORO_MINIMO || gold > POKER_ORO_MAXIMO)
+    if (gold < POKER_MIN_GOLD || gold > POKER_MAX_GOLD)
         return false;
-    if (ObtenerAsiento(player) > 0)
+    if (GetSeat(player) > 0)
         return false;
-    uint32 asiento = AsientoDisponible();
-    if (asiento == 0)
+    // TODO: Comprobar que el jugador tenga suficiente oro.
+    uint32 seat = GetSeatAvailable();
+    if (seat == 0)
         return false;
-    mesa[asiento] = player;
+    table[seat] = new PokerPlayer(player);
+    table[seat]->SetChips(gold);
+    // TODO: Restar el oro asignado al jugador.
     return true;
 }
 
-uint32 PokerMgr::ObtenerAsiento(Player *player)
+uint32 PokerMgr::GetSeat(Player *player)
 {
-    for (PokerMesa::iterator it = mesa.begin(); it != mesa.end(); ++it)
+    for (PokerTable::iterator it = table.begin(); it != table.end(); ++it)
     {
-        if (it->second && it->second == player)
+        if (it->second && it->second->GetPlayer() && it->second->GetPlayer() == player)
             return it->first;
     }
     return 0;
 }
 
-void PokerMgr::InformarJugador(Player *player)
+void PokerMgr::InformPlayerJoined(Player *player)
 {
-    for (PokerMesa::iterator it = mesa.begin(); it != mesa.end(); ++it)
+    for (PokerTable::iterator it = table.begin(); it != table.end(); ++it)
     {
-        if (it->second)
+        if (it->second && it->second->GetPlayer())
         {
             std::ostringstream resp;
-            resp << POKER_PREFIX << "s_" << it->first << "_" << it->second->GetName() << "_";
-            resp << 800 /*CHIPS*/ << "_" << 200 /*BET*/;
+            resp << POKER_PREFIX << "s_" << it->first << "_" << it->second->GetPlayer()->GetName() << "_";
+            resp << it->second->GetChips() << "_" << it->second->GetBet();
             player->Whisper(resp.str(), LANG_ADDON, player);
         }
     }
 }
 
-void PokerMgr::InformarMesa(uint32 seat)
+void PokerMgr::BroadcastToTable(uint32 seat)
 {
-    for (PokerMesa::iterator it = mesa.begin(); it != mesa.end(); ++it)
+    for (PokerTable::iterator it = table.begin(); it != table.end(); ++it)
     {
-        if (it->second && it->first != seat)
+        if (it->second && it->second->GetPlayer() && it->first != seat)
         {
             std::ostringstream resp;
-            resp << POKER_PREFIX << "s_" << seat << "_" << mesa[seat]->GetName() << "_";
-            resp << 800 /*CHIPS*/ << "_" << 200 /*BET*/;
-            it->second->Whisper(resp.str(), LANG_ADDON, it->second);
+            resp << POKER_PREFIX << "s_" << seat << "_" << table[seat]->GetPlayer()->GetName() << "_";
+            resp << table[seat]->GetChips() << "_" << table[seat]->GetBet();
+            it->second->GetPlayer()->Whisper(resp.str(), LANG_ADDON, it->second->GetPlayer());
         }
     }
 }
 
-uint32 PokerMgr::AsientoDisponible()
+uint32 PokerMgr::GetSeatAvailable()
 {
-    uint32 asiento = 9;
-    while (asiento > 0)
+    if (table.size() == POKER_MAX_SEATS)
+        return 0;
+    uint32 seat = 9;
+    while (seat > 0)
     {
-        if (mesa.find(asiento) == mesa.end())
+        if (table.find(seat) == table.end())
             break;
-        asiento--;
+        seat--;
     }    
-    return asiento;
+    return seat;
 }

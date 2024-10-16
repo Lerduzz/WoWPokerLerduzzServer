@@ -31,15 +31,15 @@ public:
         }
         else if (message == "pong!")
         {
-            if (!sPokerMgr->JugadorEntrando(player, 1000))
+            if (!sPokerMgr->PlayerJoin(player, 1000))
             {
-                uint32 asiento = sPokerMgr->ObtenerAsiento(player);
-                if (asiento > 0)
+                uint32 seat = sPokerMgr->GetSeat(player);
+                if (seat > 0)
                 {
-                    resp << "seat_" << asiento;
+                    resp << "seat_" << seat;
                     player->Whisper(resp.str(), LANG_ADDON, player);
-                    sPokerMgr->InformarJugador(player);
-                    sPokerMgr->InformarMesa(asiento);
+                    sPokerMgr->InformPlayerJoined(player);
+                    sPokerMgr->BroadcastToTable(seat);
                     std::ostringstream nresp;
                     nresp << POKER_PREFIX << "null";;
                     msg = nresp.str();

@@ -1,30 +1,30 @@
 #ifndef SC_POKER_MGR_H
 #define SC_POKER_MGR_H
 
-#include "Player.h"
+#include "PokerPlayer.h"
 
-typedef std::map<uint32, Player *> PokerMesa;
+typedef std::map<uint32, PokerPlayer *> PokerTable;
 
-enum PokerEstado
+enum PokerStatus
 {
-    POKER_INACTIVE = 0,
-    POKER_FLOP,
-    POKER_TURN,
-    POKER_RIVER,
-    POKER_SHOW
+    POKER_STATUS_INACTIVE = 0,
+    POKER_STATUS_FLOP,
+    POKER_STATUS_TURN,
+    POKER_STATUS_RIVER,
+    POKER_STATUS_SHOW
 };
 
-const int POKER_ORO_MINIMO = 500;
-const int POKER_ORO_MAXIMO = 5000;
-const int POKER_CANTIDAD_ASIENTOS = 9;
+const int POKER_MIN_GOLD = 500;
+const int POKER_MAX_GOLD = 5000;
+const int POKER_MAX_SEATS = 9;
 const std::string POKER_PREFIX = "PokerLerduzz\tFHS_v8.1.0_";
 
 class PokerMgr
 {
+public:
     PokerMgr();
     ~PokerMgr();
 
-public:
     static PokerMgr *instance()
     {
         static PokerMgr *instance = new PokerMgr();
@@ -36,24 +36,24 @@ public:
      * 
      * @return Verdadero si se pudo unir o Falso de lo contrario.
      */
-    bool JugadorEntrando(Player *player, uint32 gold);
+    bool PlayerJoin(Player *player, uint32 gold);
 
     /**
      * Determina el asiento que le corresponde en la mesa a un jugador determinado.
      * 
      * @return El numero del asiento o 0 si el jugador no se encuentra en la mesa.
      */
-    uint32 ObtenerAsiento(Player *player);
+    uint32 GetSeat(Player *player);
 
     /**
      * Informa al jugador sobre el estado de todos los jugadores de la mesa.
      */
-    void InformarJugador(Player *player);
+    void InformPlayerJoined(Player *player);
 
     /**
      * Informa a la mesa sobre la llegada de un nuevo jugador.
      */
-    void InformarMesa(uint32 seat);
+    void BroadcastToTable(uint32 seat);
 
 private:
     /**
@@ -61,10 +61,10 @@ private:
      * 
      * @return El numero del asiento o 0 si la mesa se encuentra llena.
      */
-    uint32 AsientoDisponible();
+    uint32 GetSeatAvailable();
 
-    PokerMesa mesa;
-    PokerEstado estado;
+    PokerTable table;
+    PokerStatus status;
 
 };
 
