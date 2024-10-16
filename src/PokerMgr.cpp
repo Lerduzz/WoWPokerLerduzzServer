@@ -262,7 +262,7 @@ uint32 PokerMgr::WhosButtonAfter(uint32 start)
 
 void PokerMgr::PostBlinds()
 {
-    size_t pc = table.size();
+    uint32 pc = GetPlayingPlayers();
     uint32 smallBlind = 10;
     uint32 bigBlind = 20;
 
@@ -277,13 +277,30 @@ void PokerMgr::PostBlinds()
     {
         uint32 j = WhosButtonAfter(button);
         PlayerBet(j, bigBlind, "Blinds");
-        next = button;
-
+        
         PlayerBet(button, smallBlind, "Blinds");
-		next = j;
+		
+        next = j;
     }
     else if (pc > 2)
     {
-
+        uint32 j = WhosButtonAfter(button);
+        PlayerBet(j, smallBlind, "Small Blind");
+        
+        j = WhosButtonAfter(j);
+        PlayerBet(j, bigBlind, "Big Blind");
+		
+        next = j;
     }
+}
+
+uint32 PokerMgr::GetPlayingPlayers()
+{
+    uint32 count = 0;
+    for (PokerTable::iterator it = table.begin(); it != table.end(); ++it)
+    {
+        if (it->second && it->second->GetPlayer() && it->second->IsDealt())
+            count++;
+    }
+    return count;
 }

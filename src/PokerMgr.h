@@ -35,14 +35,14 @@ public:
 
     /**
      * Gestiona la entrada de un jugador a la mesa.
-     * 
+     *
      * @return Verdadero si se pudo unir o Falso de lo contrario.
      */
     bool PlayerJoin(Player *player, uint32 gold);
 
     /**
      * Determina el asiento que le corresponde en la mesa a un jugador determinado.
-     * 
+     *
      * @return El numero del asiento o 0 si el jugador no se encuentra en la mesa.
      */
     uint32 GetSeat(Player *player);
@@ -85,14 +85,14 @@ public:
 private:
     /**
      * Obtiene un asiento disponible en la mesa.
-     * 
+     *
      * @return El numero del asiento o 0 si la mesa se encuentra llena.
      */
     uint32 GetSeatAvailable();
 
     /**
      * Determina que jugador debe tener el boton despues.
-     * 
+     *
      * @return Numero del asiento del jugador.
      */
     uint32 WhosButtonAfter(uint32 start);
@@ -101,6 +101,13 @@ private:
      * Coloca las ciegas.
      */
     void PostBlinds();
+
+    /**
+     * Obtener jugadores activos de la ronda.
+     *
+     * @return Cantidad de jugadores sentados y con cartas.
+     */
+    uint32 GetPlayingPlayers();
 
     PokerTable table;
     PokerStatus status;
