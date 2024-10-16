@@ -17,6 +17,7 @@ public:
     {
         if (!player || !receiver || player != receiver || lang != LANG_ADDON)
             return;
+        LOG_ERROR("poker", msg);
         size_t prefix_length = POKER_PREFIX.length();
         size_t msg_length = msg.length();
         if (msg_length <= prefix_length or msg.substr(0, prefix_length) != POKER_PREFIX)
