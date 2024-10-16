@@ -95,7 +95,7 @@ private:
      * 
      * @return Numero del asiento del jugador.
      */
-    uint32 WhosButtonAfter();
+    uint32 WhosButtonAfter(uint32 start);
 
     /**
      * Coloca las ciegas.

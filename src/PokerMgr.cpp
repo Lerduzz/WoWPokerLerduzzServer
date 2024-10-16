@@ -142,7 +142,7 @@ void PokerMgr::NextLevel()
     status = static_cast<PokerStatus>(static_cast<int>(status) + 1);
     if (status == POKER_STATUS_PRE_FLOP)
     {
-        button = WhosButtonAfter();
+        button = WhosButtonAfter(button);
         // FHS_BroadCastToTable("b_"..TheButton,-1)
         BroadcastToTableButton();
 
@@ -242,11 +242,11 @@ uint32 PokerMgr::GetSeatAvailable()
     return seat;
 }
 
-uint32 PokerMgr::WhosButtonAfter()
+uint32 PokerMgr::WhosButtonAfter(uint32 start)
 {
     for (uint32 i = 1; i <= 9; i++)
     {
-        uint32 j = i + button;
+        uint32 j = i + start;
         if (j > 9) j -= 9;
         if (j > 9) j -= 9;
         if (table.find(j) != table.end())
@@ -257,7 +257,7 @@ uint32 PokerMgr::WhosButtonAfter()
             }
         }
     }
-    return button;
+    return start;
 }
 
 void PokerMgr::PostBlinds()
@@ -275,7 +275,7 @@ void PokerMgr::PostBlinds()
     }
     else if (pc == 2)
     {
-        uint32 j = WhosButtonAfter();
+        uint32 j = WhosButtonAfter(button);
         PlayerBet(j, bigBlind, "Blinds");
         next = button;
 
@@ -284,6 +284,6 @@ void PokerMgr::PostBlinds()
     }
     else if (pc > 2)
     {
-        
+
     }
 }
