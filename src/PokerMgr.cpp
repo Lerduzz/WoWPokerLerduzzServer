@@ -139,7 +139,7 @@ void PokerMgr::BroadcastToTableButton()
 
 void PokerMgr::NextLevel()
 {
-    status += 1;
+    status = static_cast<PokerStatus>(static_cast<int>(status) + 1);
     if (status == POKER_STATUS_PRE_FLOP)
     {
         WhosButtonAfter();
@@ -147,12 +147,18 @@ void PokerMgr::NextLevel()
         BroadcastToTableButton();
 
         deck.clear();
+        std::array<uint32, 52> deck_arr;
         for (uint32 i = 1; i <= 52; i++)
         {
-            deck.push_back(i);
+            // deck.push_back(i);
+            deck_arr[i - 1] = i;
         }
         unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
-        std::shuffle(deck.begin(), deck.end(), std::default_random_engine(seed));
+        std::shuffle(deck_arr.begin(), deck_arr.end(), std::default_random_engine(seed));
+        for (uint32 i = 1; i <= 52; i++)
+        {
+            deck.push_back(deck_arr[i - 1]);
+        }
 
         // FHS_Set_CurrentBlind(FHS_IncrementBlind(Blinds))
         // FHS_BroadCastToTable("betsize_"..Blinds)

@@ -2,6 +2,7 @@
 #define SC_POKER_MGR_H
 
 #include "PokerPlayer.h"
+#include <random>       // std::default_random_engine
 
 typedef std::map<uint32, PokerPlayer *> PokerTable;
 
