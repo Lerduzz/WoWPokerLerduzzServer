@@ -1,6 +1,6 @@
 #include "Chat.h"
 #include "Log.h"
-#include "Player.h"
+#include "PokerMgr.h"
 #include "ScriptMgr.h"
 
 class WPL_Player : public PlayerScript
@@ -25,9 +25,18 @@ public:
         std::string message = msg.substr(prefix_length, msg_length - prefix_length);
         if (message == "!seat")
         {
-            std::ostringstream resp;
-            resp << prefix << "seat_5";
-            msg = resp.str();
+            if (sPokerMgr->JugadorEntrando(player, 1000))
+            {
+                std::ostringstream resp;
+                resp << prefix << "seat_" << sPokerMgr->ObtenerAsiento(player);
+                msg = resp.str();
+            }
+            else
+            {
+                std::ostringstream resp;
+                resp << prefix << "NoSeats";
+                msg = resp.str();
+            }            
         }
         std::ostringstream ann;
         ann << "WoWPokerLerduzz:: [" << receiver->GetName() << "]: " << message;
