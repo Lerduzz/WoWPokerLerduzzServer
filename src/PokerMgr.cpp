@@ -181,87 +181,13 @@ void PokerMgr::BroadcastToTableButton()
 void PokerMgr::NextLevel()
 {
     status = static_cast<PokerStatus>(static_cast<int>(status) + 1);
-    if (status == POKER_STATUS_PRE_FLOP)
+    switch (status)
     {
-        button = WhosButtonAfter(button);
-        // FHS_BroadCastToTable("b_"..TheButton,-1)
-        BroadcastToTableButton();
-
-        deck.clear();
-        std::array<uint32, 52> deck_arr;
-        for (uint32 i = 1; i <= 52; i++)
+        case POKER_STATUS_PRE_FLOP:
         {
-            // deck.push_back(i);
-            deck_arr[i - 1] = i;
+            DealHoleCards();
+            break;
         }
-        unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
-        std::shuffle(deck_arr.begin(), deck_arr.end(), std::default_random_engine(seed));
-        for (uint32 i = 1; i <= 52; i++)
-        {
-            deck.push_back(deck_arr[i - 1]);
-        }
-
-        // FHS_Set_CurrentBlind(FHS_IncrementBlind(Blinds))
-        // FHS_BroadCastToTable("betsize_"..Blinds)
-        std::ostringstream msg1;
-        msg1 << POKER_PREFIX << "betsize_" << 20;        
-        BroadcastToTable(msg1.str());
-
-        // RoundCount=RoundCount+1
-        round++;
-	    // FHS_BroadCastToTable("round0_"..RoundCount,-1)
-        std::ostringstream msg2;
-        msg2 << POKER_PREFIX << "round0_" << round;
-        BroadcastToTable(msg2.str());
-
-        for (uint32 i = 1; i <= 9; i++)
-        {
-            uint32 j = i + button + 1;
-            if (j > 9) j -= 9;
-            if (j > 9) j -= 9;
-            if (table.find(j) != table.end())
-            {
-                if (table[j]->GetChips() > 0 && table[j]->IsIn())
-                {
-                    table[j]->SetHole1(deck.front());
-                    deck.pop_front();
-                    table[j]->SetHole2(deck.front());
-                    deck.pop_front();
-
-                    table[j]->SetDealt(true);
-                    table[j]->SetBet(0);
-                    table[j]->SetForcedBet(true);
-
-                    // FHS_SendMessage("hole_"..Seats[j].hole1 .."_"..Seats[j].hole2,Seats[j].name)
-                    std::ostringstream msg3;
-                    msg3 << POKER_PREFIX << "hole_" << table[j]->GetHole1() << "_" << table[j]->GetHole2();
-                    table[j]->GetPlayer()->Whisper(msg3.str(), LANG_ADDON, table[j]->GetPlayer());
-
-				    // FHS_BroadCastToTable("deal_"..j,j)
-                    BroadcastToTableDeal(j);
-                }
-            }
-        }
-
-        // TODO: Repartir las 5 cartas de la mesa.
-        // DealerFlop={}
-	    // for i= 1,5 do
-	    // 	DealerFlop[i]=Shuffle[DealerCard]
-	    // 	DealerCard=DealerCard+1
-	    // end
-
-        // FHS_BroadCastToTable("flop0",-1)
-        std::ostringstream msg4;
-        msg4 << POKER_PREFIX << "flop0";
-        BroadcastToTable(msg4.str());
-
-
-        // TODO: Marcar jugadores activos para que tengan turno y colocar ciegas.
-        // FHS_SetupBets():: Aparentemente innecesario ya que se efectua al repartirle las cartas.
-	    // FHS_PostBlinds()
-        PostBlinds();
-
-        // TODO: Separar esto en una funcion independiente: function FHS_DealHoleCards().
     }
 }
 
@@ -425,4 +351,64 @@ void PokerMgr::GoNextPlayerTurn()
 
     // TODO: Init playtime limit.
     // PlayerTurnEndTime = GetTime() + AFKTimeLimit;
+}
+
+void PokerMgr::DealHoleCards()
+{
+    button = WhosButtonAfter(button);
+    BroadcastToTableButton();
+
+    deck.clear();
+    std::array<uint32, 52> deck_arr;
+    for (uint32 i = 1; i <= 52; i++)
+    {
+        deck_arr[i - 1] = i;
+    }
+    unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
+    std::shuffle(deck_arr.begin(), deck_arr.end(), std::default_random_engine(seed));
+    for (uint32 i = 1; i <= 52; i++)
+    {
+        deck.push_back(deck_arr[i - 1]);
+    }
+
+    std::ostringstream msg1;
+    msg1 << POKER_PREFIX << "betsize_" << 20;        
+    BroadcastToTable(msg1.str());
+
+    round++;
+	std::ostringstream msg2;
+    msg2 << POKER_PREFIX << "round0_" << round;
+    BroadcastToTable(msg2.str());
+
+    for (uint32 i = 1; i <= 9; i++)
+    {
+        uint32 j = i + button + 1;
+        if (j > 9) j -= 9;
+        if (j > 9) j -= 9;
+        if (table.find(j) != table.end())
+        {
+            if (table[j]->GetChips() > 0 && table[j]->IsIn())
+            {
+                table[j]->SetHole1(deck.front());
+                deck.pop_front();
+                table[j]->SetHole2(deck.front());
+                deck.pop_front();
+
+                table[j]->SetDealt(true);
+                table[j]->SetBet(0);
+                table[j]->SetForcedBet(true);
+
+                std::ostringstream msg3;
+                msg3 << POKER_PREFIX << "hole_" << table[j]->GetHole1() << "_" << table[j]->GetHole2();
+                table[j]->GetPlayer()->Whisper(msg3.str(), LANG_ADDON, table[j]->GetPlayer());
+	            BroadcastToTableDeal(j);
+            }
+        }
+    }
+
+    std::ostringstream msg4;
+    msg4 << POKER_PREFIX << "flop0";
+    BroadcastToTable(msg4.str());
+
+    PostBlinds();
 }

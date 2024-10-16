@@ -136,6 +136,11 @@ private:
      */
     void GoNextPlayerTurn();
 
+    /**
+     * Nivel 1: POKER_STATUS_PRE_FLOP.
+     */
+    void DealHoleCards();
+
     PokerTable table;
     PokerStatus status;
 
