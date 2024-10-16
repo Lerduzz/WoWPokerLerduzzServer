@@ -8,6 +8,10 @@ PokerPlayer::PokerPlayer(Player *player)
 
     _hole1 = 0;
     _hole2 = 0;
+
+    _forcedBet = false;
+    _dealt = false;
+    _in = true;
 }
 
 Player *PokerPlayer::GetPlayer()
@@ -35,6 +39,21 @@ uint32 PokerPlayer::GetHole2()
     return _hole2;
 }
 
+bool PokerPlayer::IsForcedBet()
+{
+    return _forcedBet;
+}
+
+bool PokerPlayer::IsDealt()
+{
+    return _dealt;
+}
+
+bool PokerPlayer::IsIn()
+{
+    return _in;
+}
+
 void PokerPlayer::SetChips(uint32 chips)
 {
     _chips = chips;
@@ -53,4 +72,19 @@ void PokerPlayer::SetHole1(uint32 hole1)
 void PokerPlayer::SetHole2(uint32 hole2)
 {
     _hole2 = hole2;
+}
+
+void PokerPlayer::SetForcedBet(bool forcedBet)
+{
+    _forcedBet = forcedBet;
+}
+
+void PokerPlayer::SetDealt(bool dealt)
+{
+    _dealt = dealt;
+}
+
+void PokerPlayer::SetIn(bool in)
+{
+    _in = in;
 }

@@ -16,11 +16,19 @@ public:
     uint32 GetHole1();
     uint32 GetHole2();
 
+    bool IsForcedBet();
+    bool IsDealt();
+    bool IsIn();
+
     void SetChips(uint32 chips);
     void SetBet(uint32 bet);
 
     void SetHole1(uint32 hole1);
     void SetHole2(uint32 hole2);
+
+    void SetForcedBet(bool forcedBet);
+    void SetDealt(bool dealt);
+    void SetIn(bool in);
 
 private:
     Player *_player;
@@ -29,6 +37,10 @@ private:
 
     uint32 _hole1;
     uint32 _hole2;
+
+    bool _forcedBet;
+    bool _dealt;
+    bool _in;
 
 };
 
