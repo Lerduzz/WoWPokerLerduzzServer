@@ -197,6 +197,25 @@ void PokerMgr::NextLevel()
                 }
             }
         }
+
+        // TODO: Repartir las 5 cartas de la mesa.
+        // DealerFlop={}
+	    // for i= 1,5 do
+	    // 	DealerFlop[i]=Shuffle[DealerCard]
+	    // 	DealerCard=DealerCard+1
+	    // end
+
+        // FHS_BroadCastToTable("flop0",-1)
+        std::ostringstream msg4;
+        msg4 << POKER_PREFIX << "flop0";
+        BroadcastToTable(msg4.str());
+
+
+        // TODO: Marcar jugadores activos para que tengan turno y colocar ciegas.
+        // FHS_SetupBets()
+	    // FHS_PostBlinds()
+
+        // TODO: Separar esto en una funcion independiente: function FHS_DealHoleCards().
     }
 }
 
