@@ -8,6 +8,7 @@ typedef std::map<uint32, PokerPlayer *> PokerTable;
 enum PokerStatus
 {
     POKER_STATUS_INACTIVE = 0,
+    POKER_STATUS_PRE_FLOP,
     POKER_STATUS_FLOP,
     POKER_STATUS_TURN,
     POKER_STATUS_RIVER,
@@ -51,9 +52,29 @@ public:
     void InformPlayerJoined(Player *player);
 
     /**
+     * Envia mensaje a todos los jugadores.
+     */
+    void BroadcastToTable(std::string msg);
+
+    /**
      * Informa a la mesa sobre la llegada de un nuevo jugador.
      */
-    void BroadcastToTable(uint32 seat);
+    void BroadcastToTableJoined(uint32 seat);
+
+    /**
+     * Informa a la mesa sobre carta repartida.
+     */
+    void BroadcastToTableDeal(uint32 seat);
+
+    /**
+     * Informa a la mesa sobre quien es el del boton.
+     */
+    void BroadcastToTableButton();
+
+    /**
+     * Logica principal del juego.
+     */
+    void NextLevel();
 
 private:
     /**
@@ -62,9 +83,14 @@ private:
      * @return El numero del asiento o 0 si la mesa se encuentra llena.
      */
     uint32 GetSeatAvailable();
+    void WhosButtonAfter();
 
     PokerTable table;
     PokerStatus status;
+
+    std::list<uint32> deck;
+    uint32 round;
+    uint32 button;
 
 };
 

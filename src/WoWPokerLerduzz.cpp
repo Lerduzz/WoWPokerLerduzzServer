@@ -39,7 +39,7 @@ public:
                 resp << "seat_" << seat;
                 player->Whisper(resp.str(), LANG_ADDON, player);
                 sPokerMgr->InformPlayerJoined(player);
-                sPokerMgr->BroadcastToTable(seat);
+                sPokerMgr->BroadcastToTableJoined(seat);
                 std::ostringstream nresp;
                 nresp << POKER_PREFIX << "null";;
                 msg = nresp.str();

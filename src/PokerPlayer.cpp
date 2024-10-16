@@ -5,6 +5,9 @@ PokerPlayer::PokerPlayer(Player *player)
     _player = player;
     _chips = 0;
     _bet = 0;
+
+    _hole1 = 0;
+    _hole2 = 0;
 }
 
 Player *PokerPlayer::GetPlayer()
@@ -22,6 +25,16 @@ uint32 PokerPlayer::GetBet()
     return _bet;
 }
 
+uint32 PokerPlayer::GetHole1()
+{
+    return _hole1;
+}
+
+uint32 PokerPlayer::GetHole2()
+{
+    return _hole2;
+}
+
 void PokerPlayer::SetChips(uint32 chips)
 {
     _chips = chips;
@@ -30,4 +43,14 @@ void PokerPlayer::SetChips(uint32 chips)
 void PokerPlayer::SetBet(uint32 bet)
 {
     _bet = bet;
+}
+
+void PokerPlayer::SetHole1(uint32 hole1)
+{
+    _hole1 = hole1;
+}
+
+void PokerPlayer::SetHole2(uint32 hole2)
+{
+    _hole2 = hole2;
 }
