@@ -275,6 +275,15 @@ void PokerMgr::PostBlinds()
     }
     else if (pc == 2)
     {
+        uint32 j = WhosButtonAfter();
+        PlayerBet(j, bigBlind, "Blinds");
+        next = button;
 
+        PlayerBet(button, smallBlind, "Blinds");
+		next = j;
+    }
+    else if (pc > 2)
+    {
+        
     }
 }
