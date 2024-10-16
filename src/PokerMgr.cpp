@@ -37,6 +37,34 @@ uint32 PokerMgr::ObtenerAsiento(Player *player)
     return 0;
 }
 
+void PokerMgr::InformarJugador(Player *player)
+{
+    for (PokerMesa::iterator it = mesa.begin(); it != mesa.end(); ++it)
+    {
+        if (it->second)
+        {
+            std::ostringstream resp;
+            resp << POKER_PREFIX << "s_" << it->first << "_" << it->second->GetName() << "_";
+            resp << 800 /*CHIPS*/ << "_" << 200 /*BET*/;
+            player->Whisper(resp.str(), LANG_ADDON, player);
+        }
+    }
+}
+
+void PokerMgr::InformarMesa(uint32 seat)
+{
+    for (PokerMesa::iterator it = mesa.begin(); it != mesa.end(); ++it)
+    {
+        if (it->second && it->first != seat)
+        {
+            std::ostringstream resp;
+            resp << POKER_PREFIX << "s_" << seat << "_" << mesa[seat]->GetName() << "_";
+            resp << 800 /*CHIPS*/ << "_" << 200 /*BET*/;
+            it->second->Whisper(resp.str(), LANG_ADDON, it->second);
+        }
+    }
+}
+
 uint32 PokerMgr::AsientoDisponible()
 {
     uint32 asiento = 9;

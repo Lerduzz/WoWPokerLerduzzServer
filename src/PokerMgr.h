@@ -17,6 +17,7 @@ enum PokerEstado
 const int POKER_ORO_MINIMO = 500;
 const int POKER_ORO_MAXIMO = 5000;
 const int POKER_CANTIDAD_ASIENTOS = 9;
+const std::string POKER_PREFIX = "PokerLerduzz\tFHS_v8.1.0_";
 
 class PokerMgr
 {
@@ -43,6 +44,16 @@ public:
      * @return El numero del asiento o 0 si el jugador no se encuentra en la mesa.
      */
     uint32 ObtenerAsiento(Player *player);
+
+    /**
+     * Informa al jugador sobre el estado de todos los jugadores de la mesa.
+     */
+    void InformarJugador(Player *player);
+
+    /**
+     * Informa a la mesa sobre la llegada de un nuevo jugador.
+     */
+    void InformarMesa(uint32 seat);
 
 private:
     /**

@@ -17,17 +17,39 @@ public:
     {
         if (!player || !receiver || player != receiver || lang != LANG_ADDON)
             return;
-        std::string prefix = "PokerLerduzz\tFHS_v8.1.0_";
-        size_t prefix_length = prefix.length();
+        size_t prefix_length = POKER_PREFIX.length();
         size_t msg_length = msg.length();
-        if (msg_length <= prefix_length or msg.substr(0, prefix_length) != prefix)
+        if (msg_length <= prefix_length or msg.substr(0, prefix_length) != POKER_PREFIX)
             return;
         std::string message = msg.substr(prefix_length, msg_length - prefix_length);
         std::ostringstream resp;
+        resp << POKER_PREFIX;
         if (message == "!seat")
         {
-            resp << prefix << "ping!";
+            resp << "ping!";
             msg = resp.str();
+        }
+        else if (message == "pong!")
+        {
+            if (!sPokerMgr->JugadorEntrando(player, 1000))
+            {
+                uint32 asiento = sPokerMgr->ObtenerAsiento(player);
+                if (asiento > 0)
+                {
+                    resp << "seat_" << asiento;
+                    player->Whisper(resp.str(), LANG_ADDON, player);
+                    sPokerMgr->InformarJugador(player);
+                    sPokerMgr->InformarMesa(asiento);
+                    std::ostringstream nresp;
+                    nresp << POKER_PREFIX << "null";;
+                    msg = nresp.str();
+                }
+                else
+                {
+                    resp << "NoSeats";
+                    msg = resp.str();
+                }
+            }
         }
         else
         {
