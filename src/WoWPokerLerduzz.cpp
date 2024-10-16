@@ -15,7 +15,7 @@ public:
 
     void OnChat(Player* player, uint32 type, uint32 lang, std::string& msg, Player* receiver) override
     {
-        if (player != receiver || lang != LANG_ADDON)
+        if (!player || !receiver || player != receiver || lang != LANG_ADDON)
             return;
         std::string prefix = "PokerLerduzz\tFHS_v8.1.0_";
         size_t prefix_length = prefix.length();
@@ -23,24 +23,18 @@ public:
         if (msg_length <= prefix_length or msg.substr(0, prefix_length) != prefix)
             return;
         std::string message = msg.substr(prefix_length, msg_length - prefix_length);
+        std::ostringstream resp;
         if (message == "!seat")
         {
-            if (sPokerMgr->JugadorEntrando(player, 1000))
-            {
-                std::ostringstream resp;
-                resp << prefix << "seat_" << sPokerMgr->ObtenerAsiento(player);
-                msg = resp.str();
-            }
-            else
-            {
-                std::ostringstream resp;
-                resp << prefix << "NoSeats";
-                msg = resp.str();
-            }            
+            resp << prefix << "ping!";
+            msg = resp.str();
         }
-        std::ostringstream ann;
-        ann << "WoWPokerLerduzz:: [" << receiver->GetName() << "]: " << message;
-        LOG_ERROR("poker", ann.str().c_str());
+        else
+        {
+            std::ostringstream ann;
+            ann << "WoWPokerLerduzz:: [" << receiver->GetName() << "]: " << message;
+            LOG_ERROR("poker", ann.str().c_str());
+        }
     }
 };
 
