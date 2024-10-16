@@ -98,6 +98,13 @@ private:
     uint32 WhosButtonAfter(uint32 start);
 
     /**
+     * Determina que jugador debe apostar despues.
+     *
+     * @return Numero del asiento del jugador.
+     */
+    uint32 WhosBetAfter(uint32 start);
+
+    /**
      * Coloca las ciegas.
      */
     void PostBlinds();
@@ -109,12 +116,24 @@ private:
      */
     uint32 GetPlayingPlayers();
 
+    /**
+     * Determina la mayor apuesta de los jugadores de la mesa.
+     */
+    uint32 HighestBet();
+
+    /**
+     * Avanza el turno de apostar al siguiente jugador.
+     */
+    void GoNextPlayerTurn();
+
     PokerTable table;
     PokerStatus status;
 
     std::list<uint32> deck;
     uint32 round;
     uint32 button;
+
+    uint32 turn;
 
 };
 

@@ -7,6 +7,7 @@ PokerMgr::PokerMgr()
     deck.clear();
     round = 0;
     button = 1;
+    turn = 0;
 }
 
 PokerMgr::~PokerMgr()
@@ -16,6 +17,7 @@ PokerMgr::~PokerMgr()
     deck.clear();
     round = 0;
     button = 1;
+    turn = 0;
 }
 
 bool PokerMgr::PlayerJoin(Player *player, uint32 gold)
@@ -250,12 +252,24 @@ uint32 PokerMgr::WhosButtonAfter(uint32 start)
         if (j > 9) j -= 9;
         if (j > 9) j -= 9;
         if (table.find(j) != table.end())
-        {
             if (table[j]->GetChips() > 0)
-            {
                 return j;
-            }
-        }
+    }
+    return start;
+}
+
+uint32 PokerMgr::WhosBetAfter(uint32 start)
+{
+    uint32 maxBet = HighestBet();
+    for (uint32 i = 1; i <= 9; i++)
+    {
+        uint32 j = i + start;
+        if (j > 9) j -= 9;
+        if (j > 9) j -= 9;
+        if (table.find(j) != table.end())
+            if (table[j]->GetChips() > 0 && table[j]->IsDealt())
+                if (table[j]->GetBet() < maxBet || table[j]->IsForcedBet())
+                    return j;
     }
     return start;
 }
@@ -292,6 +306,8 @@ void PokerMgr::PostBlinds()
 		
         next = j;
     }
+    turn = next;
+    GoNextPlayerTurn();
 }
 
 uint32 PokerMgr::GetPlayingPlayers()
@@ -303,4 +319,21 @@ uint32 PokerMgr::GetPlayingPlayers()
             count++;
     }
     return count;
+}
+
+uint32 PokerMgr::HighestBet()
+{
+    uint32 maxBet = 0;
+    for (PokerTable::iterator it = table.begin(); it != table.end(); ++it)
+    {
+        if (it->second && it->second->GetPlayer() && it->second->IsDealt())
+            if (it->second->GetBet() > maxBet)
+                maxBet = it->second->GetBet();
+    }
+    return maxBet;
+}
+
+void PokerMgr::GoNextPlayerTurn()
+{
+    turn = WhosBetAfter(turn);
 }
