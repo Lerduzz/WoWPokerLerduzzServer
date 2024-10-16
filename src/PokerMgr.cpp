@@ -124,7 +124,7 @@ void PokerMgr::BroadcastToTablePlayerTurn(uint32 seat, uint32 maxBet)
 {
     for (PokerTable::iterator it = table.begin(); it != table.end(); ++it)
     {
-        if (it->second && it->second->GetPlayer() && it->first != seat)
+        if (it->second && it->second->GetPlayer())
         {
             int32 delta = 5 - it->first;
             int32 fakeseat = seat + delta;
@@ -143,7 +143,7 @@ void PokerMgr::BroadcastToTablePlayerStatus(uint32 seat, std::string status)
 {
     for (PokerTable::iterator it = table.begin(); it != table.end(); ++it)
     {
-        if (it->second && it->second->GetPlayer() && it->first != seat)
+        if (it->second && it->second->GetPlayer())
         {
             int32 delta = 5 - it->first;
             int32 fakeseat = seat + delta;
