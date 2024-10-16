@@ -142,7 +142,7 @@ void PokerMgr::NextLevel()
     status = static_cast<PokerStatus>(static_cast<int>(status) + 1);
     if (status == POKER_STATUS_PRE_FLOP)
     {
-        WhosButtonAfter();
+        button = WhosButtonAfter();
         // FHS_BroadCastToTable("b_"..TheButton,-1)
         BroadcastToTableButton();
 
@@ -223,6 +223,11 @@ void PokerMgr::NextLevel()
     }
 }
 
+void PokerMgr::PlayerBet(uint32 seat, uint32 size, std::string status)
+{
+    // TODO: no implementado todavia.
+}
+
 uint32 PokerMgr::GetSeatAvailable()
 {
     if (table.size() == POKER_MAX_SEATS)
@@ -237,7 +242,7 @@ uint32 PokerMgr::GetSeatAvailable()
     return seat;
 }
 
-void PokerMgr::WhosButtonAfter()
+uint32 PokerMgr::WhosButtonAfter()
 {
     for (uint32 i = 1; i <= 9; i++)
     {
@@ -248,9 +253,28 @@ void PokerMgr::WhosButtonAfter()
         {
             if (table[j]->GetChips() > 0)
             {
-                button = j;
-                return;
+                return j;
             }
         }
+    }
+    return button;
+}
+
+void PokerMgr::PostBlinds()
+{
+    size_t pc = table.size();
+    uint32 smallBlind = 10;
+    uint32 bigBlind = 20;
+
+    uint32 next = button;
+
+    if (pc == 1)
+    {
+        PlayerBet(button, bigBlind, "Blinds");
+        next = button;
+    }
+    else if (pc == 2)
+    {
+
     }
 }

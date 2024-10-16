@@ -77,6 +77,11 @@ public:
      */
     void NextLevel();
 
+    /**
+     * Coloca la apuesta de un jugador.
+     */
+    void PlayerBet(uint32 seat, uint32 size, std::string status);
+
 private:
     /**
      * Obtiene un asiento disponible en la mesa.
@@ -84,7 +89,18 @@ private:
      * @return El numero del asiento o 0 si la mesa se encuentra llena.
      */
     uint32 GetSeatAvailable();
-    void WhosButtonAfter();
+
+    /**
+     * Determina que jugador debe tener el boton despues.
+     * 
+     * @return Numero del asiento del jugador.
+     */
+    uint32 WhosButtonAfter();
+
+    /**
+     * Coloca las ciegas.
+     */
+    void PostBlinds();
 
     PokerTable table;
     PokerStatus status;
