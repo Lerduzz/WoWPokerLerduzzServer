@@ -42,12 +42,18 @@ uint32 PokerMgr::GetSeat(Player *player)
 
 void PokerMgr::InformPlayerJoined(Player *player)
 {
+    int32 delta = 5 - GetSeat(player);
     for (PokerTable::iterator it = table.begin(); it != table.end(); ++it)
     {
         if (it->second && it->second->GetPlayer())
         {
+            int32 fakeseat = it->first + delta;
+            if (fakeseat > POKER_MAX_SEATS)
+                fakeseat -= POKER_MAX_SEATS;
+            if (fakeseat < 1)
+                fakeseat += POKER_MAX_SEATS;
             std::ostringstream resp;
-            resp << POKER_PREFIX << "s_" << it->first << "_" << it->second->GetPlayer()->GetName() << "_";
+            resp << POKER_PREFIX << "s_" << fakeseat << "_" << it->second->GetPlayer()->GetName() << "_";
             resp << it->second->GetChips() << "_" << it->second->GetBet();
             player->Whisper(resp.str(), LANG_ADDON, player);
         }
@@ -60,8 +66,14 @@ void PokerMgr::BroadcastToTable(uint32 seat)
     {
         if (it->second && it->second->GetPlayer() && it->first != seat)
         {
+            int32 delta = 5 - it->first;
+            int32 fakeseat = seat + delta;
+            if (fakeseat > POKER_MAX_SEATS)
+                fakeseat -= POKER_MAX_SEATS;
+            if (fakeseat < 1)
+                fakeseat += POKER_MAX_SEATS;
             std::ostringstream resp;
-            resp << POKER_PREFIX << "s_" << seat << "_" << table[seat]->GetPlayer()->GetName() << "_";
+            resp << POKER_PREFIX << "s_" << fakeseat << "_" << table[seat]->GetPlayer()->GetName() << "_";
             resp << table[seat]->GetChips() << "_" << table[seat]->GetBet();
             it->second->GetPlayer()->Whisper(resp.str(), LANG_ADDON, it->second->GetPlayer());
         }
