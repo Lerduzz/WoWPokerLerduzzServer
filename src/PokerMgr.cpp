@@ -180,12 +180,16 @@ void PokerMgr::NextLevel()
             if (j > 9) j -= 9;
             if (table.find(j) != table.end())
             {
-                if (table[j]->GetChips() > 0)
+                if (table[j]->GetChips() > 0 && table[j]->IsIn())
                 {
                     table[j]->SetHole1(deck.front());
                     deck.pop_front();
                     table[j]->SetHole2(deck.front());
                     deck.pop_front();
+
+                    table[j]->SetDealt(true);
+                    table[j]->SetBet(0);
+                    table[j]->SetForcedBet(true);
 
                     // FHS_SendMessage("hole_"..Seats[j].hole1 .."_"..Seats[j].hole2,Seats[j].name)
                     std::ostringstream msg3;
@@ -212,7 +216,7 @@ void PokerMgr::NextLevel()
 
 
         // TODO: Marcar jugadores activos para que tengan turno y colocar ciegas.
-        // FHS_SetupBets()
+        // FHS_SetupBets():: Aparentemente innecesario ya que se efectua al repartirle las cartas.
 	    // FHS_PostBlinds()
 
         // TODO: Separar esto en una funcion independiente: function FHS_DealHoleCards().
