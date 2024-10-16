@@ -153,7 +153,7 @@ void PokerMgr::BroadcastToTablePlayerStatus(uint32 seat, std::string status)
                 fakeseat += POKER_MAX_SEATS;
             std::ostringstream resp;
             resp << POKER_PREFIX << "st_" << fakeseat << "_" << table[seat]->GetChips();
-            resp << "_" << table[seat]->GetBet() << "_" << status < "_1";
+            resp << "_" << table[seat]->GetBet() << "_" << status << "_1";
             it->second->GetPlayer()->Whisper(resp.str(), LANG_ADDON, it->second->GetPlayer());
         }
     }
