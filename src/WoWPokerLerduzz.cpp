@@ -36,7 +36,7 @@ public:
             {
                 if (seat == 0)
                     seat = sPokerMgr->GetSeat(player);
-                resp << "seat_" << seat;
+                resp << "seat_5";
                 player->Whisper(resp.str(), LANG_ADDON, player);
                 sPokerMgr->InformPlayerJoined(player);
                 sPokerMgr->BroadcastToTableJoined(seat);
