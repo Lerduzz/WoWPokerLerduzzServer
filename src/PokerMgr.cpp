@@ -212,6 +212,11 @@ void PokerMgr::NextLevel()
             DealRiver();
             break;
         }
+        case POKER_STATUS_SHOW:
+        {
+            ShowDown();
+            break;
+        }
     }
 }
 
@@ -554,4 +559,10 @@ void PokerMgr::DealRiver()
     SetupBets();
     turn = button;
     GoNextPlayerTurn();
+}
+
+void PokerMgr::ShowDown()
+{
+    // TODO: Implementar el codigo para terminar la ronda.
+    LOG_ERROR("poker", "WoWPokerLerduzz:: void PokerMgr::ShowDown(): NO IMPLEMENTADO POR EL MOMENTO!");
 }

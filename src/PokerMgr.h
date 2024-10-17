@@ -173,6 +173,11 @@ private:
      */
     void DealRiver();
 
+    /**
+     * Nivel 5: POKER_STATUS_SHOW.
+     */
+    void ShowDown();
+
     PokerTable table;
     PokerStatus status;
 
