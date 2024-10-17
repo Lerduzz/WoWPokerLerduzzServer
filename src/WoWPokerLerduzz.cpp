@@ -73,6 +73,15 @@ public:
                 nresp << POKER_PREFIX << "null";
                 msg = nresp.str();
             }
+            else if (strcmp(tab, "fold") == 0)
+            {
+                uint32 seat = sPokerMgr->GetSeat(player);
+                if (seat > 0)
+                    sPokerMgr->FoldPlayer(seat);
+                std::ostringstream nresp;
+                nresp << POKER_PREFIX << "null";
+                msg = nresp.str();
+            }
             else
             {
                 std::ostringstream ann;

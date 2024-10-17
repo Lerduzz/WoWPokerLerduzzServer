@@ -85,6 +85,11 @@ public:
     void BroadcastToTablePlayerStatus(uint32 seat, std::string status);
 
     /**
+     * Informa a la mesa sobre el estado del jugador que se ha retirado.
+     */
+    void BroadcastToTablePlayerStatusFolded(uint32 seat);
+
+    /**
      * Informa a la mesa sobre quien es el del boton.
      */
     void BroadcastToTableButton();
@@ -100,9 +105,14 @@ public:
     void PlayerBet(uint32 seat, uint32 size, std::string status);
 
     /**
-     * Manejar la accion del jugador en turno.
+     * Manejar la apuesta del jugador.
      */
     void PlayerAction(uint32 seat, uint32 delta);
+
+    /**
+     * Manejar la retirada del jugador.
+     */
+    void FoldPlayer(uint32 seat);
 
 private:
     /**

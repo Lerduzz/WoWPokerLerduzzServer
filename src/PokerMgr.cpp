@@ -168,6 +168,26 @@ void PokerMgr::BroadcastToTablePlayerStatus(uint32 seat, std::string status)
     }
 }
 
+void PokerMgr::BroadcastToTablePlayerStatusFolded(uint32 seat)
+{
+    for (PokerTable::iterator it = table.begin(); it != table.end(); ++it)
+    {
+        if (it->second && it->second->GetPlayer())
+        {
+            int32 delta = 5 - it->first;
+            int32 fakeseat = seat + delta;
+            if (fakeseat > POKER_MAX_SEATS)
+                fakeseat -= POKER_MAX_SEATS;
+            if (fakeseat < 1)
+                fakeseat += POKER_MAX_SEATS;
+            std::ostringstream resp;
+            resp << POKER_PREFIX << "st_" << fakeseat << "_" << table[seat]->GetChips();
+            resp << "_" << table[seat]->GetBet() << "_Folded_0.5";
+            it->second->GetPlayer()->Whisper(resp.str(), LANG_ADDON, it->second->GetPlayer());
+        }
+    }
+}
+
 void PokerMgr::BroadcastToTableButton()
 {
     for (PokerTable::iterator it = table.begin(); it != table.end(); ++it)
@@ -321,6 +341,23 @@ void PokerMgr::PlayerAction(uint32 seat, uint32 delta)
 
     table[seat]->SetForcedBet(false);
     GoNextPlayerTurn();
+}
+
+void PokerMgr::FoldPlayer(uint32 seat)
+{
+    PokerPlayer *pp = sPokerMgr->GetSeatInfo(seat);
+    if (pp && pp->IsDealt())
+    {
+        BroadcastToTablePlayerStatusFolded(seat);
+        pp->SetDealt(false);
+        pp->SetForcedBet(false);
+
+        if (turn == seat)
+            GoNextPlayerTurn();
+        else
+            if (GetPlayingPlayers() == 1)
+                GoNextPlayerTurn();
+    }
 }
 
 uint32 PokerMgr::GetSeatAvailable()
