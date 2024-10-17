@@ -238,7 +238,10 @@ void PokerMgr::PlayerBet(uint32 seat, uint32 size, std::string status)
 void PokerMgr::PlayerAction(uint32 seat, uint32 delta)
 {
     if (seat != turn)
+    {
+        LOG_ERROR("poker", "WoWPokerLerduzz:: {} ha intentado apostar fuera de su turno (Asiento: {}, Turno: {}).", table[seat]->GetPlayer()->GetName(), seat, turn);
         return;
+    }
 
     uint32 maxBet = HighestBet();
 
@@ -273,7 +276,10 @@ void PokerMgr::PlayerAction(uint32 seat, uint32 delta)
         if (table[seat]->GetBet() == maxBet)
             PlayerBet(seat, 0, "Checked");
         else
+        {
             LOG_ERROR("poker", "WoWPokerLerduzz:: {} ha enviado pasar pero su apuesta no es igual a la maxima.", table[seat]->GetPlayer()->GetName());
+            return;
+        }
     }
     else if (delta > 0)
     {

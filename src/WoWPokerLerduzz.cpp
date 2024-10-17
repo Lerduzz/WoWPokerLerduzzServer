@@ -52,8 +52,9 @@ public:
         }
         else
         {
+            char *tok = message.data();
             char *tab;
-            tab = strtok(message.data(), "_");
+            tab = strtok(tok, "_");
             if (tab == "call")
             {
                 uint32 seat = sPokerMgr->GetSeat(player);
