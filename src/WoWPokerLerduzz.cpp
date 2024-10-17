@@ -24,12 +24,12 @@ public:
         std::string message = msg.substr(prefix_length, msg_length - prefix_length);
         std::ostringstream resp;
         resp << POKER_PREFIX;
-        if (message == "!seat")
+        if (strcmp(message.c_str(), "!seat") == 0)
         {
             resp << "ping!";
             msg = resp.str();
         }
-        else if (message == "pong!")
+        else if (strcmp(message.c_str(), "pong!") == 0)
         {
             uint32 seat = sPokerMgr->GetSeat(player);
             if (seat > 0 || sPokerMgr->PlayerJoin(player, 1000))
@@ -52,10 +52,10 @@ public:
         }
         else
         {
-            char *tok = message.data();
+            std::string tok = message;
             char *tab;
-            tab = strtok(tok, "_");
-            if (tab == "call")
+            tab = strtok(tok.data(), "_");
+            if (strcmp(tab, "call") == 0)
             {
                 uint32 seat = sPokerMgr->GetSeat(player);
                 if (seat > 0)
