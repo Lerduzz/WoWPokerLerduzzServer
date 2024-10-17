@@ -382,14 +382,20 @@ uint32 PokerMgr::GetSeatAvailable()
 {
     if (table.size() == POKER_MAX_SEATS)
         return 0;
-    uint32 seat = 9;
-    while (seat > 0)
+    std::list<uint32> seats;
+    for (uint32 i = 1; i <= 9; i++)
     {
-        if (table.find(seat) == table.end())
-            break;
-        seat--;
-    }    
-    return seat;
+        if (table.find(i) == table.end())
+            seats.push_back(i);
+    }
+    if (seats.size() == 0)
+        return 0;
+    if (seats.size() == 1)
+        return seats.front();
+    std::array<uint32, seats.size()> seats_arr;
+    unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
+    std::shuffle(seats_arr.begin(), seats_arr.end(), std::default_random_engine(seed));
+    return seats_arr[0];
 }
 
 uint32 PokerMgr::WhosButtonAfter(uint32 start)
