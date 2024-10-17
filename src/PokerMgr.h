@@ -2,7 +2,7 @@
 #define SC_POKER_MGR_H
 
 #include "PokerPlayer.h"
-#include <random>       // std::default_random_engine
+#include <random>
 
 typedef std::map<uint32, PokerPlayer *> PokerTable;
 
@@ -184,6 +184,13 @@ private:
      * @return Sidepot total.
      */
     uint32 GetSidePot(uint32 bet);
+
+    /**
+     * Calcula el bote total.
+     *
+     * @return Bote total.
+     */
+    uint32 GetTotalPot();
 
     /**
      * Avanza el turno de apostar al siguiente jugador.

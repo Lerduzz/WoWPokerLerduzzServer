@@ -514,6 +514,15 @@ uint32 PokerMgr::GetSidePot(uint32 bet)
     return total;
 }
 
+uint32 PokerMgr::GetTotalPot()
+{
+    uint32 total = 0;
+	for (PokerTable::iterator it = table.begin(); it != table.end(); ++it)
+        if (it->second && it->second->GetPlayer())
+            total += it->second->GetBet();
+	return total;
+}
+
 void PokerMgr::GoNextPlayerTurn()
 {
     turn = WhosBetAfter(turn);
@@ -645,6 +654,32 @@ void PokerMgr::DealRiver()
 void PokerMgr::ShowDown()
 {
     std::list<uint32> winners;
+    uint32 maxBet = HighestBet();
+    uint32 totalPot = GetTotalPot();
+    SidePot tmpPot;
+
+    if (sidepots.size() == 0)
+    {
+        tmpPot = SidePot();
+        tmpPot.bet = maxBet;
+        tmpPot.pot = totalPot;
+        sidepots.push_back(tmpPot);
+    }
+
+    bool found = false;
+	for (std::list<SidePot>::iterator it = sidepots.begin(); it != sidepots.end(); ++it)
+		if (it->bet == maxBet)
+			found = true;
+	if (!found)
+    {
+        tmpPot = SidePot();
+        tmpPot.bet = maxBet;
+        tmpPot.pot = totalPot;
+        sidepots.push_back(tmpPot);
+    }
+
+    sidepots.sort([](SidePot a, SidePot b){ return a.pot < b.pot; });
+
     if (GetPlayingPlayers() == 1)
     {
         for (PokerTable::iterator it = table.begin(); it != table.end(); ++it)
