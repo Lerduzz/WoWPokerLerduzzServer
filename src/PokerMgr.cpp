@@ -716,39 +716,42 @@ void PokerMgr::ShowDown()
 			if (table[*itw]->GetBet() >= it->bet)
 				winnerCount++;
 					
-		/*if (winnercount>0) then
-			pot=FHS_round((SidePot[r].pot) / winnercount,0)
-			
-		for j=1,getn(Winners) do
-				if (Seats[Winners[j]].bet>=SidePot[r].bet) then
-					Seats[Winners[j]].chips=Seats[Winners[j]].chips+pot
-					Seats[Winners[j]].dealt=0
-				end
-			end						
-		else
-			-- There were no winners of this pot, split it and give it back
-			winnercount=0
-			for j=1,9 do
-				if ((Seats[j].bet>=SidePot[r].bet)and(Seats[j].seated==1)) then
-					winnercount=winnercount+1
-				end
-			end
-			for j=1,9 do
-				
-				pot=FHS_round((SidePot[r].pot) / winnercount,0)
-				--Player bet into that 
-				if ((Seats[j].seated==1)and(Seats[j].bet>=SidePot[r].bet)) then
-					
-					Seats[j].chips=Seats[j].chips+pot
-					FHS_BroadCastToTable("st_"..j.."_"..Seats[j].chips.."_"..Seats[j].bet.."_"..Seats[j].status.."_0.5")
-				
-					FHS_ShowCard(j,pot.." returned")
-					Seats[j].dealt=0
-					--Local View
-					FHS_UpdateSeat(j)
-				end
-			end
-		end*/
+		if (winnerCount > 0)
+        {
+            uint32 pot = it->pot / winnerCount;			
+		    for (std::list<uint32>::iterator itw = winners.begin(); itw != winners.end(); ++itw)
+            {
+                if (table[*itw]->GetBet() >= it->bet)
+                {
+                    table[*itw]->SetChips(table[*itw]->GetChips() + pot);
+					table[*itw]->SetDealt(false);
+                }
+            }
+        }
+		// else
+		// 	-- There were no winners of this pot, split it and give it back
+		// 	winnercount=0
+		// 	for j=1,9 do
+		// 		if ((Seats[j].bet>=SidePot[r].bet)and(Seats[j].seated==1)) then
+		// 			winnercount=winnercount+1
+		// 		end
+		// 	end
+		// 	for j=1,9 do
+		// 		
+		// 		pot=FHS_round((SidePot[r].pot) / winnercount,0)
+		// 		--Player bet into that 
+		// 		if ((Seats[j].seated==1)and(Seats[j].bet>=SidePot[r].bet)) then
+		// 			
+		// 			Seats[j].chips=Seats[j].chips+pot
+		// 			FHS_BroadCastToTable("st_"..j.."_"..Seats[j].chips.."_"..Seats[j].bet.."_"..Seats[j].status.."_0.5")
+		// 		
+		// 			FHS_ShowCard(j,pot.." returned")
+		// 			Seats[j].dealt=0
+		// 			--Local View
+		// 			FHS_UpdateSeat(j)
+		// 		end
+		// 	end
+		// end
     }
     // ----------------------------------------------------------
 }
