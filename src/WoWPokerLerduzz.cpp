@@ -8,11 +8,6 @@ class WPL_Player : public PlayerScript
 public:
     WPL_Player() : PlayerScript("WPL_Player") { }
 
-    void OnLogin(Player* player) override
-    {
-        ChatHandler(player->GetSession()).SendSysMessage("El casino esta activado.");
-    }
-
     void OnChat(Player* player, uint32 type, uint32 lang, std::string& msg, Player* receiver) override
     {
         if (!player || !receiver || player != receiver || lang != LANG_ADDON)
@@ -92,7 +87,20 @@ public:
     }
 };
 
+class WPL_World : public WorldScript
+{
+public:
+    WPL_World() : WorldScript("WPL_World") { }
+
+    void OnUpdate(uint32 diff) override
+    {
+        sPokerMgr->OnWorldUpdate(diff);
+    }
+};
+
+
 void AddSC_WoWPokerLerduzz()
 {
     new WPL_Player();
+    new WPL_World();
 }

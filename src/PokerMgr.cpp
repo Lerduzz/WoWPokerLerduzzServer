@@ -9,6 +9,7 @@ PokerMgr::PokerMgr()
     button = 1;
     turn = 0;
     flop = {0, 0, 0, 0, 0};
+    delay = 1000;
 }
 
 PokerMgr::~PokerMgr()
@@ -20,6 +21,7 @@ PokerMgr::~PokerMgr()
     button = 1;
     turn = 0;
     flop = {0, 0, 0, 0, 0};
+    delay = 1000;
 }
 
 bool PokerMgr::PlayerJoin(Player *player, uint32 gold)
@@ -104,10 +106,6 @@ void PokerMgr::BroadcastToTableJoined(uint32 seat)
             it->second->GetPlayer()->Whisper(resp.str(), LANG_ADDON, it->second->GetPlayer());
         }
     }
-    
-    // TODO: DEBUG!
-    if (table.size() >= 2)
-        sPokerMgr->NextLevel();
 }
 
 void PokerMgr::BroadcastToTableDeal(uint32 seat)
@@ -360,6 +358,26 @@ void PokerMgr::FoldPlayer(uint32 seat)
     }
 }
 
+void PokerMgr::OnWorldUpdate(uint32 diff)
+{
+    if (delay >= diff)
+    {
+        delay -= diff;
+        return;
+    }
+    LOG_ERROR("poker", "void PokerMgr::OnWorldUpdate(uint32 diff = {}).", diff);
+    if (status == POKER_STATUS_SHOW)
+    {
+        status = POKER_STATUS_INACTIVE;
+        delay = 10000;
+        return;
+    }
+    if (status == POKER_STATUS_INACTIVE)
+        if (GetSeatedPlayers() > 1)
+            sPokerMgr->NextLevel();
+    delay = 1000;
+}
+
 uint32 PokerMgr::GetSeatAvailable()
 {
     if (table.size() == POKER_MAX_SEATS)
@@ -455,6 +473,17 @@ uint32 PokerMgr::GetPlayingPlayers()
     for (PokerTable::iterator it = table.begin(); it != table.end(); ++it)
     {
         if (it->second && it->second->GetPlayer() && it->second->IsDealt())
+            count++;
+    }
+    return count;
+}
+
+uint32 PokerMgr::GetSeatedPlayers()
+{
+    uint32 count = 0;
+    for (PokerTable::iterator it = table.begin(); it != table.end(); ++it)
+    {
+        if (it->second && it->second->GetPlayer() && it->second->IsIn())
             count++;
     }
     return count;

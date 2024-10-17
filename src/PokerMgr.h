@@ -114,6 +114,11 @@ public:
      */
     void FoldPlayer(uint32 seat);
 
+    /**
+     * Gestionar actualizacion del mundo.
+     */
+    void OnWorldUpdate(uint32 diff);
+
 private:
     /**
      * Obtiene un asiento disponible en la mesa.
@@ -152,6 +157,13 @@ private:
      * @return Cantidad de jugadores sentados y con cartas.
      */
     uint32 GetPlayingPlayers();
+
+    /**
+     * Obtener jugadores activos de la mesa.
+     *
+     * @return Cantidad de jugadores sentados.
+     */
+    uint32 GetSeatedPlayers();
 
     /**
      * Determina la mayor apuesta de los jugadores de la mesa.
@@ -198,6 +210,8 @@ private:
     uint32 button;
 
     uint32 turn;
+
+    uint32 delay;
 
 };
 
