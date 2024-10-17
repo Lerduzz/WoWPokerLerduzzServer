@@ -4,6 +4,7 @@ PokerMgr::PokerMgr()
 {
     table.clear();
     status = POKER_STATUS_INACTIVE;
+    sidepots.clear();
     deck.clear();
     round = 0;
     button = 1;
@@ -251,28 +252,23 @@ void PokerMgr::PlayerBet(uint32 seat, uint32 size, std::string status)
 
     BroadcastToTablePlayerStatus(seat, status);
 
-    // TODO: Sidepot ...
-    /*
-    --Pots
-	if (Seats[j].chips==0) then
-		--Mark the curent pot as a side pot.
-		found=0;
-		bets=FHS_SidePot(Seats[j].bet);
-		for r=1,getn(SidePot) do
-			if (SidePot[r].bet==Seats[j].bet) then found=1; end;
-		end;
-		if (found==0) then 
-			SidePot[getn(SidePot)+1]={bet=Seats[j].bet,pot=bets}; 
-		end;
-	end;
+    if (table[seat]->GetChips() == 0)
+    {
+        bool found = false;
+		for (std::list<SidePot>::iterator it = sidepots.begin(); it != sidepots.end(); ++it)
+			if (it->bet == table[seat]->GetBet())
+                found = true;
+		if (found)
+        {
+            SidePot tmp = SidePot();
+            tmp.bet = table[seat]->GetBet();
+            tmp.pot = GetSidePot(table[seat]->GetBet());
+            sidepots.push_back(tmp);
+        }
+    }
 
-	--Check the existing sidepots, if our bet is < a sidepot, that sidepot needs to be rebuilt
-	for j=1,getn(SidePot) do
-	--if (Seats[j].bet<=SidePot[j].bet) then
-			SidePot[j].pot=FHS_SidePot(SidePot[j].bet);
-	--	end;
-	end;
-    */
+    for (std::list<SidePot>::iterator it = sidepots.begin(); it != sidepots.end(); ++it)
+		it->pot = GetSidePot(it->bet);
 }
 
 void PokerMgr::PlayerAction(uint32 seat, uint32 delta)
@@ -508,6 +504,23 @@ uint32 PokerMgr::HighestBet()
     return maxBet;
 }
 
+uint32 PokerMgr::GetSidePot(uint32 bet)
+{
+    uint32 total = 0;
+	uint32 r;	
+	for (PokerTable::iterator it = table.begin(); it != table.end(); ++it)
+    {
+        if (it->second && it->second->GetPlayer())
+        {
+            r = it->second->GetBet();
+			if (r > bet)
+				r = bet;
+			total += r;
+        }
+	}
+	return total;
+}
+
 void PokerMgr::GoNextPlayerTurn()
 {
     turn = WhosBetAfter(turn);
@@ -551,6 +564,8 @@ void PokerMgr::DealHoleCards()
     std::ostringstream msg1;
     msg1 << POKER_PREFIX << "betsize_" << 20;        
     BroadcastToTable(msg1.str());
+
+    sidepots.clear();
 
     round++;
 	std::ostringstream msg2;
@@ -636,8 +651,38 @@ void PokerMgr::DealRiver()
 
 void PokerMgr::ShowDown()
 {
+    std::list<uint32> winners;
+    if (GetPlayingPlayers() == 1)
+    {
+        for (PokerTable::iterator it = table.begin(); it != table.end(); ++it)
+        {
+            if (it->second && it->second->GetPlayer() && it->second->IsDealt())
+                winners.push_back(it->first);
+        }
+    }
+    else
+    {
+        LOG_ERROR("poker", "WoWPokerLerduzz:: void PokerMgr::ShowDown(): NO IMPLEMENTADO POR EL MOMENTO!");
+        return;
+    }
+
+    if (winners.size() > 0)
+    {
+        for (PokerTable::iterator it = table.begin(); it != table.end(); ++it)
+        {
+            if (it->second && it->second->GetPlayer() && it->second->GetBet() > 0)
+            {
+                uint32 pot = it->second->GetBet() / (uint32) winners.size();
+            }
+        }
+        for (std::list<uint32>::iterator it = winners.begin(); it != winners.end(); ++it)
+        {
+            
+        }
+    }
+
     // TODO: Implementar el codigo para terminar la ronda.
-    LOG_ERROR("poker", "WoWPokerLerduzz:: void PokerMgr::ShowDown(): NO IMPLEMENTADO POR EL MOMENTO!");
+    
 
     // TODO: DEBUG (Resetear jugadores devolviendo las fichas apostadas).
     for (PokerTable::iterator it = table.begin(); it != table.end(); ++it)

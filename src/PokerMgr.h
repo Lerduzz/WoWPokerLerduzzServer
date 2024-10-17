@@ -16,6 +16,12 @@ enum PokerStatus
     POKER_STATUS_SHOW
 };
 
+struct SidePot
+{
+    uint32 bet;
+    uint32 pot;
+};
+
 const int POKER_MIN_GOLD = 500;
 const int POKER_MAX_GOLD = 5000;
 const int POKER_MAX_SEATS = 9;
@@ -167,8 +173,17 @@ private:
 
     /**
      * Determina la mayor apuesta de los jugadores de la mesa.
+     *
+     * @return Mayor apuesta.
      */
     uint32 HighestBet();
+
+    /**
+     * Calcula el sidepot total de una apuesta.
+     *
+     * @return Sidepot total.
+     */
+    uint32 GetSidePot(uint32 bet);
 
     /**
      * Avanza el turno de apostar al siguiente jugador.
@@ -202,6 +217,7 @@ private:
 
     PokerTable table;
     PokerStatus status;
+    std::list<SidePot> sidepots;
 
     std::list<uint32> deck;
     std::array<uint32, 5> flop;
