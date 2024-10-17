@@ -255,10 +255,10 @@ void PokerMgr::PlayerBet(uint32 seat, uint32 size, std::string status)
     if (table[seat]->GetChips() == 0)
     {
         bool found = false;
-		for (std::list<SidePot>::iterator it = sidepots.begin(); it != sidepots.end(); ++it)
-			if (it->bet == table[seat]->GetBet())
+        for (std::list<SidePot>::iterator it = sidepots.begin(); it != sidepots.end(); ++it)
+            if (it->bet == table[seat]->GetBet())
                 found = true;
-		if (found)
+        if (!found)
         {
             SidePot tmp = SidePot();
             tmp.bet = table[seat]->GetBet();
@@ -268,16 +268,13 @@ void PokerMgr::PlayerBet(uint32 seat, uint32 size, std::string status)
     }
 
     for (std::list<SidePot>::iterator it = sidepots.begin(); it != sidepots.end(); ++it)
-		it->pot = GetSidePot(it->bet);
+        it->pot = GetSidePot(it->bet);
 }
 
 void PokerMgr::PlayerAction(uint32 seat, uint32 delta)
 {
     if (seat != turn)
-    {
-        LOG_ERROR("poker", "WoWPokerLerduzz:: {} ha intentado apostar fuera de su turno (Asiento: {}, Turno: {}).", table[seat]->GetPlayer()->GetName(), seat, turn);
         return;
-    }
 
     uint32 maxBet = HighestBet();
 
@@ -287,23 +284,19 @@ void PokerMgr::PlayerAction(uint32 seat, uint32 delta)
         {
             delta = table[seat]->GetChips();
 
-            // TODO: Sidepot ...
-            /*
-            --Mark the curent pot as a side pot.
-			local found=0
-			local bets=FHS_SidePot(delta)
-			for r=1,getn(SidePot) do
-				if (SidePot[r].bet==delta) then found=1; end
-			end
-			if (found==0) then 
-				SidePot[getn(SidePot)+1]={bet=delta,pot=bets}
-			end
-
-			--Check the existing sidepots, if our bet is < a sidepot, that sidepot needs to be rebuilt
-			for j=1,getn(SidePot) do
-				SidePot[j].pot=FHS_SidePot(SidePot[j].bet)
-			end
-            */
+            bool found = false;
+            for (std::list<SidePot>::iterator it = sidepots.begin(); it != sidepots.end(); ++it)
+                if (it->bet == delta)
+                    found = true;
+            if (!found)
+            {
+                SidePot tmp = SidePot();
+                tmp.bet = delta;
+                tmp.pot = GetSidePot(delta);
+                sidepots.push_back(tmp);
+            }
+            for (std::list<SidePot>::iterator it = sidepots.begin(); it != sidepots.end(); ++it)
+                it->pot = GetSidePot(it->bet);
         }
     }
 
@@ -453,7 +446,7 @@ void PokerMgr::PostBlinds()
         PlayerBet(j, bigBlind, "Blinds");
         
         PlayerBet(button, smallBlind, "Blinds");
-		
+        
         next = j;
     }
     else if (pc > 2)
@@ -463,7 +456,7 @@ void PokerMgr::PostBlinds()
         
         j = WhosButtonAfter(j);
         PlayerBet(j, bigBlind, "Big Blind");
-		
+        
         next = j;
     }
     turn = next;
@@ -507,18 +500,18 @@ uint32 PokerMgr::HighestBet()
 uint32 PokerMgr::GetSidePot(uint32 bet)
 {
     uint32 total = 0;
-	uint32 r;	
-	for (PokerTable::iterator it = table.begin(); it != table.end(); ++it)
+    uint32 r;
+    for (PokerTable::iterator it = table.begin(); it != table.end(); ++it)
     {
         if (it->second && it->second->GetPlayer())
         {
             r = it->second->GetBet();
-			if (r > bet)
-				r = bet;
-			total += r;
+            if (r > bet)
+                r = bet;
+            total += r;
         }
-	}
-	return total;
+    }
+    return total;
 }
 
 void PokerMgr::GoNextPlayerTurn()
@@ -568,7 +561,7 @@ void PokerMgr::DealHoleCards()
     sidepots.clear();
 
     round++;
-	std::ostringstream msg2;
+    std::ostringstream msg2;
     msg2 << POKER_PREFIX << "round0_" << round;
     BroadcastToTable(msg2.str());
 
@@ -592,7 +585,7 @@ void PokerMgr::DealHoleCards()
                 std::ostringstream msg3;
                 msg3 << POKER_PREFIX << "hole_" << table[j]->GetHole1() << "_" << table[j]->GetHole2();
                 table[j]->GetPlayer()->Whisper(msg3.str(), LANG_ADDON, table[j]->GetPlayer());
-	            BroadcastToTableDeal(j);
+                BroadcastToTableDeal(j);
             }
         }
     }
