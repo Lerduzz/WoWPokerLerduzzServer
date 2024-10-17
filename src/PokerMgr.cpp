@@ -631,4 +631,17 @@ void PokerMgr::ShowDown()
 {
     // TODO: Implementar el codigo para terminar la ronda.
     LOG_ERROR("poker", "WoWPokerLerduzz:: void PokerMgr::ShowDown(): NO IMPLEMENTADO POR EL MOMENTO!");
+
+    // TODO: DEBUG (Resetear jugadores devolviendo las fichas apostadas).
+    for (PokerTable::iterator it = table.begin(); it != table.end(); ++it)
+    {
+        if (it->second && it->second->GetPlayer() && it->second->GetBet() > 0)
+        {
+            it->second->SetChips(it->second->GetChips() + it->second->GetBet());
+            it->second->SetBet(0);
+            it->second->SetDealt(false);
+            it->second->SetForcedBet(false);
+            BroadcastToTablePlayerStatus(it->first, "Default");
+        }
+    }
 }
