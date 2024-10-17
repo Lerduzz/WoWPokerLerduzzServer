@@ -77,12 +77,6 @@ public:
                 nresp << POKER_PREFIX << "null";
                 msg = nresp.str();
             }
-            else
-            {
-                std::ostringstream ann;
-                ann << "WoWPokerLerduzz:: [" << receiver->GetName() << "]: " << message;
-                LOG_ERROR("poker", ann.str().c_str());
-            }
         }
     }
 };

@@ -260,7 +260,7 @@ void PokerMgr::NextLevel()
 
 void PokerMgr::PlayerBet(uint32 seat, uint32 size, std::string status)
 {
-    if (table[seat]->GetChips() < size)
+    if (table[seat]->GetChips() <= size)
     {
         size = table[seat]->GetChips();
         status = "All In";
@@ -285,7 +285,6 @@ void PokerMgr::PlayerBet(uint32 seat, uint32 size, std::string status)
             sidepots.push_back(tmp);
         }
     }
-
     for (std::list<SidePot>::iterator it = sidepots.begin(); it != sidepots.end(); ++it)
         it->pot = GetSidePot(it->bet);
 }
@@ -324,10 +323,7 @@ void PokerMgr::PlayerAction(uint32 seat, uint32 delta)
         if (table[seat]->GetBet() == maxBet)
             PlayerBet(seat, 0, "Checked");
         else
-        {
-            LOG_ERROR("poker", "WoWPokerLerduzz:: {} ha enviado pasar pero su apuesta no es igual a la maxima.", table[seat]->GetPlayer()->GetName());
             return;
-        }
     }
     else if (delta > 0)
     {
@@ -373,7 +369,6 @@ void PokerMgr::OnWorldUpdate(uint32 diff)
         delay -= diff;
         return;
     }
-    LOG_ERROR("poker", "void PokerMgr::OnWorldUpdate(uint32 diff = {}).", diff);
     if (status == POKER_STATUS_SHOW)
     {
         status = POKER_STATUS_INACTIVE;
@@ -698,7 +693,7 @@ void PokerMgr::ShowDown()
         sidepots.push_back(tmpPot);
     }
 
-    sidepots.sort([](SidePot a, SidePot b){ return a.pot < b.pot; });
+    sidepots.sort([](SidePot a, SidePot b){ return a.bet < b.bet; });
 
     uint32 tmpTotal;
     uint32 tmpPrev;
