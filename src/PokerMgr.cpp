@@ -207,6 +207,11 @@ void PokerMgr::NextLevel()
             DealTurn();
             break;
         }
+        case POKER_STATUS_RIVER:
+        {
+            DealRiver();
+            break;
+        }
     }
 }
 
@@ -530,6 +535,20 @@ void PokerMgr::DealTurn()
 
     std::ostringstream msg;
     msg << POKER_PREFIX << "turn_" << flop[4];        
+    BroadcastToTable(msg.str());
+
+    SetupBets();
+    turn = button;
+    GoNextPlayerTurn();
+}
+
+void PokerMgr::DealRiver()
+{
+    flop[5] = deck.front();
+    deck.pop_front();
+
+    std::ostringstream msg;
+    msg << POKER_PREFIX << "river_" << flop[5];        
     BroadcastToTable(msg.str());
 
     SetupBets();

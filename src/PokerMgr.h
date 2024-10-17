@@ -168,6 +168,11 @@ private:
      */
     void DealTurn();
 
+    /**
+     * Nivel 4: POKER_STATUS_RIVER.
+     */
+    void DealRiver();
+
     PokerTable table;
     PokerStatus status;
 
