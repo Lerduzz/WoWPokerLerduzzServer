@@ -8,6 +8,7 @@ PokerMgr::PokerMgr()
     round = 0;
     button = 1;
     turn = 0;
+    flop = {0, 0, 0, 0, 0};
 }
 
 PokerMgr::~PokerMgr()
@@ -18,6 +19,7 @@ PokerMgr::~PokerMgr()
     round = 0;
     button = 1;
     turn = 0;
+    flop = {0, 0, 0, 0, 0};
 }
 
 bool PokerMgr::PlayerJoin(Player *player, uint32 gold)
@@ -195,6 +197,11 @@ void PokerMgr::NextLevel()
             DealHoleCards();
             break;
         }
+        case POKER_STATUS_FLOP:
+        {
+            ShowFlopCards();
+            break;
+        }
     }
 }
 
@@ -345,6 +352,15 @@ uint32 PokerMgr::WhosBetAfter(uint32 start)
     return 0;
 }
 
+void PokerMgr::SetupBets()
+{
+    for (PokerTable::iterator it = table.begin(); it != table.end(); ++it)
+    {
+        if (it->second && it->second->GetPlayer() && it->second->IsDealt() && it->second->IsIn())
+            it->second->SetForcedBet(true);
+    }
+}
+
 void PokerMgr::PostBlinds()
 {
     uint32 pc = GetPlayingPlayers();
@@ -469,7 +485,6 @@ void PokerMgr::DealHoleCards()
 
                 table[j]->SetDealt(true);
                 table[j]->SetBet(0);
-                table[j]->SetForcedBet(true);
 
                 std::ostringstream msg3;
                 msg3 << POKER_PREFIX << "hole_" << table[j]->GetHole1() << "_" << table[j]->GetHole2();
@@ -483,5 +498,22 @@ void PokerMgr::DealHoleCards()
     msg4 << POKER_PREFIX << "flop0";
     BroadcastToTable(msg4.str());
 
+    SetupBets();
     PostBlinds();
+}
+
+void PokerMgr::ShowFlopCards()
+{
+    for (uint32 i = 0; i < 3; i++)
+    {
+        flop[i] = deck.front();
+        deck.pop_front();
+    }
+    std::ostringstream msg;
+    msg << POKER_PREFIX << "flop1_" << flop[0] << "_" << flop[1] << "_" << flop[2];        
+    BroadcastToTable(msg.str());
+
+    SetupBets();
+    turn = button;
+    GoNextPlayerTurn();
 }

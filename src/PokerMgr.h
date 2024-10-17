@@ -127,6 +127,11 @@ private:
     uint32 WhosBetAfter(uint32 start);
 
     /**
+     * Marca para que todos los jugadores tengan turno.
+     */
+    void SetupBets();
+
+    /**
      * Coloca las ciegas.
      */
     void PostBlinds();
@@ -153,10 +158,17 @@ private:
      */
     void DealHoleCards();
 
+    /**
+     * Nivel 2: POKER_STATUS_FLOP.
+     */
+    void ShowFlopCards();
+
     PokerTable table;
     PokerStatus status;
 
     std::list<uint32> deck;
+    std::array<uint32, 5> flop;
+
     uint32 round;
     uint32 button;
 
