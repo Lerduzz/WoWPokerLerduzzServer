@@ -680,6 +680,20 @@ void PokerMgr::ShowDown()
 
     sidepots.sort([](SidePot a, SidePot b){ return a.pot < b.pot; });
 
+    uint32 tmpTotal;
+    uint32 tmpPrev;
+    for (std::list<SidePot>::iterator it = sidepots.begin(); it != sidepots.end(); ++it)
+    {
+        if (it == sidepots.begin())
+            tmpTotal = it->pot;
+        else
+        {
+            tmpPrev = it->pot;
+            it->pot -= tmpTotal;
+            tmpTotal = tmpPrev;
+        }
+    }
+
     if (GetPlayingPlayers() == 1)
     {
         for (PokerTable::iterator it = table.begin(); it != table.end(); ++it)
