@@ -347,6 +347,9 @@ void PokerMgr::PlayerAction(uint32 seat, uint32 delta)
 
 void PokerMgr::FoldPlayer(uint32 seat)
 {
+    if (seat != turn)
+        return;
+
     PokerPlayer *pp = sPokerMgr->GetSeatInfo(seat);
     if (pp && pp->IsDealt())
     {
