@@ -657,6 +657,7 @@ void PokerMgr::ShowDown()
     uint32 maxBet = HighestBet();
     uint32 totalPot = GetTotalPot();
     SidePot tmpPot;
+    uint32 pot;
 
     if (sidepots.size() == 0)
     {
@@ -701,57 +702,51 @@ void PokerMgr::ShowDown()
             if (it->second && it->second->GetPlayer() && it->second->IsDealt())
                 winners.push_back(it->first);
         }
+
+        for (std::list<SidePot>::iterator it = sidepots.begin(); it != sidepots.end(); ++it)
+        {
+            uint32 winnerCount = 0;
+            for (std::list<uint32>::iterator itw = winners.begin(); itw != winners.end(); ++itw)
+                if (table[*itw]->GetBet() >= it->bet)
+                    winnerCount++;
+
+            if (winnerCount > 0)
+            {
+                pot = it->pot / winnerCount;
+                for (std::list<uint32>::iterator itw = winners.begin(); itw != winners.end(); ++itw)
+                {
+                    if (table[*itw]->GetBet() >= it->bet)
+                    {
+                        table[*itw]->SetChips(table[*itw]->GetChips() + pot);
+                        table[*itw]->SetDealt(false);
+                    }
+                }
+            }
+            else
+            {
+                winnerCount = 0;
+                for (PokerTable::iterator itt = table.begin(); itt != table.end(); ++itt)
+                {
+                    if (itt->second && itt->second->GetPlayer() && itt->second->GetBet() >= it->bet)
+                        winnerCount++;
+                }
+                for (PokerTable::iterator itt = table.begin(); itt != table.end(); ++itt)
+                {
+                    pot = it->pot / winnerCount;
+                    if (itt->second && itt->second->GetPlayer() && itt->second->GetBet() >= it->bet)
+                    {
+                        itt->second->SetChips(itt->second->GetChips() + pot);
+                        itt->second->SetDealt(false);
+                        // FHS_BroadCastToTable("st_"..j.."_"..Seats[j].chips.."_"..Seats[j].bet.."_"..Seats[j].status.."_0.5")
+                        // FHS_ShowCard(j,pot.." returned")
+                    }
+                }
+            }
+        }
+        
     }
     else
     {
         LOG_ERROR("poker", "WoWPokerLerduzz:: void PokerMgr::ShowDown(): NO IMPLEMENTADO POR EL MOMENTO!");
-        return;
     }
-
-    // ----------------------------------------------------------
-    for (std::list<SidePot>::iterator it = sidepots.begin(); it != sidepots.end(); ++it)
-    {
-        uint32 winnerCount = 0;
-        for (std::list<uint32>::iterator itw = winners.begin(); itw != winners.end(); ++itw)
-            if (table[*itw]->GetBet() >= it->bet)
-                winnerCount++;
-                    
-        if (winnerCount > 0)
-        {
-            uint32 pot = it->pot / winnerCount;			
-            for (std::list<uint32>::iterator itw = winners.begin(); itw != winners.end(); ++itw)
-            {
-                if (table[*itw]->GetBet() >= it->bet)
-                {
-                    table[*itw]->SetChips(table[*itw]->GetChips() + pot);
-                    table[*itw]->SetDealt(false);
-                }
-            }
-        }
-        else
-        {
-            winnerCount = 0;
-            for (PokerTable::iterator itt = table.begin(); itt != table.end(); ++itt)
-            {
-                if (itt->second && itt->second->GetPlayer() && itt->second->GetBet() >= it->bet)
-                    winnerCount++;
-            }
-        // 	for j=1,9 do
-        // 		
-        // 		pot=FHS_round((SidePot[r].pot) / winnercount,0)
-        // 		--Player bet into that 
-        // 		if ((Seats[j].seated==1)and(Seats[j].bet>=SidePot[r].bet)) then
-        // 			
-        // 			Seats[j].chips=Seats[j].chips+pot
-        // 			FHS_BroadCastToTable("st_"..j.."_"..Seats[j].chips.."_"..Seats[j].bet.."_"..Seats[j].status.."_0.5")
-        // 		
-        // 			FHS_ShowCard(j,pot.." returned")
-        // 			Seats[j].dealt=0
-        // 			--Local View
-        // 			FHS_UpdateSeat(j)
-        // 		end
-        // 	end
-        }
-    }
-    // ----------------------------------------------------------
 }
