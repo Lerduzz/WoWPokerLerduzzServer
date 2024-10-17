@@ -41,7 +41,7 @@ public:
                 sPokerMgr->InformPlayerJoined(player);
                 sPokerMgr->BroadcastToTableJoined(seat);
                 std::ostringstream nresp;
-                nresp << POKER_PREFIX << "null";;
+                nresp << POKER_PREFIX << "null";
                 msg = nresp.str();
             }
             else
@@ -52,9 +52,32 @@ public:
         }
         else
         {
-            std::ostringstream ann;
-            ann << "WoWPokerLerduzz:: [" << receiver->GetName() << "]: " << message;
-            LOG_ERROR("poker", ann.str().c_str());
+            char *tab;
+            tab = strtok(message.data(), "_");
+            if (tab == "call")
+            {
+                uint32 seat = sPokerMgr->GetSeat(player);
+                if (seat > 0)
+                {
+                    PokerPlayer *pp = sPokerMgr->GetSeatInfo(seat);
+                    if (pp && pp->IsDealt())
+                    {
+                        tab = strtok(nullptr, "_"); // TODO: No enviar el numero de asiento ya que siempre llega 5.
+                        tab = strtok(nullptr, "_");
+                        uint32 delta = (uint32) atoi(tab);
+                        sPokerMgr->PlayerAction(seat, delta);
+                    }
+                }
+                std::ostringstream nresp;
+                nresp << POKER_PREFIX << "null";
+                msg = nresp.str();
+            }
+            else
+            {
+                std::ostringstream ann;
+                ann << "WoWPokerLerduzz:: [" << receiver->GetName() << "]: " << message;
+                LOG_ERROR("poker", ann.str().c_str());
+            }
         }
     }
 };

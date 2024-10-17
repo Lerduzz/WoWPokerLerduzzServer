@@ -48,6 +48,13 @@ public:
     uint32 GetSeat(Player *player);
 
     /**
+     * Obtiene la informacion de una silla de la mesa.
+     *
+     * @return El numero del asiento o 0 si el jugador no se encuentra en la mesa.
+     */
+    PokerPlayer *GetSeatInfo(uint32 seat);
+
+    /**
      * Informa al jugador sobre el estado de todos los jugadores de la mesa.
      */
     void InformPlayerJoined(Player *player);
@@ -91,6 +98,11 @@ public:
      * Coloca la apuesta de un jugador.
      */
     void PlayerBet(uint32 seat, uint32 size, std::string status);
+
+    /**
+     * Manejar la accion del jugador en turno.
+     */
+    void PlayerAction(uint32 seat, uint32 delta);
 
 private:
     /**

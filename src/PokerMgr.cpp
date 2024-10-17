@@ -48,6 +48,13 @@ uint32 PokerMgr::GetSeat(Player *player)
     return 0;
 }
 
+PokerPlayer *PokerMgr::GetSeatInfo(uint32 seat)
+{
+    if (table.find(seat) != table.end())
+        return table[seat];
+    return nullptr;
+}
+
 void PokerMgr::InformPlayerJoined(Player *player)
 {
     int32 delta = 5 - GetSeat(player);
@@ -226,6 +233,66 @@ void PokerMgr::PlayerBet(uint32 seat, uint32 size, std::string status)
 	--	end;
 	end;
     */
+}
+
+void PokerMgr::PlayerAction(uint32 seat, uint32 delta)
+{
+    if (seat != turn)
+        return;
+
+    uint32 maxBet = HighestBet();
+
+    if (table[seat]->IsForcedBet())
+    {
+        if (delta > table[seat]->GetChips())
+        {
+            delta = table[seat]->GetChips();
+
+            // TODO: Sidepot ...
+            /*
+            --Mark the curent pot as a side pot.
+			local found=0
+			local bets=FHS_SidePot(delta)
+			for r=1,getn(SidePot) do
+				if (SidePot[r].bet==delta) then found=1; end
+			end
+			if (found==0) then 
+				SidePot[getn(SidePot)+1]={bet=delta,pot=bets}
+			end
+
+			--Check the existing sidepots, if our bet is < a sidepot, that sidepot needs to be rebuilt
+			for j=1,getn(SidePot) do
+				SidePot[j].pot=FHS_SidePot(SidePot[j].bet)
+			end
+            */
+        }
+    }
+
+    if (delta == 0)
+    {
+        if (table[seat]->GetBet() == maxBet)
+            PlayerBet(seat, 0, "Checked");
+        else
+            LOG_ERROR("poker", "WoWPokerLerduzz:: {} ha enviado pasar pero su apuesta no es igual a la maxima.", table[seat]->GetPlayer()->GetName());
+    }
+    else if (delta > 0)
+    {
+        if (table[seat]->GetBet() + delta == maxBet)
+            PlayerBet(seat, delta, "Called");
+        else
+        {
+            if (table[seat]->GetBet() + delta >= table[seat]->GetChips())
+            {
+                delta = table[seat]->GetChips();
+                PlayerBet(seat, delta, "All In");
+            }
+            else
+                PlayerBet(seat, delta, "Raised");
+        }
+    }
+
+    table[seat]->SetForcedBet(false);
+    GoNextPlayerTurn();
 }
 
 uint32 PokerMgr::GetSeatAvailable()
