@@ -206,6 +206,25 @@ void PokerMgr::BroadcastToTableButton()
     }
 }
 
+void PokerMgr::BroadcastToTableWins(uint32 seat)
+{
+    for (PokerTable::iterator it = table.begin(); it != table.end(); ++it)
+    {
+        if (it->second && it->second->GetPlayer())
+        {
+            int32 delta = 5 - it->first;
+            int32 fakeseat = seat + delta;
+            if (fakeseat > POKER_MAX_SEATS)
+                fakeseat -= POKER_MAX_SEATS;
+            if (fakeseat < 1)
+                fakeseat += POKER_MAX_SEATS;
+            std::ostringstream resp;
+            resp << POKER_PREFIX << "showdown_" << fakeseat << "_" << table[seat]->GetPlayer()->GetName() << " ha ganado."; // TODO: Traducir del lado del cliente.
+            it->second->GetPlayer()->Whisper(resp.str(), LANG_ADDON, it->second->GetPlayer());
+        }
+    }
+}
+
 void PokerMgr::NextLevel()
 {
     status = static_cast<PokerStatus>(static_cast<int>(status) + 1);
@@ -738,12 +757,14 @@ void PokerMgr::ShowDown()
                         itt->second->SetChips(itt->second->GetChips() + pot);
                         itt->second->SetDealt(false);
                         // FHS_BroadCastToTable("st_"..j.."_"..Seats[j].chips.."_"..Seats[j].bet.."_"..Seats[j].status.."_0.5")
+                        BroadcastToTablePlayerStatusFolded(itt->first);
                         // FHS_ShowCard(j,pot.." returned")
                     }
                 }
             }
         }
-        
+        BroadcastToTablePlayerStatus(winners.front(), "Default");
+        BroadcastToTableWins(winners.front());
     }
     else
     {

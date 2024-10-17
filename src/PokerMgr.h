@@ -101,6 +101,11 @@ public:
     void BroadcastToTableButton();
 
     /**
+     * Informa a la mesa sobre el ganador.
+     */
+    void BroadcastToTableWins(uint32 seat);
+
+    /**
      * Logica principal del juego.
      */
     void NextLevel();
