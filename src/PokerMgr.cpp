@@ -202,6 +202,11 @@ void PokerMgr::NextLevel()
             ShowFlopCards();
             break;
         }
+        case POKER_STATUS_TURN:
+        {
+            DealTurn();
+            break;
+        }
     }
 }
 
@@ -511,6 +516,20 @@ void PokerMgr::ShowFlopCards()
     }
     std::ostringstream msg;
     msg << POKER_PREFIX << "flop1_" << flop[0] << "_" << flop[1] << "_" << flop[2];        
+    BroadcastToTable(msg.str());
+
+    SetupBets();
+    turn = button;
+    GoNextPlayerTurn();
+}
+
+void PokerMgr::DealTurn()
+{
+    flop[4] = deck.front();
+    deck.pop_front();
+
+    std::ostringstream msg;
+    msg << POKER_PREFIX << "turn_" << flop[4];        
     BroadcastToTable(msg.str());
 
     SetupBets();

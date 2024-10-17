@@ -163,6 +163,11 @@ private:
      */
     void ShowFlopCards();
 
+    /**
+     * Nivel 3: POKER_STATUS_TURN.
+     */
+    void DealTurn();
+
     PokerTable table;
     PokerStatus status;
 
