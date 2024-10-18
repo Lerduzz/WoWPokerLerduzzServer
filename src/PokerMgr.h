@@ -1,6 +1,7 @@
 #ifndef SC_POKER_MGR_H
 #define SC_POKER_MGR_H
 
+#include "PokerHandMgr.h"
 #include "PokerPlayer.h"
 #include <random>
 
@@ -20,6 +21,12 @@ struct SidePot
 {
     uint32 bet;
     uint32 pot;
+};
+
+struct PokerHand
+{
+    std::string rank;
+    std::string desc;
 };
 
 const int POKER_MIN_GOLD = 500;
@@ -201,6 +208,13 @@ private:
      * Avanza el turno de apostar al siguiente jugador.
      */
     void GoNextPlayerTurn();
+
+    /**
+     * Determinar la mano del jugador.
+     *
+     * @return Rango y descripcion de la mano.
+     */
+    PokerHand FindHandForPlayer(uint32 seat);
 
     /**
      * Nivel 1: POKER_STATUS_PRE_FLOP.
