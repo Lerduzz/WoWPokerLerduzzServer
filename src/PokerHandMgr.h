@@ -18,35 +18,34 @@ enum PokerSuit
     POKER_SUIT_SPADES
 };
 
-class HandIterator {
-public:
-    HandIterator(const std::vector<uint32>& cards) : cards(cards), listCards(5) {
-        for (uint32 i = 0; i < std::min(5, (int)cards.size()); ++i) {
-            listCards[i] = i;
-        }
-    }
+enum PokerHand
+{
+    POKER_HAND_HIGH_CARD = 0,
+    POKER_HAND_ONE_PAIR,
+    POKER_HAND_TWO_PAIR,
+    POKER_HAND_THREE_OF_A_KIND,
+    POKER_HAND_STRAIGHT,
+    POKER_HAND_FLUSH,
+    POKER_HAND_FULL_FOUSE,
+    POKER_HAND_FOUR_OF_A_KIND,
+    POKER_HAND_STRAIGHT_FLUSH,
+    POKER_HAND_ROYAL_FLUSH
+};
 
-    std::pair<std::vector<uint32>, std::vector<uint32>> operator()() {
-        if (cards.size() <= 5) return {{}, {}};
+struct PokerCard
+{
+    uint32 rank;
+    PokerSuit suit;
+};
 
-        for (uint32 i = 4; i >= 0; --i) {
-            if (listCards[i] + 5 - i < cards.size()) {
-                ++listCards[i];
-                for (uint32 j = i + 1; j < 5; ++j) {
-                    listCards[j] = listCards[j-1] + 1;
-                }
-                std::vector<uint32> hand;
-                for (uint32 j : listCards) hand.push_back(cards[j]);
-                return { listCards, hand };
-            }
-        }
-        return {{}, {}};
-    }
-
-private:
-    const std::vector<uint32>& cards;
-    std::vector<uint32> listCards;
-
+struct PokerHandRank
+{
+    PokerHand hand;
+    PokerCard best1;
+    PokerCard best2;
+    PokerCard best3;
+    PokerCard best4;
+    PokerCard best5;
 };
 
 class PokerHandMgr
@@ -61,11 +60,9 @@ public:
         return instance;
     }
 
-    std::string BestRank(const std::vector<uint32>& cards);
-    std::string HandDescription(const std::string& rank);
+    PokerHandRank BestRank(const std::vector<uint32>& cards);
 
 private:    
-    std::string Rank(const std::vector<uint32>& cards);
     PokerSuit GetCardSuit(uint32 card);
     uint32 GetCardRank(uint32 card);
 

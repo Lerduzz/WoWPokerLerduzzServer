@@ -1,5 +1,20 @@
 #include "PokerHandMgr.h"
 
+PokerHandRank PokerHandMgr::BestRank(const std::vector<uint32> &cards)
+{
+    std::array<PokerCard, 7> temp;
+    uint32 index = 0;
+    for (uint32 card : cards) {
+        temp[index] = PokerCard();
+        temp[index].rank = GetCardRank(card);
+        temp[index].suit = GetCardSuit(card);
+        index++;
+    }
+    PokerHandRank result = PokerHandRank();    
+    return result;
+}
+
+/*
 std::string PokerHandMgr::BestRank(const std::vector<uint32> &cards)
 {
     std::string rank = "000000";
@@ -20,35 +35,35 @@ std::string PokerHandMgr::HandDescription(const std::string &rank)
 {
     std::array<std::string, 14> POKER_CARD_RANK = {
         "--",
-    	"Two",
-    	"Three",
-    	"Four",
-    	"Five",
-    	"Six",
-    	"Seven",
-    	"Eight",
-    	"Nine",
-    	"Ten",
-    	"Jack",
-    	"Queen",
-    	"King",
-    	"Ace"
+        "Two",
+        "Three",
+        "Four",
+        "Five",
+        "Six",
+        "Seven",
+        "Eight",
+        "Nine",
+        "Ten",
+        "Jack",
+        "Queen",
+        "King",
+        "Ace"
     };
     std::array<std::string, 14> POKER_CARD_RANK_PLURAL = {
         "--",
-    	"Twos",
-    	"Threes",
-    	"Fours",
-    	"Fives",
-    	"Sixes",
-    	"Sevens",
-    	"Eights",
-    	"Nines",
-    	"Tens",
-    	"Jacks",
-    	"Queens",
-    	"Kings",
-    	"Aces"
+        "Twos",
+        "Threes",
+        "Fours",
+        "Fives",
+        "Sixes",
+        "Sevens",
+        "Eights",
+        "Nines",
+        "Tens",
+        "Jacks",
+        "Queens",
+        "Kings",
+        "Aces"
     };
 
     if (rank.empty()) return "";
@@ -126,44 +141,50 @@ std::string PokerHandMgr::Rank(const std::vector<uint32> &cards)
     }
 
     // -- now find best hand
-	// -- 5 of a kind
-	// if (sortedGroups[1]>"500") return "9"..string.sub(sortedGroups[1],2) end
+    // -- 5 of a kind
+    // if (sortedGroups[1]>"500") return "9"..string.sub(sortedGroups[1],2) end
     if (!sortedGroups.empty() && sortedGroups[0] > "500") return "9" + sortedGroups[0].substr(1);
 
     // -- straight flush
-	// if (straight and flush) then return "8"..string.sub(sortedGroups[1],2) end
+    // if (straight and flush) then return "8"..string.sub(sortedGroups[1],2) end
     if (straight && flush) return "8" + sortedGroups[0].substr(1);
 
     // -- 4 of a kind
-	// if (sortedGroups[1]>"400") then return "7"..string.sub(sortedGroups[1],2)..string.sub(sortedGroups[2],2) end
-	if (sortedGroups[0] > "400") return "7" + sortedGroups[0].substr(1, 1) + sortedGroups[1].substr(1, 1);
+    // if (sortedGroups[1]>"400") then return "7"..string.sub(sortedGroups[1],2)..string.sub(sortedGroups[2],2) end
+    if (sortedGroups[0] > "400") return "7" + sortedGroups[0].substr(1, 1) + sortedGroups[1].substr(1, 1);
 
     // -- full house
-	// if (sortedGroups[1]>"300" and sortedGroups[2]>"200") then return "6"..string.sub(sortedGroups[1],2)..string.sub(sortedGroups[2],2) end
-	if (sortedGroups[0] > "300" && sortedGroups[1] > "200") return "6" + sortedGroups[0].substr(1, 1) + sortedGroups[1].substr(1, 1);
+    // if (sortedGroups[1]>"300" and sortedGroups[2]>"200") then return "6"..string.sub(sortedGroups[1],2)..string.sub(sortedGroups[2],2) end
+    if (sortedGroups[0] > "300" && sortedGroups[1] > "200") return "6" + sortedGroups[0].substr(1, 1) + sortedGroups[1].substr(1, 1);
 
     // -- flush
-	// if (flush) then return "5"..table.concat(ranks) end
-    if (flush) return "5" + ranks;
+    // if (flush) then return "5"..table.concat(ranks) end
+    if (flush) {
+        std::string result = "5";
+        for (const auto& rank : ranks) {
+            result += rank;
+        }
+        return result;
+    }
 
-	// -- straight
-	// if (straight) then return "4"..ranks[1] end --string.sub(sortedGroups[1],2) end
-    if (straight) return "4" + ranks.substr(0, 1);
+    // -- straight
+    // if (straight) then return "4"..ranks[1] end --string.sub(sortedGroups[1],2) end
+    if (straight) return "4" + ranks[1];
 
-	// -- 3 of a kind
-	// if (sortedGroups[1]>"300") then return "3"..string.sub(sortedGroups[1],2)..string.sub(sortedGroups[2],2)..string.sub(sortedGroups[3],2) end
-	if (sortedGroups[0] > "300") return "3" + sortedGroups[0].substr(1, 1) + sortedGroups[1].substr(1, 1) + sortedGroups[2].substr(1, 1);
+    // -- 3 of a kind
+    // if (sortedGroups[1]>"300") then return "3"..string.sub(sortedGroups[1],2)..string.sub(sortedGroups[2],2)..string.sub(sortedGroups[3],2) end
+    if (sortedGroups[0] > "300") return "3" + sortedGroups[0].substr(1, 1) + sortedGroups[1].substr(1, 1) + sortedGroups[2].substr(1, 1);
 
     // -- two pair
-	// if (sortedGroups[1]>"200" and sortedGroups[2]>"200") then return "2"..string.sub(sortedGroups[1],2)..string.sub(sortedGroups[2],2)..string.sub(sortedGroups[3],2) end
-	if (sortedGroups[0] > "200" && sortedGroups[1] > "200") return "2" + sortedGroups[0].substr(1, 1) + sortedGroups[1].substr(1, 1) + sortedGroups[2].substr(1, 1);
+    // if (sortedGroups[1]>"200" and sortedGroups[2]>"200") then return "2"..string.sub(sortedGroups[1],2)..string.sub(sortedGroups[2],2)..string.sub(sortedGroups[3],2) end
+    if (sortedGroups[0] > "200" && sortedGroups[1] > "200") return "2" + sortedGroups[0].substr(1, 1) + sortedGroups[1].substr(1, 1) + sortedGroups[2].substr(1, 1);
 
     // -- one pair
-	// if (sortedGroups[1]>"200") then return "1"..string.sub(sortedGroups[1],2)..string.sub(sortedGroups[2],2)..string.sub(sortedGroups[3],2)..string.sub(sortedGroups[4],2) end
+    // if (sortedGroups[1]>"200") then return "1"..string.sub(sortedGroups[1],2)..string.sub(sortedGroups[2],2)..string.sub(sortedGroups[3],2)..string.sub(sortedGroups[4],2) end
     if (sortedGroups[0] > "200") return "1" + sortedGroups[0].substr(1, 1) + sortedGroups[1].substr(1, 1) + sortedGroups[2].substr(1, 1) + sortedGroups[3].substr(1, 1);
 
     return "0" + ranks[0] + ranks[1] + ranks[2] + ranks[3] + ranks[4];
-}
+}*/
 
 PokerSuit PokerHandMgr::GetCardSuit(uint32 card)
 {

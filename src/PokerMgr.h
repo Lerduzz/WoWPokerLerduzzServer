@@ -23,11 +23,11 @@ struct SidePot
     uint32 pot;
 };
 
-struct PokerHand
-{
-    std::string rank;
-    std::string desc;
-};
+// struct PokerHand
+// {
+//     std::string rank;
+//     std::string desc;
+// };
 
 const int POKER_MIN_GOLD = 500;
 const int POKER_MAX_GOLD = 5000;
