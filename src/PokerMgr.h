@@ -23,12 +23,6 @@ struct SidePot
     uint32 pot;
 };
 
-// struct PokerHand
-// {
-//     std::string rank;
-//     std::string desc;
-// };
-
 const int POKER_MIN_GOLD = 500;
 const int POKER_MAX_GOLD = 5000;
 const int POKER_MAX_SEATS = 9;
@@ -214,7 +208,7 @@ private:
      *
      * @return Rango y descripcion de la mano.
      */
-    PokerHand FindHandForPlayer(uint32 seat);
+    PokerHandRank FindHandForPlayer(uint32 seat);
 
     /**
      * Nivel 1: POKER_STATUS_PRE_FLOP.

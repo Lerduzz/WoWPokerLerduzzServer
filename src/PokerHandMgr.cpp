@@ -2,15 +2,72 @@
 
 PokerHandRank PokerHandMgr::BestRank(const std::vector<uint32> &cards)
 {
-    std::array<PokerCard, 7> temp;
-    uint32 index = 0;
+    std::list<PokerCard> cardList;
     for (uint32 card : cards) {
-        temp[index] = PokerCard();
-        temp[index].rank = GetCardRank(card);
-        temp[index].suit = GetCardSuit(card);
-        index++;
+        PokerCard tmp = PokerCard();
+        tmp.suit = GetCardSuit(card);
+        tmp.rank = GetCardRank(card);
+        cardList.push_back(tmp);
     }
-    PokerHandRank result = PokerHandRank();    
+
+    PokerHandRank result = PokerHandRank();
+
+    // Royal Flush.
+    if (cardList.size() >= 5)
+    {
+        cardList.sort([](PokerCard a, PokerCard b) { return a.rank > b.rank; });
+        std::list<PokerCard> tempList;
+        for (PokerCard card : cardList)
+        {
+            if (card.rank < POKER_RANK_TEN)
+                continue;
+            if (tempList.empty() || card.rank != tempList.back().rank)
+                tempList.push_back(card);
+        }
+        if (tempList.size() == 5)
+        {
+            PokerSuit st = tempList.front().suit;
+            bool same = true;
+            for (PokerCard card : tempList)
+            {
+                if (card.suit != st)
+                {
+                    same = false;
+                    break;
+                }
+            }
+            if (same)
+            {
+                result.hand = POKER_HAND_ROYAL_FLUSH;
+                return result;
+            }
+        }
+    }
+
+    // Hight Card.
+    result.hand = POKER_HAND_HIGH_CARD;
+    result.best1 = cardList.front();
+    cardList.pop_front();
+    if (cardList.size() > 0)
+    {
+        result.best2 = cardList.front();
+        cardList.pop_front();
+        if (cardList.size() > 0)
+        {
+            result.best3 = cardList.front();
+            cardList.pop_front();
+            if (cardList.size() > 0)
+            {
+                result.best4 = cardList.front();
+                cardList.pop_front();
+                if (cardList.size() > 0)
+                {
+                    result.best5 = cardList.front();
+                    cardList.pop_front();
+                }
+            }
+        }
+    }
     return result;
 }
 
@@ -199,9 +256,24 @@ PokerSuit PokerHandMgr::GetCardSuit(uint32 card)
     return POKER_SUIT_NONE;
 }
 
-uint32 PokerHandMgr::GetCardRank(uint32 card)
+PokerRank PokerHandMgr::GetCardRank(uint32 card)
 {
-    std::array<uint32, 14> ranks = { 0, 14, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13 };
+    std::array<PokerRank, 14> ranks = {
+        POKER_RANK_NONE,
+        POKER_RANK_ACE,
+        POKER_RANK_TWO,
+        POKER_RANK_THREE,
+        POKER_RANK_FOUR,
+        POKER_RANK_FIVE,
+        POKER_RANK_SIX,
+        POKER_RANK_SEVEN,
+        POKER_RANK_EIGHT,
+        POKER_RANK_NINE,
+        POKER_RANK_TEN,
+        POKER_RANK_JACK,
+        POKER_RANK_QUEEN,
+        POKER_RANK_KING
+    };
     uint32 index = card % 13;
     return ranks[index];
 }

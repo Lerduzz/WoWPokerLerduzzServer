@@ -18,6 +18,24 @@ enum PokerSuit
     POKER_SUIT_SPADES
 };
 
+enum PokerRank
+{
+    POKER_RANK_NONE = 0,
+    POKER_RANK_TWO = 2,
+    POKER_RANK_THREE,
+    POKER_RANK_FOUR,
+    POKER_RANK_FIVE,
+    POKER_RANK_SIX,
+    POKER_RANK_SEVEN,
+    POKER_RANK_EIGHT,
+    POKER_RANK_NINE,
+    POKER_RANK_TEN,
+    POKER_RANK_JACK,
+    POKER_RANK_QUEEN,
+    POKER_RANK_KING,
+    POKER_RANK_ACE
+};
+
 enum PokerHand
 {
     POKER_HAND_HIGH_CARD = 0,
@@ -34,8 +52,8 @@ enum PokerHand
 
 struct PokerCard
 {
-    uint32 rank;
     PokerSuit suit;
+    PokerRank rank;
 };
 
 struct PokerHandRank
@@ -64,7 +82,7 @@ public:
 
 private:    
     PokerSuit GetCardSuit(uint32 card);
-    uint32 GetCardRank(uint32 card);
+    PokerRank GetCardRank(uint32 card);
 
 };
 
