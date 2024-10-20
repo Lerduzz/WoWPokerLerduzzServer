@@ -3,6 +3,7 @@
 
 #include "Common.h"
 #include "Log.h"
+#include <map>
 
 enum PokerSuit
 {
@@ -94,6 +95,7 @@ private:
     /**
      * Determina si un conjunto de cartas forman una escalera real.
      *
+     * @param cards Lista de cartas ordenadas por rango descendente.
      * @return POKER_HAND_ROYAL_FLUSH.
      */
     PokerHandRank IsRoyalFlush(std::list<PokerCard> cards);

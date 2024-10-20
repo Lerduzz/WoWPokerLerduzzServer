@@ -564,8 +564,15 @@ void PokerMgr::GoNextPlayerTurn()
     // PokerHandRank h = FindHandForPlayer(turn);
     // LOG_ ERROR("poker", "Player turn {}, player hand {}.", turn, h.hand);
 
-    std::list<uint32> inCards = { 11, 10, 12, 13, 1, 2, 3 };
-    LOG_ERROR("poker", "DEBUG: Royal Flush {} == 9.", sPokerHandMgr->BestRank(inCards).hand);
+    // std::list<uint32> inCards = { 11, 10, 12, 13, 1, 2, 3 };
+    // LOG_ERROR("poker", "DEBUG: Royal Flush {} == 9.", sPokerHandMgr->BestRank(inCards).hand);
+    // std::list<uint32> inCards2 = { 25, 10, 23, 13, 24, 26, 14 };
+    // PokerHandRank phr = sPokerHandMgr->BestRank(inCards2);
+    // std::ostringstream ccc;
+    // ccc << "Cartas (S, R): ";
+    // for (PokerCard pc : phr.cards)
+    //     ccc << "(" << pc.suit << ", " << pc.rank << "), ";
+    // LOG_ERROR("poker", "DEBUG: Royal Flush {} == 9. {}", phr.hand, ccc.str());
 }
 
 PokerHandRank PokerMgr::FindHandForPlayer(uint32 seat)
