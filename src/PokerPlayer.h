@@ -2,6 +2,7 @@
 #define SC_POKER_PLAYER_H
 
 #include "Player.h"
+#include "PokerHandMgr.h"
 
 class PokerPlayer
 {

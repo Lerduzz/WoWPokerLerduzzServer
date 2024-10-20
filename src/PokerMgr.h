@@ -1,7 +1,6 @@
 #ifndef SC_POKER_MGR_H
 #define SC_POKER_MGR_H
 
-#include "PokerHandMgr.h"
 #include "PokerPlayer.h"
 #include <random>
 
