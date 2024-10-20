@@ -567,6 +567,9 @@ void PokerMgr::GoNextPlayerTurn()
     std::list<uint32> inCards8 = { 14, 15, 16, 17, 18, 20 };
     LOG_ERROR("poker", "DEBUG: Escalera de Color {} == 8.", sPokerHandMgr->BestRank(inCards8).hand);
 
+    std::list<uint32> inCards7 = { 1, 14, 27, 17, 40, 20 };
+    LOG_ERROR("poker", "DEBUG: Poker {} == 7.", sPokerHandMgr->BestRank(inCards7).hand);
+
     std::list<uint32> inCards5 = { 1, 3, 4, 6, 8, 11 };
     LOG_ERROR("poker", "DEBUG: Color {} == 5.", sPokerHandMgr->BestRank(inCards5).hand);
 

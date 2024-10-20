@@ -21,7 +21,9 @@ PokerHandRank PokerHandMgr::BestRank(std::list<uint32> cards)
     if (result.hand == POKER_HAND_STRAIGHT_FLUSH)
         return result;
 
-    // TODO: POKER_HAND_FOUR_OF_A_KIND.
+    result = IsFourOfAKind(cardList);
+    if (result.hand == POKER_HAND_FOUR_OF_A_KIND)
+        return result;
 
     // TODO: POKER_HAND_FULL_FOUSE.
 
@@ -118,6 +120,40 @@ PokerHandRank PokerHandMgr::IsStraightFlush(std::list<PokerCard> cardsFlush)
     PokerHandRank result = IsStraight(cardsFlush);
     if (result.hand == POKER_HAND_STRAIGHT)
         result.hand = POKER_HAND_STRAIGHT_FLUSH;
+    return result;
+}
+
+PokerHandRank PokerHandMgr::IsFourOfAKind(std::list<PokerCard> cards)
+{
+    PokerHandRank result = PokerHandRank();
+    result.hand = POKER_HAND_HIGH_CARD;
+    if (cards.size() >= 4)
+    {
+        std::map<PokerRank, uint32> rankCount;
+        for (PokerCard card : cards)
+            rankCount[card.rank]++;
+        for (std::map<PokerRank, uint32>::iterator it = rankCount.begin(); it != rankCount.end(); ++it)
+        {
+            if (it->second == 4)
+            {
+                std::list<PokerCard> resultList;
+                std::list<PokerCard> kickerList;
+                for (PokerCard card : cards)
+                    if (card.rank == it->first)
+                        resultList.push_back(card);
+                    else
+                        kickerList.push_back(card);
+                for (PokerCard kicker : kickerList)
+                    if (resultList.size() < 5)
+                        resultList.push_back(kicker);
+                    else
+                        break;
+                result.hand = POKER_HAND_FOUR_OF_A_KIND;
+                result.cards = resultList;
+                break;
+            }
+        }
+    }
     return result;
 }
 

@@ -109,6 +109,14 @@ private:
     PokerHandRank IsStraightFlush(std::list<PokerCard> cardsFlush);
 
     /**
+     * Determina si un conjunto de cartas forman un poker.
+     *
+     * @param cards Lista de cartas ordenadas por rango descendente.
+     * @return POKER_HAND_FOUR_OF_A_KIND.
+     */
+    PokerHandRank IsFourOfAKind(std::list<PokerCard> cards);
+
+    /**
      * Determina si un conjunto de cartas forman un color.
      *
      * @param cards Lista de cartas ordenadas por rango descendente.
