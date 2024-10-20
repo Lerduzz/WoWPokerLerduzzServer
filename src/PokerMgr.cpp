@@ -560,36 +560,6 @@ void PokerMgr::GoNextPlayerTurn()
 
     // TODO: Init playtime limit.
     // PlayerTurnEndTime = GetTime() + AFKTimeLimit;
-
-    std::list<uint32> inCards9 = { 25, 10, 23, 13, 24, 26, 14 };
-    LOG_ERROR("poker", "DEBUG: Escalera Real {} == 9.", sPokerHandMgr->BestRank(inCards9).hand);
-
-    std::list<uint32> inCards8 = { 14, 15, 16, 17, 18, 20 };
-    LOG_ERROR("poker", "DEBUG: Escalera de Color {} == 8.", sPokerHandMgr->BestRank(inCards8).hand);
-
-    std::list<uint32> inCards7 = { 1, 14, 27, 17, 40, 20 };
-    LOG_ERROR("poker", "DEBUG: Poker {} == 7.", sPokerHandMgr->BestRank(inCards7).hand);
-
-    std::list<uint32> inCards6 = { 1, 14, 27, 13, 26, 39 };
-    LOG_ERROR("poker", "DEBUG: Full {} == 6.", sPokerHandMgr->BestRank(inCards6).hand);
-
-    std::list<uint32> inCards5 = { 1, 3, 4, 6, 8, 11 };
-    LOG_ERROR("poker", "DEBUG: Color {} == 5.", sPokerHandMgr->BestRank(inCards5).hand);
-
-    std::list<uint32> inCards4 = { 1, 52, 24, 18, 51, 23, 22 };
-    LOG_ERROR("poker", "DEBUG: Escalera {} == 4.", sPokerHandMgr->BestRank(inCards4).hand);
-
-    std::list<uint32> inCards3 = { 1, 14, 27, 2, 3, 5, 52 };
-    LOG_ERROR("poker", "DEBUG: Trio {} == 3.", sPokerHandMgr->BestRank(inCards3).hand);
-
-    std::list<uint32> inCards2 = { 1, 14, 13, 26, 3, 5 };
-    LOG_ERROR("poker", "DEBUG: Dos Parejas {} == 2.", sPokerHandMgr->BestRank(inCards2).hand);
-
-    std::list<uint32> inCards1 = { 1, 14, 2 };
-    LOG_ERROR("poker", "DEBUG: Una Pareja {} == 1.", sPokerHandMgr->BestRank(inCards1).hand);
-
-    std::list<uint32> inCards0 = { 1, 12 };
-    LOG_ERROR("poker", "DEBUG: Carta Alta {} == 0.", sPokerHandMgr->BestRank(inCards0).hand);
 }
 
 PokerHandRank PokerMgr::FindHandForPlayer(uint32 seat)
