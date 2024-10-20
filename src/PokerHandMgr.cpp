@@ -16,6 +16,7 @@ PokerHandRank PokerHandMgr::BestRank(std::list<uint32> cards)
         return result;
 
     PokerHandRank flush = IsFlush(cardList);
+
     result = IsStraightFlush(flush.cards);
     if (result.hand == POKER_HAND_STRAIGHT_FLUSH)
         return result;
