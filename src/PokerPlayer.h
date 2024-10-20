@@ -2,6 +2,7 @@
 #define SC_POKER_PLAYER_H
 
 #include "Player.h"
+#include "PokerHandMgr.h"
 
 class PokerPlayer
 {
@@ -20,6 +21,8 @@ public:
     bool IsDealt();
     bool IsIn();
 
+    PokerHandRank GetHandRank();
+
     void SetChips(uint32 chips);
     void SetBet(uint32 bet);
 
@@ -29,6 +32,8 @@ public:
     void SetForcedBet(bool forcedBet);
     void SetDealt(bool dealt);
     void SetIn(bool in);
+
+    void SetHandRank(PokerHandRank handRank);
 
 private:
     Player *_player;
@@ -41,6 +46,8 @@ private:
     bool _forcedBet;
     bool _dealt;
     bool _in;
+
+    PokerHandRank _handRank;
 
 };
 

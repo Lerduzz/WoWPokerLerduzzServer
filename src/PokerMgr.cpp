@@ -765,10 +765,8 @@ void PokerMgr::ShowDown()
             {
                 winnerCount = 0;
                 for (PokerTable::iterator itt = table.begin(); itt != table.end(); ++itt)
-                {
                     if (itt->second && itt->second->GetPlayer() && itt->second->GetBet() >= it->bet)
                         winnerCount++;
-                }
                 for (PokerTable::iterator itt = table.begin(); itt != table.end(); ++itt)
                 {
                     pot = it->pot / winnerCount;
@@ -788,6 +786,82 @@ void PokerMgr::ShowDown()
     }
     else
     {
-        LOG_ERROR("poker", "WoWPokerLerduzz:: void PokerMgr::ShowDown(): NO IMPLEMENTADO POR EL MOMENTO!");
+        PokerHandRank best = PokerHandRank();
+        best.hand = POKER_HAND_HIGH_CARD;
+        for (PokerTable::iterator it = table.begin(); it != table.end(); ++it)
+        {
+            if (it->second && it->second->GetPlayer() && it->second->IsDealt())
+            {
+                it->second->SetHandRank(FindHandForPlayer(it->first));
+                if (best.cards.empty() || sPokerHandMgr->HandRankCompare(it->second->GetHandRank(), best) > 0)
+                    best = it->second->GetHandRank();
+            }
+        }
+        for (PokerTable::iterator it = table.begin(); it != table.end(); ++it)
+            if (it->second && it->second->GetPlayer() && it->second->IsDealt())
+                if (sPokerHandMgr->HandRankCompare(it->second->GetHandRank(), best) == 0)
+                    winners.push_back(it->first);
+        if (winners.size() > 0)
+        {
+            for (std::list<SidePot>::iterator it = sidepots.begin(); it != sidepots.end(); ++it)
+            {
+                uint32 winnerCount = 0;
+                for (std::list<uint32>::iterator itw = winners.begin(); itw != winners.end(); ++itw)
+                    if (table[*itw]->GetBet() >= it->bet)
+                        winnerCount++;
+
+                if (winnerCount > 0)
+                {
+                    pot = it->pot / winnerCount;
+                    for (std::list<uint32>::iterator itw = winners.begin(); itw != winners.end(); ++itw)
+                    {
+                        if (table[*itw]->GetBet() >= it->bet)
+                        {
+                            table[*itw]->SetChips(table[*itw]->GetChips() + pot);
+                            table[*itw]->SetDealt(false);
+                            // TODO: FHS_BroadCastToTable("st_"..Winners[j].."_"..ThisSeat.chips.."_"..ThisSeat.bet.."_"..ThisSeat.status.."_1")
+							// TODO: FHS_ShowCard(Winners[j],"Winner!")
+                        }
+                    }
+                }
+                else
+                {
+                    winnerCount = 0;
+                    for (PokerTable::iterator itt = table.begin(); itt != table.end(); ++itt)
+                        if (itt->second && itt->second->GetPlayer() && itt->second->GetBet() >= it->bet)
+                            winnerCount++;
+                    for (PokerTable::iterator itt = table.begin(); itt != table.end(); ++itt)
+                    {
+                        pot = it->pot / winnerCount;
+                        if (itt->second && itt->second->GetPlayer() && itt->second->GetBet() >= it->bet)
+                        {
+                            itt->second->SetChips(itt->second->GetChips() + pot);
+                            itt->second->SetDealt(false);
+                            // FHS_BroadCastToTable("st_"..j.."_"..Seats[j].chips.."_"..Seats[j].bet.."_"..Seats[j].status.."_0.5")
+                            BroadcastToTablePlayerStatusFolded(itt->first);
+                            // FHS_ShowCard(j,pot.." returned")
+                        }
+                    }
+                }
+            }
+        }
+        else
+        {
+            for (PokerTable::iterator it = table.begin(); it != table.end(); ++it)
+                if (it->second && it->second->GetPlayer() && it->second->GetBet() > 0)
+                {
+                    it->second->SetChips(it->second->GetChips() + it->second->GetBet());
+                    it->second->SetDealt(false);
+                    // TODO: FHS_BroadCastToTable("st_"..j.."_"..Seats[j].chips.."_"..Seats[j].bet.."_"..Seats[j].status.."_1")
+                }
+        }
+        // TODO: FHS_BroadCastToTable("showdown_0_"..text)
+
+        // for j=1,9 do
+		// 	-- If you're still in at this point, you have to show your hand
+		// 	if (Seats[j].dealt==1) then
+		// 		FHS_ShowCard(j,"Showdown") -- TODO: Lerduzz: Traducir esto en todas las instancias.
+		// 	end
+		// end
     }
 }

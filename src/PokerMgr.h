@@ -1,7 +1,6 @@
 #ifndef SC_POKER_MGR_H
 #define SC_POKER_MGR_H
 
-#include "PokerHandMgr.h"
 #include "PokerPlayer.h"
 #include <random>
 
@@ -206,7 +205,7 @@ private:
     /**
      * Determinar la mano del jugador.
      *
-     * @return Rango y descripcion de la mano.
+     * @return Rango y cartas de la mano.
      */
     PokerHandRank FindHandForPlayer(uint32 seat);
 
