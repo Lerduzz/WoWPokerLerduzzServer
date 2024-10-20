@@ -93,6 +93,8 @@ uint32 PokerHandMgr::HandRankCompare(PokerHandRank handA, PokerHandRank handB)
                     return 1;
                 if (itA->rank < itB->rank)
                     return -1;
+                itA++;
+                itB++;
             }
             if (itA != handA.cards.end() && itB == handB.cards.end())
                 return 1;
