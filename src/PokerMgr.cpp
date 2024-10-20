@@ -581,6 +581,15 @@ void PokerMgr::GoNextPlayerTurn()
 
     std::list<uint32> inCards3 = { 1, 14, 27, 2, 3, 5, 52 };
     LOG_ERROR("poker", "DEBUG: Trio {} == 3.", sPokerHandMgr->BestRank(inCards3).hand);
+
+    std::list<uint32> inCards2 = { 1, 14, 13, 26, 3, 5 };
+    LOG_ERROR("poker", "DEBUG: Dos Parejas {} == 2.", sPokerHandMgr->BestRank(inCards2).hand);
+
+    std::list<uint32> inCards1 = { 1, 14, 2 };
+    LOG_ERROR("poker", "DEBUG: Una Pareja {} == 1.", sPokerHandMgr->BestRank(inCards1).hand);
+
+    std::list<uint32> inCards0 = { 1, 12 };
+    LOG_ERROR("poker", "DEBUG: Carta Alta {} == 0.", sPokerHandMgr->BestRank(inCards0).hand);
 }
 
 PokerHandRank PokerMgr::FindHandForPlayer(uint32 seat)

@@ -148,6 +148,22 @@ private:
      */
     PokerHandRank IsThreeOfAKind(std::list<PokerCard> cards);
 
+    /**
+     * Determina si un conjunto de cartas forman dos parejas.
+     *
+     * @param cards Lista de cartas ordenadas por rango descendente.
+     * @return POKER_HAND_TWO_PAIR.
+     */
+    PokerHandRank IsTwoPair(std::list<PokerCard> cards);
+
+    /**
+     * Determina si un conjunto de cartas forman una pareja.
+     *
+     * @param cards Lista de cartas ordenadas por rango descendente.
+     * @return POKER_HAND_ONE_PAIR.
+     */
+    PokerHandRank IsOnePair(std::list<PokerCard> cards);
+
 };
 
 #define sPokerHandMgr PokerHandMgr::instance()

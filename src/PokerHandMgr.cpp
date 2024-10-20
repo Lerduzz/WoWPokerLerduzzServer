@@ -44,9 +44,13 @@ PokerHandRank PokerHandMgr::BestRank(std::list<uint32> cards)
     if (result.hand == POKER_HAND_THREE_OF_A_KIND)
         return result;
 
-    // TODO: POKER_HAND_TWO_PAIR.
+    result = IsTwoPair(cardList);
+    if (result.hand == POKER_HAND_TWO_PAIR)
+        return result;
 
-    // TODO: POKER_HAND_ONE_PAIR.
+    result = IsOnePair(cardList);
+    if (result.hand == POKER_HAND_ONE_PAIR)
+        return result;
 
     result.hand = POKER_HAND_HIGH_CARD;
     while (cardList.size() > 5)
@@ -345,6 +349,89 @@ PokerHandRank PokerHandMgr::IsThreeOfAKind(std::list<PokerCard> cards)
                     else
                         break;
                 result.hand = POKER_HAND_THREE_OF_A_KIND;
+                result.cards = resultList;
+                break;
+            }
+        }
+    }
+    return result;
+}
+
+PokerHandRank PokerHandMgr::IsTwoPair(std::list<PokerCard> cards)
+{
+    PokerHandRank result = PokerHandRank();
+    result.hand = POKER_HAND_HIGH_CARD;
+    if (cards.size() >= 4)
+    {
+        std::map<PokerRank, uint32> rankCount;
+        for (PokerCard card : cards)
+            rankCount[card.rank]++;
+        PokerRank main = POKER_RANK_NONE;
+        PokerRank kicker = POKER_RANK_NONE;
+        for (std::map<PokerRank, uint32>::iterator it = rankCount.begin(); it != rankCount.end(); ++it)
+        {
+            if (main != POKER_RANK_NONE && kicker != POKER_RANK_NONE)
+                break;
+            if (it->second == 2 && main == POKER_RANK_NONE)
+            {
+                main = it->first;
+                continue;
+            }
+            if (it->second == 2 && kicker == POKER_RANK_NONE)
+            {
+                kicker = it->first;
+                break;
+            }
+        }
+        if (main != POKER_RANK_NONE && kicker != POKER_RANK_NONE)
+        {
+            std::list<PokerCard> resultList;
+            for (PokerCard card : cards)
+                if (card.rank == main)
+                    resultList.push_back(card);
+            for (PokerCard card : cards)
+                if (card.rank == kicker)
+                    resultList.push_back(card);
+            if (cards.size() > 4)
+                for (PokerCard card : cards)
+                    if (card.rank != main && card.rank != kicker)
+                    {
+                        resultList.push_back(card);
+                        break;
+                    }
+            result.hand = POKER_HAND_TWO_PAIR;
+            result.cards = resultList;
+        }
+    }
+    return result;
+}
+
+PokerHandRank PokerHandMgr::IsOnePair(std::list<PokerCard> cards)
+{
+    PokerHandRank result = PokerHandRank();
+    result.hand = POKER_HAND_HIGH_CARD;
+    if (cards.size() >= 2)
+    {
+        std::map<PokerRank, uint32> rankCount;
+        for (PokerCard card : cards)
+            rankCount[card.rank]++;
+        for (std::map<PokerRank, uint32>::iterator it = rankCount.begin(); it != rankCount.end(); ++it)
+        {
+            if (it->second == 2)
+            {
+                std::list<PokerCard> resultList;
+                std::list<PokerCard> kickerList;
+                for (PokerCard card : cards)
+                    if (card.rank == it->first)
+                        resultList.push_back(card);
+                    else
+                        kickerList.push_back(card);
+                for (PokerCard card : kickerList)
+                    if (resultList.size() < 5)
+                        resultList.push_back(card);
+                    else
+                        break;
+                result.hand = POKER_HAND_ONE_PAIR;
                 result.cards = resultList;
                 break;
             }
