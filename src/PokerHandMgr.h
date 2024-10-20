@@ -117,6 +117,14 @@ private:
     PokerHandRank IsFourOfAKind(std::list<PokerCard> cards);
 
     /**
+     * Determina si un conjunto de cartas forman un full.
+     *
+     * @param cards Lista de cartas ordenadas por rango descendente.
+     * @return POKER_HAND_FULL_FOUSE.
+     */
+    PokerHandRank IsFullHouse(std::list<PokerCard> cards);
+
+    /**
      * Determina si un conjunto de cartas forman un color.
      *
      * @param cards Lista de cartas ordenadas por rango descendente.

@@ -25,7 +25,9 @@ PokerHandRank PokerHandMgr::BestRank(std::list<uint32> cards)
     if (result.hand == POKER_HAND_FOUR_OF_A_KIND)
         return result;
 
-    // TODO: POKER_HAND_FULL_FOUSE.
+    result = IsFullHouse(cardList);
+    if (result.hand == POKER_HAND_FULL_FOUSE)
+        return result;
 
     if (flush.hand == POKER_HAND_FLUSH)
     {
@@ -153,6 +155,52 @@ PokerHandRank PokerHandMgr::IsFourOfAKind(std::list<PokerCard> cards)
                 result.hand = POKER_HAND_FOUR_OF_A_KIND;
                 result.cards = resultList;
                 break;
+            }
+        }
+    }
+    return result;
+}
+
+PokerHandRank PokerHandMgr::IsFullHouse(std::list<PokerCard> cards)
+{
+    PokerHandRank result = PokerHandRank();
+    result.hand = POKER_HAND_HIGH_CARD;
+    if (cards.size() >= 5)
+    {
+        std::map<PokerRank, uint32> rankCount;
+        for (PokerCard card : cards)
+            rankCount[card.rank]++;
+        PokerRank main = POKER_RANK_NONE;
+        PokerRank kicker = POKER_RANK_NONE;
+        for (std::map<PokerRank, uint32>::iterator it = rankCount.begin(); it != rankCount.end(); ++it)
+        {
+            if (main != POKER_RANK_NONE && kicker != POKER_RANK_NONE)
+                break;
+            if (it->second == 3 && main == POKER_RANK_NONE)
+            {
+                main = it->first;
+                continue;
+            }
+            if (it->second >= 2 && kicker == POKER_RANK_NONE)
+            {
+                kicker = it->first;
+            }
+        }
+        if (main != POKER_RANK_NONE && kicker != POKER_RANK_NONE)
+        {
+            std::list<PokerCard> resultList;
+            for (PokerCard card : cards)
+                if (card.rank == main)
+                    resultList.push_back(card);
+            for (PokerCard card : cards)
+                if (resultList.size() == 5)
+                    break;
+                else if (card.rank == kicker)
+                    resultList.push_back(card);
+            if (resultList.size() == 5)
+            {
+                result.hand = POKER_HAND_FULL_FOUSE;
+                result.cards = resultList;
             }
         }
     }
