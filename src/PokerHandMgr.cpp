@@ -59,7 +59,7 @@ PokerHandRank PokerHandMgr::BestRank(std::list<uint32> cards)
     return result;
 }
 
-uint32 PokerHandMgr::HandRankCompare(PokerHandRank handA, PokerHandRank handB)
+int32 PokerHandMgr::HandRankCompare(PokerHandRank handA, PokerHandRank handB)
 {
     if (handA.hand > handB.hand)
         return 1;
@@ -104,6 +104,33 @@ uint32 PokerHandMgr::HandRankCompare(PokerHandRank handA, PokerHandRank handB)
         }
     }
     return 0;
+}
+
+std::string PokerHandMgr::GetHandRankDescription(PokerHandRank hand)
+{
+    switch (hand.hand)
+    {
+        case POKER_HAND_ROYAL_FLUSH:
+            return "Royal Flush";
+        case POKER_HAND_STRAIGHT_FLUSH:
+            return "Straight Flush";
+        case POKER_HAND_FOUR_OF_A_KIND:
+            return "Four of a Kind";
+        case POKER_HAND_FULL_FOUSE:
+            return "Full House";
+        case POKER_HAND_FLUSH:
+            return "Flush";
+        case POKER_HAND_STRAIGHT:
+            return "Straight";
+        case POKER_HAND_THREE_OF_A_KIND:
+            return "Three of a Kind";
+        case POKER_HAND_TWO_PAIR:
+            return "Two Pair";
+        case POKER_HAND_ONE_PAIR:
+            return "One Pair";
+        default:
+            return "High Card";
+    }
 }
 
 PokerSuit PokerHandMgr::GetCardSuit(uint32 card)

@@ -84,7 +84,12 @@ public:
      * @return 1 Si la mano A es mejor que la mano B.
      * @return -1 Si la mano B es mejor que la mano A.
      */
-    uint32 HandRankCompare(PokerHandRank handA, PokerHandRank handB);
+    int32 HandRankCompare(PokerHandRank handA, PokerHandRank handB);
+
+    /**
+     * Obtener una descripcion de la mano.
+     */
+    std::string GetHandRankDescription(PokerHandRank hand);
 
 private:
     /**
