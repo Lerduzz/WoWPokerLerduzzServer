@@ -54,6 +54,11 @@ bool PokerPlayer::IsIn()
     return _in;
 }
 
+PokerHandRank PokerPlayer::GetHandRank()
+{
+    return _handRank;
+}
+
 void PokerPlayer::SetChips(uint32 chips)
 {
     _chips = chips;
@@ -87,4 +92,9 @@ void PokerPlayer::SetDealt(bool dealt)
 void PokerPlayer::SetIn(bool in)
 {
     _in = in;
+}
+
+void PokerPlayer::SetHandRank(PokerHandRank handRank)
+{
+    _handRank = handRank;
 }
