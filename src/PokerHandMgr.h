@@ -77,6 +77,15 @@ public:
      */
     PokerHandRank BestRank(std::list<uint32> cards);
 
+    /**
+     * Compara dos manos de poker para determinar la mejor.
+     *
+     * @return 0 Si son iguales.
+     * @return 1 Si la mano A es mejor que la mano B.
+     * @return -1 Si la mano B es mejor que la mano A.
+     */
+    uint32 HandRankCompare(PokerHandRank handA, PokerHandRank handB);
+
 private:
     /**
      * Determina el palo de una carta (1 - 52).

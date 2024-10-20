@@ -59,6 +59,51 @@ PokerHandRank PokerHandMgr::BestRank(std::list<uint32> cards)
     return result;
 }
 
+uint32 PokerHandMgr::HandRankCompare(PokerHandRank handA, PokerHandRank handB)
+{
+    if (handA.hand > handB.hand)
+        return 1;
+    if (handA.hand < handB.hand)
+        return -1;
+    switch(handA.hand)
+    {
+        case POKER_HAND_ROYAL_FLUSH:
+        {
+            return 0;
+            break;
+        }
+        case POKER_HAND_STRAIGHT_FLUSH:
+        case POKER_HAND_FOUR_OF_A_KIND:
+        case POKER_HAND_STRAIGHT:
+        {
+            if (handA.cards.front().rank > handB.cards.front().rank)
+                return 1;
+            if (handA.cards.front().rank < handB.cards.front().rank)
+                return -1;
+            return 0;
+            break;
+        }
+        default:
+        {
+            std::list<PokerCard>::iterator itA = handA.cards.begin();
+            std::list<PokerCard>::iterator itB = handB.cards.begin();
+            while (itA != handA.cards.end() && itB != handB.cards.end())
+            {
+                if (itA->rank > itB->rank)
+                    return 1;
+                if (itA->rank < itB->rank)
+                    return -1;
+            }
+            if (itA != handA.cards.end() && itB == handB.cards.end())
+                return 1;
+            if (itA == handA.cards.end() && itB != handB.cards.end())
+                return -1;
+            break;
+        }
+    }
+    return 0;
+}
+
 PokerSuit PokerHandMgr::GetCardSuit(uint32 card)
 {
     if (card >= 1 && card <= 13)

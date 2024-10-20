@@ -206,7 +206,7 @@ private:
     /**
      * Determinar la mano del jugador.
      *
-     * @return Rango y descripcion de la mano.
+     * @return Rango y cartas de la mano.
      */
     PokerHandRank FindHandForPlayer(uint32 seat);
 
