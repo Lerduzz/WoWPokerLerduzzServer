@@ -1,5 +1,4 @@
 #include "Chat.h"
-#include "Log.h"
 #include "PokerMgr.h"
 #include "ScriptMgr.h"
 

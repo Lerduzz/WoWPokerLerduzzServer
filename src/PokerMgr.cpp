@@ -562,6 +562,28 @@ void PokerMgr::GoNextPlayerTurn()
     // PlayerTurnEndTime = GetTime() + AFKTimeLimit;
 }
 
+PokerHandRank PokerMgr::FindHandForPlayer(uint32 seat)
+{
+    PokerHandRank hand = PokerHandRank();
+    hand.hand = POKER_HAND_HIGH_CARD;
+    if (table.find(seat) != table.end() && status > POKER_STATUS_INACTIVE)
+    {
+        std::list<uint32> inCards = { table[seat]->GetHole1(), table[seat]->GetHole2() };
+        if (status >= POKER_STATUS_FLOP)
+        {
+            inCards.push_back(flop[0]);
+            inCards.push_back(flop[1]);
+            inCards.push_back(flop[2]);
+        }
+        if (status >= POKER_STATUS_TURN)
+            inCards.push_back(flop[3]);
+        if (status >= POKER_STATUS_RIVER)
+            inCards.push_back(flop[4]);
+        hand = sPokerHandMgr->BestRank(inCards);
+    }
+    return hand;
+}
+
 void PokerMgr::DealHoleCards()
 {
     button = WhosButtonAfter(button);
@@ -642,11 +664,11 @@ void PokerMgr::ShowFlopCards()
 
 void PokerMgr::DealTurn()
 {
-    flop[4] = deck.front();
+    flop[3] = deck.front();
     deck.pop_front();
 
     std::ostringstream msg;
-    msg << POKER_PREFIX << "turn_" << flop[4];        
+    msg << POKER_PREFIX << "turn_" << flop[3];        
     BroadcastToTable(msg.str());
 
     SetupBets();
@@ -656,11 +678,11 @@ void PokerMgr::DealTurn()
 
 void PokerMgr::DealRiver()
 {
-    flop[5] = deck.front();
+    flop[4] = deck.front();
     deck.pop_front();
 
     std::ostringstream msg;
-    msg << POKER_PREFIX << "river_" << flop[5];        
+    msg << POKER_PREFIX << "river_" << flop[4];        
     BroadcastToTable(msg.str());
 
     SetupBets();
