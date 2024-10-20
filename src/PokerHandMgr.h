@@ -2,12 +2,7 @@
 #define SC_POKER_HAND_MGR_H
 
 #include "Common.h"
-#include <vector>
-#include <string>
-#include <algorithm>
-#include <map>
-#include <functional>
-#include <cmath>
+#include "Log.h"
 
 enum PokerSuit
 {
@@ -59,11 +54,7 @@ struct PokerCard
 struct PokerHandRank
 {
     PokerHand hand;
-    PokerCard best1;
-    PokerCard best2;
-    PokerCard best3;
-    PokerCard best4;
-    PokerCard best5;
+    std::list<PokerCard> cards;
 };
 
 class PokerHandMgr
@@ -78,11 +69,34 @@ public:
         return instance;
     }
 
-    PokerHandRank BestRank(const std::vector<uint32>& cards);
+    /**
+     * Determina la mejor mano posible formada por un conjunto de cartas.
+     *
+     * @return PokerHandRank().
+     */
+    PokerHandRank BestRank(std::list<uint32> cards);
 
-private:    
+private:
+    /**
+     * Determina el palo de una carta (1 - 52).
+     *
+     * @return PokerSuit.
+     */
     PokerSuit GetCardSuit(uint32 card);
+
+    /**
+     * Determina el rango de una carta (1 - 52).
+     *
+     * @return PokerRank.
+     */
     PokerRank GetCardRank(uint32 card);
+
+    /**
+     * Determina si un conjunto de cartas forman una escalera real.
+     *
+     * @return POKER_HAND_ROYAL_FLUSH.
+     */
+    PokerHandRank IsRoyalFlush(std::list<PokerCard> cards);
 
 };
 

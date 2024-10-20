@@ -561,11 +561,11 @@ void PokerMgr::GoNextPlayerTurn()
     // TODO: Init playtime limit.
     // PlayerTurnEndTime = GetTime() + AFKTimeLimit;
 
-    PokerHandRank h = FindHandForPlayer(turn);
-    LOG_ERROR("poker", "Player turn {}, player hand {}.", turn, h.hand);
+    // PokerHandRank h = FindHandForPlayer(turn);
+    // LOG_ ERROR("poker", "Player turn {}, player hand {}.", turn, h.hand);
 
-    std::vector<uint32> inCards = { 11, 10, 12, 13, 1 };
-    LOG_ERROR("poker", "DEBUG1: RF {}.", sPokerHandMgr->BestRank(inCards).hand);
+    std::list<uint32> inCards = { 11, 10, 12, 13, 1, 2, 3 };
+    LOG_ERROR("poker", "DEBUG: Royal Flush {} == 9.", sPokerHandMgr->BestRank(inCards).hand);
 }
 
 PokerHandRank PokerMgr::FindHandForPlayer(uint32 seat)
@@ -574,7 +574,7 @@ PokerHandRank PokerMgr::FindHandForPlayer(uint32 seat)
     hand.hand = POKER_HAND_HIGH_CARD;
     if (table.find(seat) != table.end() && status > POKER_STATUS_INACTIVE)
     {
-        std::vector<uint32> inCards = { table[seat]->GetHole1(), table[seat]->GetHole2() };
+        std::list<uint32> inCards = { table[seat]->GetHole1(), table[seat]->GetHole2() };
         if (status >= POKER_STATUS_FLOP)
         {
             inCards.push_back(flop[0]);
