@@ -45,6 +45,8 @@ PokerHandRank PokerHandMgr::BestRank(std::list<uint32> cards)
     // TODO: POKER_HAND_ONE_PAIR.
 
     result.hand = POKER_HAND_HIGH_CARD;
+    while (cardList.size() > 5)
+        cardList.pop_back();
     result.cards = cardList;
     return result;
 }
