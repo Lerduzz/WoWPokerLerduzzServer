@@ -578,6 +578,9 @@ void PokerMgr::GoNextPlayerTurn()
 
     std::list<uint32> inCards4 = { 1, 52, 24, 18, 51, 23, 22 };
     LOG_ERROR("poker", "DEBUG: Escalera {} == 4.", sPokerHandMgr->BestRank(inCards4).hand);
+
+    std::list<uint32> inCards3 = { 1, 14, 27, 2, 3, 5, 52 };
+    LOG_ERROR("poker", "DEBUG: Trio {} == 3.", sPokerHandMgr->BestRank(inCards3).hand);
 }
 
 PokerHandRank PokerMgr::FindHandForPlayer(uint32 seat)

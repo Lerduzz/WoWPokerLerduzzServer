@@ -140,6 +140,14 @@ private:
      */
     PokerHandRank IsStraight(std::list<PokerCard> cards);
 
+    /**
+     * Determina si un conjunto de cartas forman un trio.
+     *
+     * @param cards Lista de cartas ordenadas por rango descendente.
+     * @return POKER_HAND_THREE_OF_A_KIND.
+     */
+    PokerHandRank IsThreeOfAKind(std::list<PokerCard> cards);
+
 };
 
 #define sPokerHandMgr PokerHandMgr::instance()
