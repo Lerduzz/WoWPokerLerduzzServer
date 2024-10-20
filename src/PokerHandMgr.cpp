@@ -13,7 +13,7 @@ PokerHandRank PokerHandMgr::BestRank(std::list<uint32> cards)
 
     PokerHandRank result = IsRoyalFlush(cardList);
     if (result.hand == POKER_HAND_ROYAL_FLUSH)
-        return result;    
+        return result;
 
     result.hand = POKER_HAND_HIGH_CARD;
     result.cards = cardList;
@@ -246,7 +246,7 @@ PokerHandRank PokerHandMgr::IsRoyalFlush(std::list<PokerCard> cards)
             {
                 if (it->second == 5)
                 {
-                    if (resultList.size() > 5)
+                    if (resultList.size() > it->second)
                         resultList.remove_if([ps = it->first](PokerCard pc) { return pc.suit != ps; });
                     result.hand = POKER_HAND_ROYAL_FLUSH;
                     result.cards = resultList;
@@ -260,5 +260,121 @@ PokerHandRank PokerHandMgr::IsRoyalFlush(std::list<PokerCard> cards)
 
 PokerHandRank PokerHandMgr::IsStraightFlush(std::list<PokerCard> cards)
 {
-    return PokerHandRank();
+    PokerHandRank result = IsStraight(IsFlush(cards).cards);
+    if (result.hand == POKER_HAND_STRAIGHT)
+        result.hand = POKER_HAND_STRAIGHT_FLUSH;
+    return result;
+}
+
+PokerHandRank PokerHandMgr::IsFlush(std::list<PokerCard> cards)
+{
+    PokerHandRank result = PokerHandRank();
+    result.hand = POKER_HAND_HIGH_CARD;
+    if (cards.size() >= 5)
+    {
+        std::list<PokerCard> resultList;
+        for (PokerCard card : cards)
+            resultList.push_back(card);
+        std::map<PokerSuit, uint32> suitCount;
+        for (PokerCard card : resultList)
+            suitCount[card.suit]++;
+        for (std::map<PokerSuit, uint32>::iterator it = suitCount.begin(); it != suitCount.end(); ++it)
+        {
+            if (it->second >= 5)
+            {
+                if (resultList.size() > it->second)
+                    resultList.remove_if([ps = it->first](PokerCard pc) { return pc.suit != ps; });
+                result.hand = POKER_HAND_FLUSH;
+                result.cards = resultList;
+                break;
+            }
+        }
+    }
+    return result;
+}
+
+PokerHandRank PokerHandMgr::IsStraight(std::list<PokerCard> cards)
+{
+    PokerHandRank result = PokerHandRank();
+    result.hand = POKER_HAND_HIGH_CARD;
+    if (cards.size() >= 5)
+    {
+        std::list<PokerCard> resultList;
+        for (PokerCard card : cards)
+            if (resultList.empty() || card.rank != resultList.back().rank)
+                resultList.push_back(card);
+        if (resultList.size() >= 5)
+        {
+            PokerCard start;
+            PokerCard prev;
+            PokerCard end;
+            uint32 count;
+            for (PokerCard card : resultList)
+            {
+                if (card.rank == resultList.front().rank)
+                {
+                    start = card;
+                    count = 1;
+                }
+                else if ((card.rank == resultList.back().rank))
+                {
+                    if (card.rank + 1 == prev.rank)
+                    {
+                        count++;
+                        end = card;
+                    }
+                    else
+                    {
+                        if (count >= 5)
+                        {
+                            end = prev;
+                            break;
+                        }
+                        else
+                        {
+                            count = 1;
+                            start = card;
+                        }
+                    }
+                }
+                else
+                {
+                    if (card.rank + 1 == prev.rank)
+                        count++;
+                    else
+                    {
+                        if (count >= 5)
+                        {
+                            end = prev;
+                            break;
+                        }
+                        else
+                        {
+                            count = 1;
+                            start = card;
+                        }
+                    }
+                }
+                prev = card;
+            }
+            if (count >= 5)
+            {
+                resultList.remove_if([st = start, ed = end](PokerCard pc) { return pc.rank > st.rank || pc.rank < ed.rank; });
+                while (resultList.size() > 5)
+                    resultList.pop_back();
+                result.hand = POKER_HAND_STRAIGHT;
+                result.cards = resultList;
+            }
+            else if (count == 4 && resultList.front().rank == POKER_RANK_ACE && resultList.back().rank == POKER_RANK_TWO)
+            {
+                PokerCard ace = resultList.front();
+                resultList.pop_front();
+                resultList.push_back(ace);
+                resultList.remove_if([](PokerCard pc) { return pc.rank > POKER_RANK_FIVE && pc.rank != POKER_RANK_ACE; });
+                result.hand = POKER_HAND_STRAIGHT;
+                result.cards = resultList;
+            }
+        }
+    }
+    return result;
 }
