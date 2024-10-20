@@ -793,7 +793,7 @@ void PokerMgr::ShowDown()
             if (it->second && it->second->GetPlayer() && it->second->IsDealt())
             {
                 it->second->SetHandRank(FindHandForPlayer(it->first));
-                if (sPokerHandMgr->HandRankCompare(it->second->GetHandRank(), best) > 0)
+                if (best.cards.empty() || sPokerHandMgr->HandRankCompare(it->second->GetHandRank(), best) > 0)
                     best = it->second->GetHandRank();
             }
         }
