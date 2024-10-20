@@ -98,6 +98,13 @@ private:
      */
     PokerHandRank IsRoyalFlush(std::list<PokerCard> cards);
 
+    /**
+     * Determina si un conjunto de cartas forman una escalera de color.
+     *
+     * @return POKER_HAND_STRAIGHT_FLUSH.
+     */
+    PokerHandRank IsStraightFlush(std::list<PokerCard> cards);
+
 };
 
 #define sPokerHandMgr PokerHandMgr::instance()

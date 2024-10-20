@@ -262,3 +262,8 @@ PokerHandRank PokerHandMgr::IsRoyalFlush(std::list<PokerCard> cards)
     }
     return result;
 }
+
+PokerHandRank PokerHandMgr::IsStraightFlush(std::list<PokerCard> cards)
+{
+    return PokerHandRank();
+}
