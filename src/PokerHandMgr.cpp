@@ -9,6 +9,7 @@ PokerHandRank PokerHandMgr::BestRank(std::list<uint32> cards)
         tmp.rank = GetCardRank(card);
         cardList.push_back(tmp);
     }
+    cardList.sort([](PokerCard a, PokerCard b) { return a.rank > b.rank; });
 
     PokerHandRank result = IsRoyalFlush(cardList);
     if (result.hand == POKER_HAND_ROYAL_FLUSH)
@@ -232,31 +233,25 @@ PokerHandRank PokerHandMgr::IsRoyalFlush(std::list<PokerCard> cards)
     result.hand = POKER_HAND_HIGH_CARD;
     if (cards.size() >= 5)
     {
-        cards.sort([](PokerCard a, PokerCard b) { return a.rank > b.rank; });
         std::list<PokerCard> resultList;
         for (PokerCard card : cards)
-        {
-            if (card.rank < POKER_RANK_TEN)
-                continue;
-            if (resultList.empty() || card.rank != resultList.back().rank)
+            if (card.rank >= POKER_RANK_TEN)
                 resultList.push_back(card);
-        }
-        if (resultList.size() == 5)
+        if (resultList.size() >= 5)
         {
-            PokerSuit st = resultList.front().suit;
-            bool same = true;
+            std::map<PokerSuit, uint32> suitCount;
             for (PokerCard card : resultList)
+                suitCount[card.suit]++;
+            for (std::map<PokerSuit, uint32>::iterator it = suitCount.begin(); it != suitCount.end(); ++it)
             {
-                if (card.suit != st)
+                if (it->second == 5)
                 {
-                    same = false;
+                    if (resultList.size() > 5)
+                        resultList.remove_if([ps = it->first](PokerCard pc) { return pc.suit != ps; });
+                    result.hand = POKER_HAND_ROYAL_FLUSH;
+                    result.cards = resultList;
                     break;
                 }
-            }
-            if (same)
-            {
-                result.hand = POKER_HAND_ROYAL_FLUSH;
-                result.cards = resultList;
             }
         }
     }
