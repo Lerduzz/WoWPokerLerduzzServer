@@ -9,6 +9,7 @@ PokerHandRank PokerHandMgr::BestRank(std::list<uint32> cards)
         tmp.rank = GetCardRank(card);
         cardList.push_back(tmp);
     }
+    cardList.sort([](PokerCard a, PokerCard b) { return a.rank > b.rank; });
 
     PokerHandRank result = IsRoyalFlush(cardList);
     if (result.hand == POKER_HAND_ROYAL_FLUSH)
@@ -228,19 +229,19 @@ PokerRank PokerHandMgr::GetCardRank(uint32 card)
 
 PokerHandRank PokerHandMgr::IsRoyalFlush(std::list<PokerCard> cards)
 {
+    // TODO: No se debe eliminar los duplicados antes de verificar el palo.
     PokerHandRank result = PokerHandRank();
     result.hand = POKER_HAND_HIGH_CARD;
+
+    // Esta mano necesita al menos 5 cartas para poedr formarse.
     if (cards.size() >= 5)
     {
-        cards.sort([](PokerCard a, PokerCard b) { return a.rank > b.rank; });
         std::list<PokerCard> resultList;
         for (PokerCard card : cards)
-        {
-            if (card.rank < POKER_RANK_TEN)
-                continue;
-            if (resultList.empty() || card.rank != resultList.back().rank)
+            if (card.rank >= POKER_RANK_TEN)
                 resultList.push_back(card);
-        }
+        
+        
         if (resultList.size() == 5)
         {
             PokerSuit st = resultList.front().suit;
