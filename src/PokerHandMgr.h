@@ -103,10 +103,10 @@ private:
     /**
      * Determina si un conjunto de cartas forman una escalera de color.
      *
-     * @param cards Lista de cartas ordenadas por rango descendente.
+     * @param cards Lista de cartas ordenadas por rango descendente y que ya forman un color.
      * @return POKER_HAND_STRAIGHT_FLUSH.
      */
-    PokerHandRank IsStraightFlush(std::list<PokerCard> cards);
+    PokerHandRank IsStraightFlush(std::list<PokerCard> cardsFlush);
 
     /**
      * Determina si un conjunto de cartas forman un color.
