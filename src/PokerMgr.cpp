@@ -835,7 +835,7 @@ void PokerMgr::ShowDown()
                 if (sPokerHandMgr->HandRankCompare(it->second->GetHandRank(), best) == 0)
                     winners.push_back(it->first);
         std::ostringstream text;
-        text << "showdown_0_";
+        text << POKER_PREFIX << "showdown_0_";
         if (winners.size() > 0)
         {
             if (winners.size() == 1)
