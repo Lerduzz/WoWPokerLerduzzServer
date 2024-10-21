@@ -40,7 +40,7 @@ public:
             }
             else
             {
-                resp << "NoSeats";
+                resp << "noseats!";
                 msg = resp.str();
             }
         }

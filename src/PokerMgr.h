@@ -91,6 +91,11 @@ public:
     void BroadcastToTablePlayerStatus(uint32 seat, std::string status);
 
     /**
+     * Informa a la mesa que un jugador ha mostrado sus cartas.
+     */
+    void BroadcastToTableShowCards(uint32 seat, std::string status);
+
+    /**
      * Informa a la mesa sobre el estado del jugador que se ha retirado.
      */
     void BroadcastToTablePlayerStatusFolded(uint32 seat);
@@ -208,6 +213,11 @@ private:
      * @return Rango y cartas de la mano.
      */
     PokerHandRank FindHandForPlayer(uint32 seat);
+
+    /**
+     * Hace que un jugador muestre sus cartas.
+     */
+    void ShowCards(uint32 seat, std::string status);
 
     /**
      * Nivel 1: POKER_STATUS_PRE_FLOP.
