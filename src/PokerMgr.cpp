@@ -351,7 +351,7 @@ void PokerMgr::PlayerAction(uint32 seat, uint32 delta)
             PlayerBet(seat, delta, "Called");
         else
         {
-            if (table[seat]->GetBet() + delta >= table[seat]->GetChips())
+            if (delta >= table[seat]->GetChips())
             {
                 delta = table[seat]->GetChips();
                 PlayerBet(seat, delta, "All In");
