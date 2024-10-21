@@ -25,7 +25,7 @@ struct SidePot
 const int POKER_MIN_GOLD = 500;
 const int POKER_MAX_GOLD = 5000;
 const int POKER_MAX_SEATS = 9;
-const std::string POKER_PREFIX = "PokerLerduzz\tFHS_v8.1.0_";
+const std::string POKER_PREFIX = "WoWPokerLerduzz\tWPL_v1.0.0_";
 
 class PokerMgr
 {
