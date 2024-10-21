@@ -563,18 +563,16 @@ uint32 PokerMgr::GetTotalPot()
 void PokerMgr::GoNextPlayerTurn()
 {
     turn = WhosBetAfter(turn);
-
     if (turn == 0)
     {
         NextLevel();
         return;
     }
-
     if (GetPlayingPlayers() == 1)
     {
         NextLevel();
+        return;
     }
-
     uint32 maxBet = HighestBet();
     BroadcastToTablePlayerTurn(turn, maxBet);
 
