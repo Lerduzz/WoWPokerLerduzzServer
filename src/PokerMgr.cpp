@@ -35,14 +35,6 @@ JoinResult PokerMgr::PlayerJoin(Player *player, uint32 gold)
         return POKER_JOIN_ERROR_NO_ENOUGH_MONEY;
     if (gold < POKER_MIN_GOLD || gold > POKER_MAX_GOLD)
         return POKER_JOIN_ERROR_MONEY_OUT_OF_RANGE;
-    LOG_ERROR(
-        "poker",
-        "if (POKER_MAX_GOLD_TABLE * GOLD [{}] - GetTotalMoney() [{}] = {} < gold * GOLD = {}).",
-        POKER_MAX_GOLD_TABLE * GOLD,
-        GetTotalMoney(),
-        POKER_MAX_GOLD_TABLE * GOLD - GetTotalMoney(),
-        gold * GOLD
-    );
     if (POKER_MAX_GOLD_TABLE * GOLD - GetTotalMoney() < gold * GOLD)
         return POKER_JOIN_ERROR_MONEY_TABLE_FULL;
     uint32 seat = GetSeatAvailable();
