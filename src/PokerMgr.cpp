@@ -35,7 +35,7 @@ JoinResult PokerMgr::PlayerJoin(Player *player, uint32 gold)
         return POKER_JOIN_ERROR_NO_ENOUGH_MONEY;
     if (gold < POKER_MIN_GOLD || gold > POKER_MAX_GOLD)
         return POKER_JOIN_ERROR_MONEY_OUT_OF_RANGE;
-    if (POKER_MAX_GOLD_TABLE - GetTotalMoney() < gold * GOLD)
+    if (POKER_MAX_GOLD_TABLE * GOLD - GetTotalMoney() < gold * GOLD)
         return POKER_JOIN_ERROR_MONEY_TABLE_FULL;
     uint32 seat = GetSeatAvailable();
     if (seat == 0)
@@ -53,9 +53,9 @@ void PokerMgr::PlayerLeave(Player *player, bool logout)
     {
         if (table[seat]->GetMoney() > 0)
         {
-            uint32 allowedMoney = POKER_MAX_GOLD_REWARD - player->GetMoney();
-            if (!logout)
+            if (!logout && player->GetMoney() < POKER_MAX_GOLD_REWARD * GOLD)
             {
+                uint32 allowedMoney = POKER_MAX_GOLD_REWARD * GOLD - player->GetMoney();
                 if (table[seat]->GetMoney() <= allowedMoney)
                 {
                     player->SetMoney(player->GetMoney() + table[seat]->GetMoney());
@@ -63,7 +63,7 @@ void PokerMgr::PlayerLeave(Player *player, bool logout)
                 }
                 else
                 {
-                    player->SetMoney(player->GetMoney() + allowedMoney);
+                    player->SetMoney(POKER_MAX_GOLD_REWARD * GOLD);
                     table[seat]->SetMoney(table[seat]->GetMoney() - allowedMoney);
                 }
             }
