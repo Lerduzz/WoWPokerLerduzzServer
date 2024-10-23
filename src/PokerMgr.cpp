@@ -74,7 +74,7 @@ void PokerMgr::InformPlayerJoined(Player *player)
                 fakeseat += POKER_MAX_SEATS;
             std::ostringstream resp;
             resp << POKER_PREFIX << "s_" << fakeseat << "_" << it->second->GetPlayer()->GetName() << "_";
-            resp << it->second->GetChips() << "_" << it->second->GetBet();
+            resp << it->second->GetChips() << "_" << it->second->GetBet() << "_" << (it->second->GetPlayer()->GetFaction() == 1 ? "A" : "H");
             player->Whisper(resp.str(), LANG_ADDON, player);
         }
     }
@@ -103,7 +103,7 @@ void PokerMgr::BroadcastToTableJoined(uint32 seat)
                 fakeseat += POKER_MAX_SEATS;
             std::ostringstream resp;
             resp << POKER_PREFIX << "s_" << fakeseat << "_" << table[seat]->GetPlayer()->GetName() << "_";
-            resp << table[seat]->GetChips() << "_" << table[seat]->GetBet();
+            resp << table[seat]->GetChips() << "_" << table[seat]->GetBet() << "_" << (table[seat]->GetPlayer()->GetFaction() == 1 ? "A" : "H");
             it->second->GetPlayer()->Whisper(resp.str(), LANG_ADDON, it->second->GetPlayer());
         }
     }
@@ -575,9 +575,6 @@ void PokerMgr::GoNextPlayerTurn()
     }
     uint32 maxBet = HighestBet();
     BroadcastToTablePlayerTurn(turn, maxBet);
-
-    // TODO: Init playtime limit.
-    // PlayerTurnEndTime = GetTime() + AFKTimeLimit;
 }
 
 PokerHandRank PokerMgr::FindHandForPlayer(uint32 seat)
@@ -650,6 +647,7 @@ void PokerMgr::DealHoleCards()
         if (j > 9) j -= 9;
         if (table.find(j) != table.end())
         {
+            table[j]->SetBet(0);
             if (table[j]->GetChips() > 0 && table[j]->IsIn())
             {
                 table[j]->SetHole1(deck.front());
@@ -658,7 +656,6 @@ void PokerMgr::DealHoleCards()
                 deck.pop_front();
 
                 table[j]->SetDealt(true);
-                table[j]->SetBet(0);
 
                 std::ostringstream msg3;
                 msg3 << POKER_PREFIX << "hole_" << table[j]->GetHole1() << "_" << table[j]->GetHole2();
