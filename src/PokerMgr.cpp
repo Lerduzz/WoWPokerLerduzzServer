@@ -468,8 +468,8 @@ void PokerMgr::SetupBets()
 void PokerMgr::PostBlinds()
 {
     uint32 pc = GetPlayingPlayers();
-    uint32 smallBlind = POKER_BET_SIZE / 2;
-    uint32 bigBlind = POKER_BET_SIZE;
+    uint32 smallBlind = POKER_BET_SIZE * GOLD / 2;
+    uint32 bigBlind = POKER_BET_SIZE * GOLD;
 
     uint32 next = button;
 
