@@ -19,7 +19,6 @@ public:
 
     bool IsForcedBet();
     bool IsDealt();
-    bool IsIn();
 
     PokerHandRank GetHandRank();
 
@@ -31,7 +30,6 @@ public:
 
     void SetForcedBet(bool forcedBet);
     void SetDealt(bool dealt);
-    void SetIn(bool in);
 
     void SetHandRank(PokerHandRank handRank);
 
@@ -45,7 +43,6 @@ private:
 
     bool _forcedBet;
     bool _dealt;
-    bool _in;
 
     PokerHandRank _handRank;
 

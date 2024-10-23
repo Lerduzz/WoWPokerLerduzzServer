@@ -11,7 +11,6 @@ PokerPlayer::PokerPlayer(Player *player)
 
     _forcedBet = false;
     _dealt = false;
-    _in = true;
 }
 
 Player *PokerPlayer::GetPlayer()
@@ -49,11 +48,6 @@ bool PokerPlayer::IsDealt()
     return _dealt;
 }
 
-bool PokerPlayer::IsIn()
-{
-    return _in;
-}
-
 PokerHandRank PokerPlayer::GetHandRank()
 {
     return _handRank;
@@ -87,11 +81,6 @@ void PokerPlayer::SetForcedBet(bool forcedBet)
 void PokerPlayer::SetDealt(bool dealt)
 {
     _dealt = dealt;
-}
-
-void PokerPlayer::SetIn(bool in)
-{
-    _in = in;
 }
 
 void PokerPlayer::SetHandRank(PokerHandRank handRank)

@@ -459,7 +459,7 @@ void PokerMgr::SetupBets()
 {
     for (PokerTable::iterator it = table.begin(); it != table.end(); ++it)
     {
-        if (it->second && it->second->GetPlayer() && it->second->IsDealt() && it->second->IsIn())
+        if (it->second && it->second->GetPlayer() && it->second->IsDealt())
             it->second->SetForcedBet(true);
     }
 }
@@ -516,7 +516,7 @@ uint32 PokerMgr::GetSeatedPlayers()
     uint32 count = 0;
     for (PokerTable::iterator it = table.begin(); it != table.end(); ++it)
     {
-        if (it->second && it->second->GetPlayer() && it->second->IsIn())
+        if (it->second && it->second->GetPlayer())
             count++;
     }
     return count;
@@ -648,7 +648,7 @@ void PokerMgr::DealHoleCards()
         if (table.find(j) != table.end())
         {
             table[j]->SetBet(0);
-            if (table[j]->GetChips() > 0 && table[j]->IsIn())
+            if (table[j]->GetChips() > 0)
             {
                 table[j]->SetHole1(deck.front());
                 deck.pop_front();
