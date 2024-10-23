@@ -29,12 +29,14 @@ JoinResult PokerMgr::PlayerJoin(Player *player, uint32 gold)
 {
     if (!player)
         return POKER_JOIN_ERROR_NO_PLAYER;
-    if (gold < POKER_MIN_GOLD || gold > POKER_MAX_GOLD)
-        return POKER_JOIN_ERROR_MONEY_OUT_OF_RANGE;
     if (GetSeat(player) > 0)
         return POKER_JOIN_ERROR_SEATED;
     if (player->GetMoney() < gold * GOLD)
         return POKER_JOIN_ERROR_NO_ENOUGH_MONEY;
+    if (gold < POKER_MIN_GOLD || gold > POKER_MAX_GOLD)
+        return POKER_JOIN_ERROR_MONEY_OUT_OF_RANGE;
+    if (MAX_MONEY_AMOUNT - GetTotalMoney() < gold * GOLD)
+        return POKER_JOIN_ERROR_MONEY_TABLE_FULL;
     uint32 seat = GetSeatAvailable();
     if (seat == 0)
         return POKER_JOIN_ERROR_NO_SEATS;
@@ -627,6 +629,15 @@ uint32 PokerMgr::GetTotalPot()
     for (PokerTable::iterator it = table.begin(); it != table.end(); ++it)
         if (it->second && it->second->GetPlayer())
             total += it->second->GetBet();
+    return total;
+}
+
+uint32 PokerMgr::GetTotalMoney()
+{
+    uint64 total = 0;
+    for (PokerTable::iterator it = table.begin(); it != table.end(); ++it)
+        if (it->second && it->second->GetPlayer())
+            total += it->second->GetMoney() + it->second->GetBet();
     return total;
 }
 

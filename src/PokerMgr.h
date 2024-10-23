@@ -21,6 +21,7 @@ enum JoinResult
     POKER_JOIN_OK = 0,
     POKER_JOIN_ERROR_NO_PLAYER,
     POKER_JOIN_ERROR_MONEY_OUT_OF_RANGE,
+    POKER_JOIN_ERROR_MONEY_TABLE_FULL,
     POKER_JOIN_ERROR_NO_ENOUGH_MONEY,
     POKER_JOIN_ERROR_SEATED,
     POKER_JOIN_ERROR_NO_SEATS
@@ -32,10 +33,10 @@ struct SidePot
     uint32 pot;
 };
 
-const int POKER_BET_SIZE = 20;
-const int POKER_MIN_GOLD = 500;
-const int POKER_MAX_GOLD = 10000;
-const int POKER_MAX_SEATS = 9;
+const uint32 POKER_BET_SIZE = 20;
+const uint32 POKER_MIN_GOLD = 500;
+const uint32 POKER_MAX_GOLD = 25000;
+const uint32 POKER_MAX_SEATS = 9;
 const std::string POKER_PREFIX = "WoWPokerLerduzz\tWPL_v1.0.0_";
 
 class PokerMgr
@@ -222,6 +223,13 @@ private:
      * @return Bote total.
      */
     uint32 GetTotalPot();
+
+    /**
+     * Calcula el dinero total.
+     *
+     * @return Dinero total en la mesa.
+     */
+    uint32 GetTotalMoney();
 
     /**
      * Avanza el turno de apostar al siguiente jugador.
