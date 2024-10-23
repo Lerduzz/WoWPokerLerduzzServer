@@ -399,7 +399,7 @@ void PokerMgr::OnWorldUpdate(uint32 diff)
         return;
     }
     if (status == POKER_STATUS_INACTIVE)
-        if (GetSeatedPlayers() > 1)
+        if (GetPlayablePlayers() > 1)
             sPokerMgr->NextLevel();
     delay = 1000;
 }
@@ -511,14 +511,12 @@ uint32 PokerMgr::GetPlayingPlayers()
     return count;
 }
 
-uint32 PokerMgr::GetSeatedPlayers()
+uint32 PokerMgr::GetPlayablePlayers()
 {
     uint32 count = 0;
     for (PokerTable::iterator it = table.begin(); it != table.end(); ++it)
-    {
-        if (it->second && it->second->GetPlayer())
+        if (it->second && it->second->GetPlayer() && it->second->GetChips() > 0)
             count++;
-    }
     return count;
 }
 

@@ -179,7 +179,7 @@ private:
      *
      * @return Cantidad de jugadores sentados.
      */
-    uint32 GetSeatedPlayers();
+    uint32 GetPlayablePlayers();
 
     /**
      * Determina la mayor apuesta de los jugadores de la mesa.
