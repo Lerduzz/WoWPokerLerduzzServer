@@ -11,7 +11,7 @@ public:
     ~PokerPlayer() {};
 
     Player *GetPlayer();
-    uint32 GetChips();
+    uint32 GetMoney();
     uint32 GetBet();
 
     uint32 GetHole1();
@@ -22,7 +22,7 @@ public:
 
     PokerHandRank GetHandRank();
 
-    void SetChips(uint32 chips);
+    void SetMoney(uint32 money);
     void SetBet(uint32 bet);
 
     void SetHole1(uint32 hole1);
@@ -35,7 +35,7 @@ public:
 
 private:
     Player *_player;
-    uint32 _chips;
+    uint32 _money;
     uint32 _bet;
 
     uint32 _hole1;

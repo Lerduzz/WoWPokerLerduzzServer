@@ -40,7 +40,7 @@ JoinResult PokerMgr::PlayerJoin(Player *player, uint32 gold)
         return POKER_JOIN_ERROR_NO_SEATS;
     table[seat] = new PokerPlayer(player);
     player->SetMoney(player->GetMoney() - gold * GOLD);
-    table[seat]->SetChips(gold * GOLD);
+    table[seat]->SetMoney(gold * GOLD);
     return POKER_JOIN_OK;
 }
 
@@ -49,42 +49,42 @@ void PokerMgr::PlayerLeave(Player *player, bool logout)
     uint32 seat = sPokerMgr->GetSeat(player);
     if (seat > 0)
     {
-        if (table[seat]->GetChips() > 0)
+        if (table[seat]->GetMoney() > 0)
         {
             uint32 allowedMoney = MAX_MONEY_AMOUNT - player->GetMoney();
             if (!logout)
             {
-                if (table[seat]->GetChips() <= allowedMoney)
+                if (table[seat]->GetMoney() <= allowedMoney)
                 {
-                    player->SetMoney(player->GetMoney() + table[seat]->GetChips());
-                    table[seat]->SetChips(0);
+                    player->SetMoney(player->GetMoney() + table[seat]->GetMoney());
+                    table[seat]->SetMoney(0);
                 }
                 else
                 {
                     player->SetMoney(player->GetMoney() + allowedMoney);
-                    table[seat]->SetChips(table[seat]->GetChips() - allowedMoney);
+                    table[seat]->SetMoney(table[seat]->GetMoney() - allowedMoney);
                 }
             }
-            if (table[seat]->GetChips() > 0)
+            if (table[seat]->GetMoney() > 0)
             {
                 CharacterDatabaseTransaction trans = CharacterDatabase.BeginTransaction();
                 std::string subject = "WoW Poker Lerduzz";
                 std::ostringstream body;
                 body << (logout ? "Te has desconectado durante una partida" : "Has abandonado la mesa");
                 body << " de poker.\n\nEn este correo te enviamos el dinero que no se te pudo entregar directamente.";
-                while (table[seat]->GetChips() > 0)
+                while (table[seat]->GetMoney() > 0)
                 {
                     MailDraft draft(subject, body.str().c_str());
                     MailSender sender(MAIL_NORMAL, player->GetGUID().GetCounter(), MAIL_STATIONERY_GM);
-                    if (table[seat]->GetChips() > MAX_MONEY_AMOUNT)
+                    if (table[seat]->GetMoney() > MAX_MONEY_AMOUNT)
                     {
                         draft.AddMoney(MAX_MONEY_AMOUNT);
-                        table[seat]->SetChips(table[seat]->GetChips() - MAX_MONEY_AMOUNT);
+                        table[seat]->SetMoney(table[seat]->GetMoney() - MAX_MONEY_AMOUNT);
                     }
                     else
                     {
-                        draft.AddMoney(table[seat]->GetChips());
-                        table[seat]->SetChips(0);
+                        draft.AddMoney(table[seat]->GetMoney());
+                        table[seat]->SetMoney(0);
                     }
                     draft.SendMailTo(trans, MailReceiver(player, player->GetGUID().GetCounter()), sender);
                 }
@@ -129,7 +129,7 @@ void PokerMgr::InformPlayerJoined(Player *player)
                 fakeseat += POKER_MAX_SEATS;
             std::ostringstream resp;
             resp << POKER_PREFIX << "s_" << fakeseat << "_" << it->second->GetPlayer()->GetName() << "_";
-            resp << it->second->GetChips() << "_" << it->second->GetBet() << "_" << (it->second->GetPlayer()->GetFaction() == 1 ? "A" : "H");
+            resp << it->second->GetMoney() << "_" << it->second->GetBet() << "_" << (it->second->GetPlayer()->GetFaction() == 1 ? "A" : "H");
             player->Whisper(resp.str(), LANG_ADDON, player);
         }
     }
@@ -158,7 +158,7 @@ void PokerMgr::BroadcastToTableJoined(uint32 seat)
                 fakeseat += POKER_MAX_SEATS;
             std::ostringstream resp;
             resp << POKER_PREFIX << "s_" << fakeseat << "_" << table[seat]->GetPlayer()->GetName() << "_";
-            resp << table[seat]->GetChips() << "_" << table[seat]->GetBet() << "_" << (table[seat]->GetPlayer()->GetFaction() == 1 ? "A" : "H");
+            resp << table[seat]->GetMoney() << "_" << table[seat]->GetBet() << "_" << (table[seat]->GetPlayer()->GetFaction() == 1 ? "A" : "H");
             it->second->GetPlayer()->Whisper(resp.str(), LANG_ADDON, it->second->GetPlayer());
         }
     }
@@ -234,7 +234,7 @@ void PokerMgr::BroadcastToTablePlayerStatus(uint32 seat, std::string status)
             if (fakeseat < 1)
                 fakeseat += POKER_MAX_SEATS;
             std::ostringstream resp;
-            resp << POKER_PREFIX << "st_" << fakeseat << "_" << table[seat]->GetChips();
+            resp << POKER_PREFIX << "st_" << fakeseat << "_" << table[seat]->GetMoney();
             resp << "_" << table[seat]->GetBet() << "_" << status << "_1";
             it->second->GetPlayer()->Whisper(resp.str(), LANG_ADDON, it->second->GetPlayer());
         }
@@ -274,7 +274,7 @@ void PokerMgr::BroadcastToTablePlayerStatusFolded(uint32 seat)
             if (fakeseat < 1)
                 fakeseat += POKER_MAX_SEATS;
             std::ostringstream resp;
-            resp << POKER_PREFIX << "st_" << fakeseat << "_" << table[seat]->GetChips();
+            resp << POKER_PREFIX << "st_" << fakeseat << "_" << table[seat]->GetMoney();
             resp << "_" << table[seat]->GetBet() << "_Folded_0.5";
             it->second->GetPlayer()->Whisper(resp.str(), LANG_ADDON, it->second->GetPlayer());
         }
@@ -354,18 +354,18 @@ void PokerMgr::NextLevel()
 
 void PokerMgr::PlayerBet(uint32 seat, uint32 size, std::string status)
 {
-    if (table[seat]->GetChips() <= size)
+    if (table[seat]->GetMoney() <= size)
     {
-        size = table[seat]->GetChips();
+        size = table[seat]->GetMoney();
         status = "All In";
     }
 
-    table[seat]->SetChips(table[seat]->GetChips() - size);
+    table[seat]->SetMoney(table[seat]->GetMoney() - size);
     table[seat]->SetBet(table[seat]->GetBet() + size);
 
     BroadcastToTablePlayerStatus(seat, status);
 
-    if (table[seat]->GetChips() == 0)
+    if (table[seat]->GetMoney() == 0)
     {
         bool found = false;
         for (std::list<SidePot>::iterator it = sidepots.begin(); it != sidepots.end(); ++it)
@@ -395,9 +395,9 @@ void PokerMgr::PlayerAction(uint32 seat, uint32 delta)
 
     if (table[seat]->IsForcedBet())
     {
-        if (delta > table[seat]->GetChips())
+        if (delta > table[seat]->GetMoney())
         {
-            delta = table[seat]->GetChips();
+            delta = table[seat]->GetMoney();
 
             bool found = false;
             for (std::list<SidePot>::iterator it = sidepots.begin(); it != sidepots.end(); ++it)
@@ -423,9 +423,9 @@ void PokerMgr::PlayerAction(uint32 seat, uint32 delta)
             PlayerBet(seat, delta, "Called");
         else
         {
-            if (delta >= table[seat]->GetChips())
+            if (delta >= table[seat]->GetMoney())
             {
-                delta = table[seat]->GetChips();
+                delta = table[seat]->GetMoney();
                 PlayerBet(seat, delta, "All In");
             }
             else
@@ -505,7 +505,7 @@ uint32 PokerMgr::WhosButtonAfter(uint32 start)
         if (j > 9) j -= 9;
         if (j > 9) j -= 9;
         if (table.find(j) != table.end())
-            if (table[j]->GetChips() > 0)
+            if (table[j]->GetMoney() > 0)
                 return j;
     }
     return start;
@@ -520,7 +520,7 @@ uint32 PokerMgr::WhosBetAfter(uint32 start)
         if (j > 9) j -= 9;
         if (j > 9) j -= 9;
         if (table.find(j) != table.end())
-            if (table[j]->GetChips() > 0 && table[j]->IsDealt())
+            if (table[j]->GetMoney() > 0 && table[j]->IsDealt())
                 if (table[j]->GetBet() < maxBet || table[j]->IsForcedBet())
                     return j;
     }
@@ -587,7 +587,7 @@ uint32 PokerMgr::GetPlayablePlayers()
 {
     uint32 count = 0;
     for (PokerTable::iterator it = table.begin(); it != table.end(); ++it)
-        if (it->second && it->second->GetPlayer() && it->second->GetChips() > 0)
+        if (it->second && it->second->GetPlayer() && it->second->GetMoney() > 0)
             count++;
     return count;
 }
@@ -718,7 +718,7 @@ void PokerMgr::DealHoleCards()
         if (table.find(j) != table.end())
         {
             table[j]->SetBet(0);
-            if (table[j]->GetChips() > 0)
+            if (table[j]->GetMoney() > 0)
             {
                 table[j]->SetHole1(deck.front());
                 deck.pop_front();
@@ -853,7 +853,7 @@ void PokerMgr::ShowDown()
                 {
                     if (table[*itw]->GetBet() >= it->bet)
                     {
-                        table[*itw]->SetChips(table[*itw]->GetChips() + pot);
+                        table[*itw]->SetMoney(table[*itw]->GetMoney() + pot);
                         table[*itw]->SetDealt(false);
                     }
                 }
@@ -869,7 +869,7 @@ void PokerMgr::ShowDown()
                     pot = it->pot / winnerCount;
                     if (itt->second && itt->second->GetPlayer() && itt->second->GetBet() >= it->bet)
                     {
-                        itt->second->SetChips(itt->second->GetChips() + pot);
+                        itt->second->SetMoney(itt->second->GetMoney() + pot);
                         itt->second->SetDealt(false);
                         // FHS_BroadCastToTable("st_"..j.."_"..Seats[j].chips.."_"..Seats[j].bet.."_"..Seats[j].status.."_0.5")
                         BroadcastToTablePlayerStatus(itt->first, "Returned");
@@ -922,7 +922,7 @@ void PokerMgr::ShowDown()
                     {
                         if (table[*itw]->GetBet() >= it->bet)
                         {
-                            table[*itw]->SetChips(table[*itw]->GetChips() + pot);
+                            table[*itw]->SetMoney(table[*itw]->GetMoney() + pot);
                             table[*itw]->SetDealt(false);
                             // TODO: FHS_BroadCastToTable("st_"..Winners[j].."_"..ThisSeat.chips.."_"..ThisSeat.bet.."_"..ThisSeat.status.."_1")
 							BroadcastToTablePlayerStatus(*itw, "Winner!");
@@ -942,7 +942,7 @@ void PokerMgr::ShowDown()
                         pot = it->pot / winnerCount;
                         if (itt->second && itt->second->GetPlayer() && itt->second->GetBet() >= it->bet)
                         {
-                            itt->second->SetChips(itt->second->GetChips() + pot);
+                            itt->second->SetMoney(itt->second->GetMoney() + pot);
                             itt->second->SetDealt(false);
                             // FHS_BroadCastToTable("st_"..j.."_"..Seats[j].chips.."_"..Seats[j].bet.."_"..Seats[j].status.."_0.5")
                             BroadcastToTablePlayerStatus(itt->first, "Returned");
@@ -959,7 +959,7 @@ void PokerMgr::ShowDown()
             for (PokerTable::iterator it = table.begin(); it != table.end(); ++it)
                 if (it->second && it->second->GetPlayer() && it->second->GetBet() > 0)
                 {
-                    it->second->SetChips(it->second->GetChips() + it->second->GetBet());
+                    it->second->SetMoney(it->second->GetMoney() + it->second->GetBet());
                     it->second->SetDealt(false);
                     // TODO: FHS_BroadCastToTable("st_"..j.."_"..Seats[j].chips.."_"..Seats[j].bet.."_"..Seats[j].status.."_1")
                     BroadcastToTablePlayerStatus(it->first, "Returned");

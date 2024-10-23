@@ -3,7 +3,7 @@
 PokerPlayer::PokerPlayer(Player *player)
 {
     _player = player;
-    _chips = 0;
+    _money = 0;
     _bet = 0;
 
     _hole1 = 0;
@@ -18,9 +18,9 @@ Player *PokerPlayer::GetPlayer()
     return _player;
 }
 
-uint32 PokerPlayer::GetChips()
+uint32 PokerPlayer::GetMoney()
 {
-    return _chips;
+    return _money;
 }
 
 uint32 PokerPlayer::GetBet()
@@ -53,9 +53,9 @@ PokerHandRank PokerPlayer::GetHandRank()
     return _handRank;
 }
 
-void PokerPlayer::SetChips(uint32 chips)
+void PokerPlayer::SetMoney(uint32 money)
 {
-    _chips = chips;
+    _money = money;
 }
 
 void PokerPlayer::SetBet(uint32 bet)
