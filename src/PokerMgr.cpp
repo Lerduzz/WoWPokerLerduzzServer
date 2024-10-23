@@ -49,51 +49,52 @@ void PokerMgr::PlayerLeave(Player *player, bool logout)
     uint32 seat = sPokerMgr->GetSeat(player);
     if (seat > 0)
     {
-        if (table[seat]->GetChips() == 0)
-            return;
-        uint32 allowedMoney = MAX_MONEY_AMOUNT - player->GetMoney();
-        if (!logout)
-        {
-            if (table[seat]->GetChips() <= allowedMoney)
-            {
-                player->SetMoney(player->GetMoney() + table[seat]->GetChips());
-                table[seat]->SetChips(0);
-            }
-            else
-            {
-                player->SetMoney(player->GetMoney() + allowedMoney);
-                table[seat]->SetChips(table[seat]->GetChips() - allowedMoney);
-            }
-        }
         if (table[seat]->GetChips() > 0)
         {
-            CharacterDatabaseTransaction trans = CharacterDatabase.BeginTransaction();
-            std::string subject = "WoW Poker Lerduzz";
-            std::ostringstream body;
-            body << (logout ? "Te has desconectado durante una partida" : "Has abandonado la mesa");
-            body << " de poker.\n\t\n\tEn este correo te enviamos el dinero que no se te pudo entregar directamente.";
-            while (table[seat]->GetChips() > 0)
+            uint32 allowedMoney = MAX_MONEY_AMOUNT - player->GetMoney();
+            if (!logout)
             {
-                MailDraft draft(subject, body.str().c_str());
-                MailSender sender(MAIL_NORMAL, player->GetGUID().GetCounter(), MAIL_STATIONERY_GM);
-                if (table[seat]->GetChips() > MAX_MONEY_AMOUNT)
+                if (table[seat]->GetChips() <= allowedMoney)
                 {
-                    draft.AddMoney(MAX_MONEY_AMOUNT);
-                    table[seat]->SetChips(table[seat]->GetChips() - MAX_MONEY_AMOUNT);
+                    player->SetMoney(player->GetMoney() + table[seat]->GetChips());
+                    table[seat]->SetChips(0);
                 }
                 else
                 {
-                    draft.AddMoney(table[seat]->GetChips());
-                    table[seat]->SetChips(0);
+                    player->SetMoney(player->GetMoney() + allowedMoney);
+                    table[seat]->SetChips(table[seat]->GetChips() - allowedMoney);
                 }
-                draft.SendMailTo(trans, MailReceiver(player, player->GetGUID().GetCounter()), sender);
             }
-            CharacterDatabase.CommitTransaction(trans);
+            if (table[seat]->GetChips() > 0)
+            {
+                CharacterDatabaseTransaction trans = CharacterDatabase.BeginTransaction();
+                std::string subject = "WoW Poker Lerduzz";
+                std::ostringstream body;
+                body << (logout ? "Te has desconectado durante una partida" : "Has abandonado la mesa");
+                body << " de poker.\n\nEn este correo te enviamos el dinero que no se te pudo entregar directamente.";
+                while (table[seat]->GetChips() > 0)
+                {
+                    MailDraft draft(subject, body.str().c_str());
+                    MailSender sender(MAIL_NORMAL, player->GetGUID().GetCounter(), MAIL_STATIONERY_GM);
+                    if (table[seat]->GetChips() > MAX_MONEY_AMOUNT)
+                    {
+                        draft.AddMoney(MAX_MONEY_AMOUNT);
+                        table[seat]->SetChips(table[seat]->GetChips() - MAX_MONEY_AMOUNT);
+                    }
+                    else
+                    {
+                        draft.AddMoney(table[seat]->GetChips());
+                        table[seat]->SetChips(0);
+                    }
+                    draft.SendMailTo(trans, MailReceiver(player, player->GetGUID().GetCounter()), sender);
+                }
+                CharacterDatabase.CommitTransaction(trans);
+            }
         }
         BroadcastToTableLeaved(seat, logout);
+        table.erase(seat);
         if (turn == seat)
             GoNextPlayerTurn();
-        table.erase(seat);
     }
 }
 

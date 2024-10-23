@@ -34,9 +34,7 @@ public:
                 player->Whisper(resp.str(), LANG_ADDON, player);
                 sPokerMgr->InformPlayerJoined(player);
                 sPokerMgr->BroadcastToTableJoined(seat);
-                std::ostringstream nresp;
-                nresp << POKER_PREFIX << "null";
-                msg = nresp.str();
+                NullMsg(msg);
             }
             else
             {
@@ -44,6 +42,11 @@ public:
                 resp << "noseats!";
                 msg = resp.str();
             }
+        }
+        else if (strcmp(message.c_str(), "quit") == 0)
+        {
+            sPokerMgr->PlayerLeave(player);
+            NullMsg(msg);
         }
         else
         {
@@ -64,22 +67,14 @@ public:
                         sPokerMgr->PlayerAction(seat, delta);
                     }
                 }
-                std::ostringstream nresp;
-                nresp << POKER_PREFIX << "null";
-                msg = nresp.str();
+                NullMsg(msg);
             }
             else if (strcmp(tab, "fold") == 0)
             {
                 uint32 seat = sPokerMgr->GetSeat(player);
                 if (seat > 0)
                     sPokerMgr->FoldPlayer(seat);
-                std::ostringstream nresp;
-                nresp << POKER_PREFIX << "null";
-                msg = nresp.str();
-            }
-            else if (strcmp(tab, "q") == 0)
-            {
-                sPokerMgr->PlayerLeave(player);
+                NullMsg(msg);
             }
         }
     }
@@ -87,6 +82,13 @@ public:
     void OnLogout(Player* player) override
     {
         sPokerMgr->PlayerLeave(player, true);
+    }
+
+    void NullMsg(std::string& msg)
+    {
+        std::ostringstream nresp;
+        nresp << POKER_PREFIX << "null";
+        msg = nresp.str();
     }
 };
 
