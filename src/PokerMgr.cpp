@@ -317,6 +317,9 @@ void PokerMgr::PlayerAction(uint32 seat, uint32 delta)
 
     uint32 maxBet = HighestBet();
 
+    if (table[seat]->GetBet() + delta < maxBet)
+        delta = maxBet - table[seat]->GetBet();
+
     if (table[seat]->IsForcedBet())
     {
         if (delta > table[seat]->GetChips())
@@ -340,12 +343,7 @@ void PokerMgr::PlayerAction(uint32 seat, uint32 delta)
     }
 
     if (delta == 0)
-    {
-        if (table[seat]->GetBet() == maxBet)
-            PlayerBet(seat, 0, "Checked");
-        else
-            return;
-    }
+        PlayerBet(seat, 0, "Checked");
     else if (delta > 0)
     {
         if (table[seat]->GetBet() + delta == maxBet)
