@@ -799,14 +799,14 @@ void PokerMgr::ShowDown()
                         itt->second->SetChips(itt->second->GetChips() + pot);
                         itt->second->SetDealt(false);
                         // FHS_BroadCastToTable("st_"..j.."_"..Seats[j].chips.."_"..Seats[j].bet.."_"..Seats[j].status.."_0.5")
-                        BroadcastToTablePlayerStatusFolded(itt->first);
+                        BroadcastToTablePlayerStatus(itt->first, "Returned");
                         // FHS_ShowCard(j,pot.." returned")
                         ShowCards(itt->first, "Returned");
                     }
                 }
             }
         }
-        BroadcastToTablePlayerStatus(winners.front(), "Default");
+        BroadcastToTablePlayerStatus(winners.front(), "Winner!");
         BroadcastToTableWins(winners.front());
     }
     else
@@ -872,7 +872,7 @@ void PokerMgr::ShowDown()
                             itt->second->SetChips(itt->second->GetChips() + pot);
                             itt->second->SetDealt(false);
                             // FHS_BroadCastToTable("st_"..j.."_"..Seats[j].chips.."_"..Seats[j].bet.."_"..Seats[j].status.."_0.5")
-                            BroadcastToTablePlayerStatusFolded(itt->first);
+                            BroadcastToTablePlayerStatus(itt->first, "Returned");
                             // FHS_ShowCard(j,pot.." returned")
                             ShowCards(itt->first, "Returned");
                         }
