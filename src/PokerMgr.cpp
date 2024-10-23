@@ -25,22 +25,23 @@ PokerMgr::~PokerMgr()
     delay = 1000;
 }
 
-bool PokerMgr::PlayerJoin(Player *player, uint32 gold)
+JoinResult PokerMgr::PlayerJoin(Player *player, uint32 gold)
 {
     if (!player)
-        return false;
+        return POKER_JOIN_ERROR_NO_PLAYER;
     if (gold < POKER_MIN_GOLD || gold > POKER_MAX_GOLD)
-        return false;
+        return POKER_JOIN_ERROR_MONEY_OUT_OF_RANGE;
     if (GetSeat(player) > 0)
-        return false;
-    // TODO: Comprobar que el jugador tenga suficiente oro.
+        return POKER_JOIN_ERROR_SEATED;
+    if (player->GetMoney() < gold * GOLD)
+        return POKER_JOIN_ERROR_NO_ENOUGH_MONEY;
     uint32 seat = GetSeatAvailable();
     if (seat == 0)
-        return false;
+        return POKER_JOIN_ERROR_NO_SEATS;
     table[seat] = new PokerPlayer(player);
-    table[seat]->SetChips(gold);
-    // TODO: Restar el oro asignado al jugador.
-    return true;
+    player->SetMoney(player->GetMoney() - gold * GOLD);
+    table[seat]->SetChips(gold * GOLD);
+    return POKER_JOIN_OK;
 }
 
 uint32 PokerMgr::GetSeat(Player *player)

@@ -26,7 +26,7 @@ public:
         else if (strcmp(message.c_str(), "pong!") == 0)
         {
             uint32 seat = sPokerMgr->GetSeat(player);
-            if (seat > 0 || sPokerMgr->PlayerJoin(player, 1000))
+            if (seat > 0 || sPokerMgr->PlayerJoin(player, 10000) == POKER_JOIN_OK)
             {
                 if (seat == 0)
                     seat = sPokerMgr->GetSeat(player);
@@ -40,6 +40,7 @@ public:
             }
             else
             {
+                // TODO: Informar el problema real de no union.
                 resp << "noseats!";
                 msg = resp.str();
             }
