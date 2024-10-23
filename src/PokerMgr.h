@@ -82,7 +82,7 @@ public:
     /**
      * Informa al jugador sobre el estado de todos los jugadores de la mesa.
      */
-    void InformPlayerJoined(Player *player);
+    void InformPlayerJoined(uint32 seat);
 
     /**
      * Envia mensaje a todos los jugadores.

@@ -7,7 +7,18 @@ class WPL_Player : public PlayerScript
 public:
     WPL_Player() : PlayerScript("WPL_Player") { }
 
-    void OnChat(Player* player, uint32 type, uint32 lang, std::string& msg, Player* receiver) override
+    bool CanPlayerUseChat(Player* player, uint32 /*type*/, uint32 language, std::string& msg, Player* receiver) override
+    {
+        if (!player || !receiver || player != receiver || language != LANG_ADDON)
+            return false;
+        size_t prefix_length = POKER_PREFIX.length();
+        size_t msg_length = msg.length();
+        if (msg_length <= prefix_length or msg.substr(0, prefix_length) != POKER_PREFIX)
+            return false;
+        return true;
+    }
+
+    void OnChat(Player* player, uint32 /*type*/, uint32 lang, std::string& msg, Player* receiver) override
     {
         if (!player || !receiver || player != receiver || lang != LANG_ADDON)
             return;
@@ -32,7 +43,7 @@ public:
                     seat = sPokerMgr->GetSeat(player);
                 resp << "seat_5";
                 player->Whisper(resp.str(), LANG_ADDON, player);
-                sPokerMgr->InformPlayerJoined(player);
+                sPokerMgr->InformPlayerJoined(seat);
                 sPokerMgr->BroadcastToTableJoined(seat);
                 NullMsg(msg);
             }

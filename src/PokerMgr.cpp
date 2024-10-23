@@ -106,22 +106,22 @@ PokerPlayer *PokerMgr::GetSeatInfo(uint32 seat)
     return nullptr;
 }
 
-void PokerMgr::InformPlayerJoined(Player *player)
+void PokerMgr::InformPlayerJoined(uint32 seat)
 {
-    int32 delta = 5 - GetSeat(player);
+    int32 delta = 5 - seat;
     for (PokerTable::iterator it = table.begin(); it != table.end(); ++it)
     {
         if (it->second && it->second->GetPlayer())
         {
             int32 fakeseat = it->first + delta;
-            if (fakeseat > POKER_MAX_SEATS)
+            while (fakeseat > POKER_MAX_SEATS)
                 fakeseat -= POKER_MAX_SEATS;
-            if (fakeseat < 1)
+            while (fakeseat < 1)
                 fakeseat += POKER_MAX_SEATS;
             std::ostringstream resp;
             resp << POKER_PREFIX << "s_" << fakeseat << "_" << it->second->GetPlayer()->GetName() << "_";
             resp << it->second->GetMoney() << "_" << it->second->GetBet() << "_" << (it->second->GetPlayer()->GetFaction() == 1 ? "A" : "H");
-            player->Whisper(resp.str(), LANG_ADDON, player);
+            table[seat]->GetPlayer()->Whisper(resp.str(), LANG_ADDON, table[seat]->GetPlayer());
         }
     }
 }
@@ -143,9 +143,9 @@ void PokerMgr::BroadcastToTableJoined(uint32 seat)
         {
             int32 delta = 5 - it->first;
             int32 fakeseat = seat + delta;
-            if (fakeseat > POKER_MAX_SEATS)
+            while (fakeseat > POKER_MAX_SEATS)
                 fakeseat -= POKER_MAX_SEATS;
-            if (fakeseat < 1)
+            while (fakeseat < 1)
                 fakeseat += POKER_MAX_SEATS;
             std::ostringstream resp;
             resp << POKER_PREFIX << "s_" << fakeseat << "_" << table[seat]->GetPlayer()->GetName() << "_";
@@ -163,9 +163,9 @@ void PokerMgr::BroadcastToTableLeaved(uint32 seat, bool logout)
         {
             int32 delta = 5 - it->first;
             int32 fakeseat = seat + delta;
-            if (fakeseat > POKER_MAX_SEATS)
+            while (fakeseat > POKER_MAX_SEATS)
                 fakeseat -= POKER_MAX_SEATS;
-            if (fakeseat < 1)
+            while (fakeseat < 1)
                 fakeseat += POKER_MAX_SEATS;
             std::ostringstream resp;
             resp << POKER_PREFIX << "q_" << fakeseat;
@@ -182,9 +182,9 @@ void PokerMgr::BroadcastToTableDeal(uint32 seat)
         {
             int32 delta = 5 - it->first;
             int32 fakeseat = seat + delta;
-            if (fakeseat > POKER_MAX_SEATS)
+            while (fakeseat > POKER_MAX_SEATS)
                 fakeseat -= POKER_MAX_SEATS;
-            if (fakeseat < 1)
+            while (fakeseat < 1)
                 fakeseat += POKER_MAX_SEATS;
             std::ostringstream resp;
             resp << POKER_PREFIX << "deal_" << fakeseat;
@@ -201,9 +201,9 @@ void PokerMgr::BroadcastToTablePlayerTurn(uint32 seat, uint32 maxBet)
         {
             int32 delta = 5 - it->first;
             int32 fakeseat = seat + delta;
-            if (fakeseat > POKER_MAX_SEATS)
+            while (fakeseat > POKER_MAX_SEATS)
                 fakeseat -= POKER_MAX_SEATS;
-            if (fakeseat < 1)
+            while (fakeseat < 1)
                 fakeseat += POKER_MAX_SEATS;
             std::ostringstream resp;
             resp << POKER_PREFIX << "go_" << fakeseat << "_" << maxBet;
@@ -220,9 +220,9 @@ void PokerMgr::BroadcastToTablePlayerStatus(uint32 seat, std::string status)
         {
             int32 delta = 5 - it->first;
             int32 fakeseat = seat + delta;
-            if (fakeseat > POKER_MAX_SEATS)
+            while (fakeseat > POKER_MAX_SEATS)
                 fakeseat -= POKER_MAX_SEATS;
-            if (fakeseat < 1)
+            while (fakeseat < 1)
                 fakeseat += POKER_MAX_SEATS;
             std::ostringstream resp;
             resp << POKER_PREFIX << "st_" << fakeseat << "_" << table[seat]->GetMoney();
@@ -240,9 +240,9 @@ void PokerMgr::BroadcastToTableShowCards(uint32 seat, std::string status)
         {
             int32 delta = 5 - it->first;
             int32 fakeseat = seat + delta;
-            if (fakeseat > POKER_MAX_SEATS)
+            while (fakeseat > POKER_MAX_SEATS)
                 fakeseat -= POKER_MAX_SEATS;
-            if (fakeseat < 1)
+            while (fakeseat < 1)
                 fakeseat += POKER_MAX_SEATS;
             std::ostringstream resp;
             resp << POKER_PREFIX << "show_" << table[seat]->GetHole1() << "_";
@@ -260,9 +260,9 @@ void PokerMgr::BroadcastToTablePlayerStatusFolded(uint32 seat)
         {
             int32 delta = 5 - it->first;
             int32 fakeseat = seat + delta;
-            if (fakeseat > POKER_MAX_SEATS)
+            while (fakeseat > POKER_MAX_SEATS)
                 fakeseat -= POKER_MAX_SEATS;
-            if (fakeseat < 1)
+            while (fakeseat < 1)
                 fakeseat += POKER_MAX_SEATS;
             std::ostringstream resp;
             resp << POKER_PREFIX << "st_" << fakeseat << "_" << table[seat]->GetMoney();
@@ -299,9 +299,9 @@ void PokerMgr::BroadcastToTableWins(uint32 seat)
         {
             int32 delta = 5 - it->first;
             int32 fakeseat = seat + delta;
-            if (fakeseat > POKER_MAX_SEATS)
+            while (fakeseat > POKER_MAX_SEATS)
                 fakeseat -= POKER_MAX_SEATS;
-            if (fakeseat < 1)
+            while (fakeseat < 1)
                 fakeseat += POKER_MAX_SEATS;
             std::ostringstream resp;
             resp << POKER_PREFIX << "showdown_" << fakeseat << "_" << table[seat]->GetPlayer()->GetName() << " ha ganado."; // TODO: Traducir del lado del cliente.
