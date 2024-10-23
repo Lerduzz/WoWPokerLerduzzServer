@@ -468,8 +468,8 @@ void PokerMgr::SetupBets()
 void PokerMgr::PostBlinds()
 {
     uint32 pc = GetPlayingPlayers();
-    uint32 smallBlind = 10;
-    uint32 bigBlind = 20;
+    uint32 smallBlind = POKER_BET_SIZE / 2;
+    uint32 bigBlind = POKER_BET_SIZE;
 
     uint32 next = button;
 
@@ -629,7 +629,7 @@ void PokerMgr::DealHoleCards()
     }
 
     std::ostringstream msg1;
-    msg1 << POKER_PREFIX << "betsize_" << 20;        
+    msg1 << POKER_PREFIX << "betsize_" << POKER_BET_SIZE;
     BroadcastToTable(msg1.str());
 
     sidepots.clear();

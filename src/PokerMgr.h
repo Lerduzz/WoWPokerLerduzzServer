@@ -32,6 +32,7 @@ struct SidePot
     uint32 pot;
 };
 
+const int POKER_BET_SIZE = 20;
 const int POKER_MIN_GOLD = 500;
 const int POKER_MAX_GOLD = 10000;
 const int POKER_MAX_SEATS = 9;
