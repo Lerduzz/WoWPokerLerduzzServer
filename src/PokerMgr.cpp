@@ -35,7 +35,7 @@ JoinResult PokerMgr::PlayerJoin(Player *player, uint32 gold)
         return POKER_JOIN_ERROR_NO_ENOUGH_MONEY;
     if (gold < POKER_MIN_GOLD || gold > POKER_MAX_GOLD)
         return POKER_JOIN_ERROR_MONEY_OUT_OF_RANGE;
-    if (MAX_MONEY_AMOUNT - GetTotalMoney() < gold * GOLD)
+    if (POKER_MAX_GOLD_TABLE - GetTotalMoney() < gold * GOLD)
         return POKER_JOIN_ERROR_MONEY_TABLE_FULL;
     uint32 seat = GetSeatAvailable();
     if (seat == 0)
@@ -53,7 +53,7 @@ void PokerMgr::PlayerLeave(Player *player, bool logout)
     {
         if (table[seat]->GetMoney() > 0)
         {
-            uint32 allowedMoney = MAX_MONEY_AMOUNT - player->GetMoney();
+            uint32 allowedMoney = POKER_MAX_GOLD_REWARD - player->GetMoney();
             if (!logout)
             {
                 if (table[seat]->GetMoney() <= allowedMoney)
@@ -74,22 +74,11 @@ void PokerMgr::PlayerLeave(Player *player, bool logout)
                 std::ostringstream body;
                 body << (logout ? "Te has desconectado durante una partida" : "Has abandonado la mesa");
                 body << " de poker.\n\nEn este correo te enviamos el dinero que no se te pudo entregar directamente.";
-                while (table[seat]->GetMoney() > 0)
-                {
-                    MailDraft draft(subject, body.str().c_str());
-                    MailSender sender(MAIL_NORMAL, player->GetGUID().GetCounter(), MAIL_STATIONERY_GM);
-                    if (table[seat]->GetMoney() > MAX_MONEY_AMOUNT)
-                    {
-                        draft.AddMoney(MAX_MONEY_AMOUNT);
-                        table[seat]->SetMoney(table[seat]->GetMoney() - MAX_MONEY_AMOUNT);
-                    }
-                    else
-                    {
-                        draft.AddMoney(table[seat]->GetMoney());
-                        table[seat]->SetMoney(0);
-                    }
-                    draft.SendMailTo(trans, MailReceiver(player, player->GetGUID().GetCounter()), sender);
-                }
+                MailDraft draft(subject, body.str().c_str());
+                MailSender sender(MAIL_NORMAL, player->GetGUID().GetCounter(), MAIL_STATIONERY_GM);
+                draft.AddMoney(table[seat]->GetMoney());
+                table[seat]->SetMoney(0);
+                draft.SendMailTo(trans, MailReceiver(player, player->GetGUID().GetCounter()), sender);
                 CharacterDatabase.CommitTransaction(trans);
             }
         }
