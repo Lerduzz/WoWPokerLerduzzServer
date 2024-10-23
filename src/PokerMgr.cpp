@@ -91,6 +91,8 @@ void PokerMgr::PlayerLeave(Player *player, bool logout)
         CharacterDatabase.CommitTransaction(trans);
     }
     BroadcastToTableLeaved(seat, logout);
+    if (turn == seat)
+        GoNextPlayerTurn();
     table.erase(seat);
 }
 
