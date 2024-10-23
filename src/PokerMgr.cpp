@@ -801,7 +801,7 @@ void PokerMgr::ShowDown()
                         // FHS_BroadCastToTable("st_"..j.."_"..Seats[j].chips.."_"..Seats[j].bet.."_"..Seats[j].status.."_0.5")
                         BroadcastToTablePlayerStatusFolded(itt->first);
                         // FHS_ShowCard(j,pot.." returned")
-                        ShowCards(itt->first, "Devuelto");
+                        ShowCards(itt->first, "Returned");
                     }
                 }
             }
@@ -852,9 +852,9 @@ void PokerMgr::ShowDown()
                             table[*itw]->SetChips(table[*itw]->GetChips() + pot);
                             table[*itw]->SetDealt(false);
                             // TODO: FHS_BroadCastToTable("st_"..Winners[j].."_"..ThisSeat.chips.."_"..ThisSeat.bet.."_"..ThisSeat.status.."_1")
-							BroadcastToTablePlayerStatus(*itw, "¡Ganador!");
+							BroadcastToTablePlayerStatus(*itw, "Winner!");
                             // TODO: FHS_ShowCard(Winners[j],"Winner!")
-                            ShowCards(*itw, "¡Ganador!");
+                            ShowCards(*itw, "Winner!");
                         }
                     }
                 }
@@ -874,7 +874,7 @@ void PokerMgr::ShowDown()
                             // FHS_BroadCastToTable("st_"..j.."_"..Seats[j].chips.."_"..Seats[j].bet.."_"..Seats[j].status.."_0.5")
                             BroadcastToTablePlayerStatusFolded(itt->first);
                             // FHS_ShowCard(j,pot.." returned")
-                            ShowCards(itt->first, "Devuelto");
+                            ShowCards(itt->first, "Returned");
                         }
                     }
                 }
@@ -889,7 +889,7 @@ void PokerMgr::ShowDown()
                     it->second->SetChips(it->second->GetChips() + it->second->GetBet());
                     it->second->SetDealt(false);
                     // TODO: FHS_BroadCastToTable("st_"..j.."_"..Seats[j].chips.."_"..Seats[j].bet.."_"..Seats[j].status.."_1")
-                    BroadcastToTablePlayerStatus(it->first, "Devuelto");
+                    BroadcastToTablePlayerStatus(it->first, "Returned");
                 }
         }
         BroadcastToTable(text.str());
