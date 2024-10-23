@@ -1,4 +1,6 @@
 #include "Chat.h"
+#include "Gametime.h"
+#include "ObjectMgr.h"
 #include "PokerMgr.h"
 #include "ScriptMgr.h"
 
@@ -9,13 +11,19 @@ public:
 
     bool CanPlayerUseChat(Player* player, uint32 /*type*/, uint32 language, std::string& msg, Player* receiver) override
     {
+        bool result = true;
         if (!player || !receiver || player != receiver || language != LANG_ADDON)
-            return false;
-        size_t prefix_length = POKER_PREFIX.length();
-        size_t msg_length = msg.length();
-        if (msg_length <= prefix_length or msg.substr(0, prefix_length) != POKER_PREFIX)
-            return false;
-        return true;
+            result = false;
+        if (result)
+        {
+            size_t prefix_length = POKER_PREFIX.length();
+            size_t msg_length = msg.length();
+            if (msg_length <= prefix_length or msg.substr(0, prefix_length) != POKER_PREFIX)
+                result = false;
+        }
+        if (result)
+            return true;
+        return player->CanSpeak();
     }
 
     void OnChat(Player* player, uint32 /*type*/, uint32 lang, std::string& msg, Player* receiver) override

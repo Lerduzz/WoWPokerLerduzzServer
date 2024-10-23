@@ -474,17 +474,13 @@ uint32 PokerMgr::GetSeatAvailable()
     std::array<uint32, 9> seats = {0, 0, 0, 0, 0, 0, 0, 0, 0};
     uint32 index = 0;
     for (uint32 i = 1; i <= 9; i++)
-    {
         if (table.find(i) == table.end())
             seats[index++] = i;
-    }
     unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
     std::shuffle(seats.begin(), seats.end(), std::default_random_engine(seed));
     for (uint32 i = 0; i < 9; i++)
-    {
         if (seats[i] != 0)
             return seats[i];
-    }
     return 0;
 }
 
