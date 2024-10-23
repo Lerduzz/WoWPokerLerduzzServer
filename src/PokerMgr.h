@@ -182,6 +182,11 @@ private:
     uint32 WhosBetAfter(uint32 start);
 
     /**
+     * Limpia todas las apuestas, no devuelve el oro ni anuncia a los clientes.
+     */
+    void CleanBets();
+
+    /**
      * Marca para que todos los jugadores tengan turno.
      */
     void SetupBets();
