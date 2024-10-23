@@ -77,7 +77,16 @@ public:
                 nresp << POKER_PREFIX << "null";
                 msg = nresp.str();
             }
+            else if (strcmp(tab, "q") == 0)
+            {
+                sPokerMgr->PlayerLeave(player);
+            }
         }
+    }
+
+    void OnLogout(Player* player) override
+    {
+        sPokerMgr->PlayerLeave(player, true);
     }
 };
 

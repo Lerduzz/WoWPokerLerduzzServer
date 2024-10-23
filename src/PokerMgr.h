@@ -58,6 +58,11 @@ public:
     JoinResult PlayerJoin(Player *player, uint32 gold);
 
     /**
+     * Gestiona la salida de un jugador de la mesa.
+     */
+    void PlayerLeave(Player *player, bool logout = false);
+
+    /**
      * Determina el asiento que le corresponde en la mesa a un jugador determinado.
      *
      * @return El numero del asiento o 0 si el jugador no se encuentra en la mesa.
@@ -85,6 +90,11 @@ public:
      * Informa a la mesa sobre la llegada de un nuevo jugador.
      */
     void BroadcastToTableJoined(uint32 seat);
+
+    /**
+     * Informa a la mesa sobre la salida de un jugador.
+     */
+    void BroadcastToTableLeaved(uint32 seat, bool logout = false);
 
     /**
      * Informa a la mesa sobre carta repartida.

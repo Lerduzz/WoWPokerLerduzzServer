@@ -44,6 +44,56 @@ JoinResult PokerMgr::PlayerJoin(Player *player, uint32 gold)
     return POKER_JOIN_OK;
 }
 
+void PokerMgr::PlayerLeave(Player *player, bool logout)
+{
+    uint32 seat = sPokerMgr->GetSeat(player);
+    if (seat > 0)
+    {
+        if (table[seat]->GetChips() == 0)
+            return;
+        uint32 allowedMoney = MAX_MONEY_AMOUNT - player->GetMoney();
+        if (!logout)
+        {
+            if (table[seat]->GetChips() <= allowedMoney)
+            {
+                player->SetMoney(player->GetMoney() + table[seat]->GetChips());
+                table[seat]->SetChips(0);
+            }
+            else
+            {
+                player->SetMoney(player->GetMoney() + allowedMoney);
+                table[seat]->SetChips(table[seat]->GetChips() - allowedMoney);
+            }
+        }
+        if (table[seat]->GetChips() == 0)
+            return;
+        CharacterDatabaseTransaction trans = CharacterDatabase.BeginTransaction();
+        std::string subject = "WoW Poker Lerduzz";
+        std::ostringstream body;
+        body << (logout ? "Te has desconectado durante una partida" : "Has abandonado la mesa");
+        body << " de poker.\n\t\n\tEn este correo te enviamos el dinero que no se te pudo entregar directamente.";
+        while (table[seat]->GetChips() > 0)
+        {
+            MailDraft draft(subject, body.str().c_str());
+            MailSender sender(MAIL_NORMAL, player->GetGUID().GetCounter(), MAIL_STATIONERY_GM);
+            if (table[seat]->GetChips() > MAX_MONEY_AMOUNT)
+            {
+                draft.AddMoney(MAX_MONEY_AMOUNT);
+                table[seat]->SetChips(table[seat]->GetChips() - MAX_MONEY_AMOUNT);
+            }
+            else
+            {
+                draft.AddMoney(table[seat]->GetChips());
+                table[seat]->SetChips(0);
+            }
+            draft.SendMailTo(trans, MailReceiver(player, player->GetGUID().GetCounter()), sender);
+        }
+        CharacterDatabase.CommitTransaction(trans);
+    }
+    BroadcastToTableLeaved(seat, logout);
+    table.erase(seat);
+}
+
 uint32 PokerMgr::GetSeat(Player *player)
 {
     for (PokerTable::iterator it = table.begin(); it != table.end(); ++it)
@@ -105,6 +155,25 @@ void PokerMgr::BroadcastToTableJoined(uint32 seat)
             std::ostringstream resp;
             resp << POKER_PREFIX << "s_" << fakeseat << "_" << table[seat]->GetPlayer()->GetName() << "_";
             resp << table[seat]->GetChips() << "_" << table[seat]->GetBet() << "_" << (table[seat]->GetPlayer()->GetFaction() == 1 ? "A" : "H");
+            it->second->GetPlayer()->Whisper(resp.str(), LANG_ADDON, it->second->GetPlayer());
+        }
+    }
+}
+
+void PokerMgr::BroadcastToTableLeaved(uint32 seat, bool logout)
+{
+    for (PokerTable::iterator it = table.begin(); it != table.end(); ++it)
+    {
+        if (it->second && it->second->GetPlayer() && (!logout || it->first != seat))
+        {
+            int32 delta = 5 - it->first;
+            int32 fakeseat = seat + delta;
+            if (fakeseat > POKER_MAX_SEATS)
+                fakeseat -= POKER_MAX_SEATS;
+            if (fakeseat < 1)
+                fakeseat += POKER_MAX_SEATS;
+            std::ostringstream resp;
+            resp << POKER_PREFIX << "q_" << fakeseat;
             it->second->GetPlayer()->Whisper(resp.str(), LANG_ADDON, it->second->GetPlayer());
         }
     }
