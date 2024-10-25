@@ -159,20 +159,6 @@ void PokerMgr::BroadcastToTableJoined(uint32 seat)
     SendMessageToTable("s", resp.str(), seat, seat);
 }
 
-void PokerMgr::BroadcastToTablePlayerStatusFolded(uint32 seat)
-{
-    for (PokerTable::iterator it = table.begin(); it != table.end(); ++it)
-    {
-        if (it->second && it->second->GetPlayer())
-        {
-            std::ostringstream resp;
-            resp << POKER_PREFIX << "st_" << GetFakeSeat(it->first, seat) << "_" << table[seat]->GetMoney();
-            resp << "_" << table[seat]->GetBet() << "_Folded_0.5";
-            it->second->GetPlayer()->Whisper(resp.str(), LANG_ADDON, it->second->GetPlayer());
-        }
-    }
-}
-
 void PokerMgr::BroadcastToTableButton()
 {
     for (PokerTable::iterator it = table.begin(); it != table.end(); ++it)
@@ -327,7 +313,9 @@ void PokerMgr::FoldPlayer(uint32 seat)
     PokerPlayer *pp = sPokerMgr->GetSeatInfo(seat);
     if (pp && pp->IsDealt())
     {
-        BroadcastToTablePlayerStatusFolded(seat);
+        std::ostringstream respSt;
+        respSt << pp->GetMoney() << "_" << pp->GetBet() << "_Folded";
+        SendMessageToTable("st", respSt.str(), 0, seat, false, 0.5f);
         pp->SetDealt(false);
         pp->SetForcedBet(false);
 
