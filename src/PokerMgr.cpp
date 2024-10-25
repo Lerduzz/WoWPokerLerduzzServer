@@ -204,7 +204,7 @@ void PokerMgr::PlayerBet(uint32 seat, uint32 size, std::string status)
     table[seat]->SetBet(table[seat]->GetBet() + size);
 
     std::ostringstream respSt;
-    respSt << table[seat]->GetMoney() << "_" << table[seat]->GetBet() << "_" << status;
+    respSt << "_" << table[seat]->GetMoney() << "_" << table[seat]->GetBet() << "_" << status;
     SendMessageToTable("st", respSt.str(), 0, seat, false, 1.0f);
 
     if (table[seat]->GetMoney() == 0)
@@ -288,7 +288,7 @@ void PokerMgr::FoldPlayer(uint32 seat)
     if (pp && pp->IsDealt())
     {
         std::ostringstream respSt;
-        respSt << pp->GetMoney() << "_" << pp->GetBet() << "_Folded";
+        respSt << "_" << pp->GetMoney() << "_" << pp->GetBet() << "_Folded";
         SendMessageToTable("st", respSt.str(), 0, seat, false, 0.5f);
         pp->SetDealt(false);
         pp->SetForcedBet(false);
@@ -729,7 +729,7 @@ void PokerMgr::ShowDown()
                         itt->second->SetMoney(itt->second->GetMoney() + pot);
                         itt->second->SetDealt(false);
                         std::ostringstream respSt;
-                        respSt << itt->second->GetMoney() << "_" << itt->second->GetBet() << "_Returned";
+                        respSt << "_" << itt->second->GetMoney() << "_" << itt->second->GetBet() << "_Returned";
                         SendMessageToTable("st", respSt.str(), 0, itt->first, false, 0.5f);
                         ShowCards(itt->first);
                     }
@@ -737,7 +737,7 @@ void PokerMgr::ShowDown()
             }
         }
         std::ostringstream respSt;
-        respSt << table[winners.front()]->GetMoney() << "_" << table[winners.front()]->GetBet() << "_Winner!";
+        respSt << "_" << table[winners.front()]->GetMoney() << "_" << table[winners.front()]->GetBet() << "_Winner!";
         SendMessageToTable("st", respSt.str(), 0, winners.front(), false, 1.0f);
         SendMessageToTable("showdown", "_wins", 0, winners.front());
     }
@@ -783,7 +783,7 @@ void PokerMgr::ShowDown()
                             table[*itw]->SetMoney(table[*itw]->GetMoney() + pot);
                             table[*itw]->SetDealt(false);
                             std::ostringstream respSt;
-                            respSt << table[*itw]->GetMoney() << "_" << table[*itw]->GetBet() << "_Winner!";
+                            respSt << "_" << table[*itw]->GetMoney() << "_" << table[*itw]->GetBet() << "_Winner!";
                             SendMessageToTable("st", respSt.str(), 0, *itw, false, 1.0f);
                             ShowCards(*itw);
                         }
@@ -803,7 +803,7 @@ void PokerMgr::ShowDown()
                             itt->second->SetMoney(itt->second->GetMoney() + pot);
                             itt->second->SetDealt(false);
                             std::ostringstream respSt;
-                            respSt << itt->second->GetMoney() << "_" << itt->second->GetBet() << "_Returned";
+                            respSt << "_" << itt->second->GetMoney() << "_" << itt->second->GetBet() << "_Returned";
                             SendMessageToTable("st", respSt.str(), 0, itt->first, false, 0.5f);
                             ShowCards(itt->first);
                         }
@@ -820,7 +820,7 @@ void PokerMgr::ShowDown()
                     it->second->SetMoney(it->second->GetMoney() + it->second->GetBet());
                     it->second->SetDealt(false);
                     std::ostringstream respSt;
-                    respSt << it->second->GetMoney() << "_" << it->second->GetBet() << "_Returned";
+                    respSt << "_" << it->second->GetMoney() << "_" << it->second->GetBet() << "_Returned";
                     SendMessageToTable("st", respSt.str(), 0, it->first, false, 0.5f);
                 }
         }
