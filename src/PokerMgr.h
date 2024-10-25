@@ -95,19 +95,9 @@ public:
     void BroadcastToTableJoined(uint32 seat);
 
     /**
-     * Informa a la mesa sobre el estado del jugador que se ha retirado.
-     */
-    void BroadcastToTablePlayerStatusFolded(uint32 seat);
-
-    /**
      * Informa a la mesa sobre quien es el del boton.
      */
     void BroadcastToTableButton();
-
-    /**
-     * Informa a la mesa sobre el ganador.
-     */
-    void BroadcastToTableWins(uint32 seat);
 
     /**
      * Logica principal del juego.
