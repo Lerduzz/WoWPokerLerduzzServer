@@ -95,11 +95,6 @@ public:
     void BroadcastToTableJoined(uint32 seat);
 
     /**
-     * Informa a la mesa sobre el jugador a quien le toca.
-     */
-    void BroadcastToTablePlayerTurn(uint32 seat, uint32 maxBet);
-
-    /**
      * Informa a la mesa sobre el estado del jugador que ha apostado.
      */
     void BroadcastToTablePlayerStatus(uint32 seat, std::string status);

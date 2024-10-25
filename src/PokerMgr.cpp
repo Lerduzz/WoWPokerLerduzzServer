@@ -159,19 +159,6 @@ void PokerMgr::BroadcastToTableJoined(uint32 seat)
     SendMessageToTable("s", resp.str(), seat, seat);
 }
 
-void PokerMgr::BroadcastToTablePlayerTurn(uint32 seat, uint32 maxBet)
-{
-    for (PokerTable::iterator it = table.begin(); it != table.end(); ++it)
-    {
-        if (it->second && it->second->GetPlayer())
-        {
-            std::ostringstream resp;
-            resp << POKER_PREFIX << "go_" << GetFakeSeat(it->first, seat) << "_" << maxBet;
-            it->second->GetPlayer()->Whisper(resp.str(), LANG_ADDON, it->second->GetPlayer());
-        }
-    }
-}
-
 void PokerMgr::BroadcastToTablePlayerStatus(uint32 seat, std::string status)
 {
     for (PokerTable::iterator it = table.begin(); it != table.end(); ++it)
@@ -589,8 +576,7 @@ void PokerMgr::GoNextPlayerTurn()
         NextLevel();
         return;
     }
-    uint32 maxBet = HighestBet();
-    BroadcastToTablePlayerTurn(turn, maxBet);
+    SendMessageToTable("go", std::to_string(HighestBet()), 0, turn);
 }
 
 PokerHandRank PokerMgr::FindHandForPlayer(uint32 seat)
