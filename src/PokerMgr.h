@@ -173,6 +173,13 @@ private:
     uint32 GetSeatAvailable();
 
     /**
+     * Obtiene el asiento relativo del jugador en la mesa.
+     *
+     * @return El numero del asiento de 'other' en la mesa de 'me'.
+     */
+    uint32 GetFakeSeat(uint32 me, uint32 other);
+
+    /**
      * Determina que jugador debe tener el boton despues.
      *
      * @return Numero del asiento del jugador.

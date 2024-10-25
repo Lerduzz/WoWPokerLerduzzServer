@@ -120,18 +120,12 @@ PokerPlayer *PokerMgr::GetSeatInfo(uint32 seat)
 
 void PokerMgr::InformPlayerJoined(uint32 seat)
 {
-    int32 delta = 5 - seat;
     for (PokerTable::iterator it = table.begin(); it != table.end(); ++it)
     {
         if (it->second && it->second->GetPlayer())
         {
-            int32 fakeseat = it->first + delta;
-            while (fakeseat > POKER_MAX_SEATS)
-                fakeseat -= POKER_MAX_SEATS;
-            while (fakeseat < 1)
-                fakeseat += POKER_MAX_SEATS;
             std::ostringstream resp;
-            resp << POKER_PREFIX << "s_" << fakeseat << "_" << it->second->GetPlayer()->GetName() << "_";
+            resp << POKER_PREFIX << "s_" << GetFakeSeat(seat, it->first) << "_" << it->second->GetPlayer()->GetName() << "_";
             resp << it->second->GetMoney() << "_" << it->second->GetBet() << "_" << (it->second->GetPlayer()->GetFaction() == 1 ? "A" : "H");
             table[seat]->GetPlayer()->Whisper(resp.str(), LANG_ADDON, table[seat]->GetPlayer());
         }
@@ -153,14 +147,8 @@ void PokerMgr::BroadcastToTableJoined(uint32 seat)
     {
         if (it->second && it->second->GetPlayer() && it->first != seat)
         {
-            int32 delta = 5 - it->first;
-            int32 fakeseat = seat + delta;
-            while (fakeseat > POKER_MAX_SEATS)
-                fakeseat -= POKER_MAX_SEATS;
-            while (fakeseat < 1)
-                fakeseat += POKER_MAX_SEATS;
             std::ostringstream resp;
-            resp << POKER_PREFIX << "s_" << fakeseat << "_" << table[seat]->GetPlayer()->GetName() << "_";
+            resp << POKER_PREFIX << "s_" << GetFakeSeat(it->first, seat) << "_" << table[seat]->GetPlayer()->GetName() << "_";
             resp << table[seat]->GetMoney() << "_" << table[seat]->GetBet() << "_" << (table[seat]->GetPlayer()->GetFaction() == 1 ? "A" : "H");
             it->second->GetPlayer()->Whisper(resp.str(), LANG_ADDON, it->second->GetPlayer());
         }
@@ -173,14 +161,8 @@ void PokerMgr::BroadcastToTableLeaved(uint32 seat, bool logout)
     {
         if (it->second && it->second->GetPlayer() && (!logout || it->first != seat))
         {
-            int32 delta = 5 - it->first;
-            int32 fakeseat = seat + delta;
-            while (fakeseat > POKER_MAX_SEATS)
-                fakeseat -= POKER_MAX_SEATS;
-            while (fakeseat < 1)
-                fakeseat += POKER_MAX_SEATS;
             std::ostringstream resp;
-            resp << POKER_PREFIX << "q_" << fakeseat;
+            resp << POKER_PREFIX << "q_" << GetFakeSeat(it->first, seat);
             it->second->GetPlayer()->Whisper(resp.str(), LANG_ADDON, it->second->GetPlayer());
         }
     }
@@ -192,14 +174,8 @@ void PokerMgr::BroadcastToTableDeal(uint32 seat)
     {
         if (it->second && it->second->GetPlayer() && it->first != seat)
         {
-            int32 delta = 5 - it->first;
-            int32 fakeseat = seat + delta;
-            while (fakeseat > POKER_MAX_SEATS)
-                fakeseat -= POKER_MAX_SEATS;
-            while (fakeseat < 1)
-                fakeseat += POKER_MAX_SEATS;
             std::ostringstream resp;
-            resp << POKER_PREFIX << "deal_" << fakeseat;
+            resp << POKER_PREFIX << "deal_" << GetFakeSeat(it->first, seat);
             it->second->GetPlayer()->Whisper(resp.str(), LANG_ADDON, it->second->GetPlayer());
         }
     }
@@ -224,14 +200,8 @@ void PokerMgr::BroadcastToTablePlayerTurn(uint32 seat, uint32 maxBet)
     {
         if (it->second && it->second->GetPlayer())
         {
-            int32 delta = 5 - it->first;
-            int32 fakeseat = seat + delta;
-            while (fakeseat > POKER_MAX_SEATS)
-                fakeseat -= POKER_MAX_SEATS;
-            while (fakeseat < 1)
-                fakeseat += POKER_MAX_SEATS;
             std::ostringstream resp;
-            resp << POKER_PREFIX << "go_" << fakeseat << "_" << maxBet;
+            resp << POKER_PREFIX << "go_" << GetFakeSeat(it->first, seat) << "_" << maxBet;
             it->second->GetPlayer()->Whisper(resp.str(), LANG_ADDON, it->second->GetPlayer());
         }
     }
@@ -243,12 +213,7 @@ void PokerMgr::BroadcastToTablePlayerStatus(uint32 seat, std::string status)
     {
         if (it->second && it->second->GetPlayer())
         {
-            int32 delta = 5 - it->first;
-            int32 fakeseat = seat + delta;
-            while (fakeseat > POKER_MAX_SEATS)
-                fakeseat -= POKER_MAX_SEATS;
-            while (fakeseat < 1)
-                fakeseat += POKER_MAX_SEATS;
+            uint32 fakeseat = sGetFakeSeat(it->first, seat);
             std::ostringstream resp;
             resp << POKER_PREFIX << "st_" << fakeseat << "_" << table[seat]->GetMoney();
             resp << "_" << table[seat]->GetBet() << "_" << (fakeseat == 5 ? sPokerHandMgr->GetHandRankDescription(FindHandForPlayer(seat)) : status) << "_1";
@@ -263,15 +228,9 @@ void PokerMgr::BroadcastToTableShowCards(uint32 seat)
     {
         if (it->second && it->second->GetPlayer() && it->first != seat)
         {
-            int32 delta = 5 - it->first;
-            int32 fakeseat = seat + delta;
-            while (fakeseat > POKER_MAX_SEATS)
-                fakeseat -= POKER_MAX_SEATS;
-            while (fakeseat < 1)
-                fakeseat += POKER_MAX_SEATS;
             std::ostringstream resp;
             resp << POKER_PREFIX << "show_" << table[seat]->GetHole1() << "_";
-            resp << table[seat]->GetHole2() << "_" << fakeseat << "_" << sPokerHandMgr->GetHandRankDescription(FindHandForPlayer(seat));
+            resp << table[seat]->GetHole2() << "_" << GetFakeSeat(it->first, seat) << "_" << sPokerHandMgr->GetHandRankDescription(FindHandForPlayer(seat));
             it->second->GetPlayer()->Whisper(resp.str(), LANG_ADDON, it->second->GetPlayer());
         }
     }
@@ -283,14 +242,8 @@ void PokerMgr::BroadcastToTablePlayerStatusFolded(uint32 seat)
     {
         if (it->second && it->second->GetPlayer())
         {
-            int32 delta = 5 - it->first;
-            int32 fakeseat = seat + delta;
-            while (fakeseat > POKER_MAX_SEATS)
-                fakeseat -= POKER_MAX_SEATS;
-            while (fakeseat < 1)
-                fakeseat += POKER_MAX_SEATS;
             std::ostringstream resp;
-            resp << POKER_PREFIX << "st_" << fakeseat << "_" << table[seat]->GetMoney();
+            resp << POKER_PREFIX << "st_" << GetFakeSeat(it->first, seat) << "_" << table[seat]->GetMoney();
             resp << "_" << table[seat]->GetBet() << "_Folded_0.5";
             it->second->GetPlayer()->Whisper(resp.str(), LANG_ADDON, it->second->GetPlayer());
         }
@@ -303,14 +256,8 @@ void PokerMgr::BroadcastToTableButton()
     {
         if (it->second && it->second->GetPlayer())
         {
-            int32 delta = 5 - it->first;
-            int32 fakebutton = button + delta;
-            if (fakebutton > POKER_MAX_SEATS)
-                fakebutton -= POKER_MAX_SEATS;
-            if (fakebutton < 1)
-                fakebutton += POKER_MAX_SEATS;
             std::ostringstream resp;
-            resp << POKER_PREFIX << "b_" << fakebutton;
+            resp << POKER_PREFIX << "b_" << GetFakeSeat(it->first, button);
             it->second->GetPlayer()->Whisper(resp.str(), LANG_ADDON, it->second->GetPlayer());
         }
     }
@@ -322,14 +269,8 @@ void PokerMgr::BroadcastToTableWins(uint32 seat)
     {
         if (it->second && it->second->GetPlayer())
         {
-            int32 delta = 5 - it->first;
-            int32 fakeseat = seat + delta;
-            while (fakeseat > POKER_MAX_SEATS)
-                fakeseat -= POKER_MAX_SEATS;
-            while (fakeseat < 1)
-                fakeseat += POKER_MAX_SEATS;
             std::ostringstream resp;
-            resp << POKER_PREFIX << "showdown_" << fakeseat << "_" << table[seat]->GetPlayer()->GetName() << " ha ganado."; // TODO: Traducir del lado del cliente.
+            resp << POKER_PREFIX << "showdown_" << GetFakeSeat(it->first, seat) << "_" << table[seat]->GetPlayer()->GetName() << " ha ganado."; // TODO: Traducir del lado del cliente.
             it->second->GetPlayer()->Whisper(resp.str(), LANG_ADDON, it->second->GetPlayer());
         }
     }
@@ -508,6 +449,15 @@ uint32 PokerMgr::GetSeatAvailable()
         if (seats[i] != 0)
             return seats[i];
     return 0;
+}
+
+uint32 PokerMgr::GetFakeSeat(uint32 me, uint32 other)
+{
+    int32 delta = 5 - (int32)me;
+    int32 fakeSeat = (int32)other + delta;
+    while (fakeSeat > (int32)POKER_MAX_SEATS) fakeSeat -= (int32)POKER_MAX_SEATS;
+    while (fakeSeat < 1) fakeSeat += (int32)POKER_MAX_SEATS;
+    return (uint32) fakeSeat;
 }
 
 uint32 PokerMgr::WhosButtonAfter(uint32 start)
