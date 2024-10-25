@@ -35,14 +35,14 @@ JoinResult PokerMgr::PlayerJoin(Player *player, uint32 gold)
         return POKER_JOIN_ERROR_NO_ENOUGH_MONEY;
     if (gold < POKER_MIN_GOLD || gold > POKER_MAX_GOLD)
         return POKER_JOIN_ERROR_MONEY_OUT_OF_RANGE;
-    if (POKER_MAX_GOLD_TABLE * GOLD - GetTotalMoney() < gold * GOLD)
+    if (POKER_MAX_GOLD_TABLE - GetTotalMoney() < gold)
         return POKER_JOIN_ERROR_MONEY_TABLE_FULL;
     uint32 seat = GetSeatAvailable();
     if (seat == 0)
         return POKER_JOIN_ERROR_NO_SEATS;
     table[seat] = new PokerPlayer(player);
     player->SetMoney(player->GetMoney() - gold * GOLD);
-    table[seat]->SetMoney(gold * GOLD);
+    table[seat]->SetMoney(gold);
     return POKER_JOIN_OK;
 }
 
@@ -55,10 +55,10 @@ void PokerMgr::PlayerLeave(Player *player, bool logout)
         {
             if (!logout && player->GetMoney() < POKER_MAX_GOLD_REWARD * GOLD)
             {
-                uint32 allowedMoney = POKER_MAX_GOLD_REWARD * GOLD - player->GetMoney();
+                uint32 allowedMoney = POKER_MAX_GOLD_REWARD - player->GetMoney() / GOLD;
                 if (table[seat]->GetMoney() <= allowedMoney)
                 {
-                    player->SetMoney(player->GetMoney() + table[seat]->GetMoney());
+                    player->SetMoney(player->GetMoney() + table[seat]->GetMoney() * GOLD);
                     table[seat]->SetMoney(0);
                 }
                 else
@@ -70,15 +70,27 @@ void PokerMgr::PlayerLeave(Player *player, bool logout)
             if (table[seat]->GetMoney() > 0)
             {
                 CharacterDatabaseTransaction trans = CharacterDatabase.BeginTransaction();
+                MailSender sender(MAIL_NORMAL, player->GetGUID().GetCounter(), MAIL_STATIONERY_GM);
+                MailReceiver receiver(player, player->GetGUID().GetCounter());
                 std::string subject = "WoW Poker Lerduzz";
                 std::ostringstream body;
                 body << (logout ? "Te has desconectado durante una partida" : "Has abandonado la mesa");
                 body << " de poker.\n\nEn este correo te enviamos el dinero que no se te pudo entregar directamente.";
-                MailDraft draft(subject, body.str().c_str());
-                MailSender sender(MAIL_NORMAL, player->GetGUID().GetCounter(), MAIL_STATIONERY_GM);
-                draft.AddMoney(table[seat]->GetMoney());
-                table[seat]->SetMoney(0);
-                draft.SendMailTo(trans, MailReceiver(player, player->GetGUID().GetCounter()), sender);
+                while (table[seat]->GetMoney() > 0)
+                {
+                    MailDraft draft(subject, body.str().c_str());
+                    if (table[seat]->GetMoney() > POKER_MAX_GOLD_REWARD)
+                    {
+                        draft.AddMoney(POKER_MAX_GOLD_REWARD * GOLD);
+                        table[seat]->SetMoney(table[seat]->GetMoney() - POKER_MAX_GOLD_REWARD);
+                    }
+                    else
+                    {
+                        draft.AddMoney(table[seat]->GetMoney() * GOLD);
+                        table[seat]->SetMoney(0);
+                    }
+                    draft.SendMailTo(trans, receiver, sender);
+                }
                 CharacterDatabase.CommitTransaction(trans);
             }
         }
@@ -464,6 +476,7 @@ void PokerMgr::OnWorldUpdate(uint32 diff)
     if (status == POKER_STATUS_INACTIVE)
         if (GetPlayablePlayers() > 1)
             sPokerMgr->NextLevel();
+        // TODO: else {Mandar a limpiar la mesa y poner al jugador que esta sentado en espera}.
     delay = 1000;
 }
 
@@ -535,8 +548,8 @@ void PokerMgr::SetupBets()
 void PokerMgr::PostBlinds()
 {
     uint32 pc = GetPlayingPlayers();
-    uint32 smallBlind = POKER_BET_SIZE * GOLD / 2;
-    uint32 bigBlind = POKER_BET_SIZE * GOLD;
+    uint32 smallBlind = POKER_BET_SIZE / 2;
+    uint32 bigBlind = POKER_BET_SIZE;
 
     uint32 next = button;
 
