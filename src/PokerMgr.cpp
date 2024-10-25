@@ -682,14 +682,14 @@ void PokerMgr::DealHoleCards()
         deck.push_back(deck_arr[i - 1]);
 
     std::ostringstream msg1;
-    msg1 << POKER_PREFIX << "betsize_" << POKER_BET_SIZE;
+    msg1 << "betsize_" << POKER_BET_SIZE;
     SendMessageToTable(msg1.str());
 
     sidepots.clear();
 
     round++;
     std::ostringstream msg2;
-    msg2 << POKER_PREFIX << "round0_" << round;
+    msg2 << "round0_" << round;
     SendMessageToTable(msg2.str());
 
     for (uint32 i = 1; i <= 9; i++)
@@ -717,7 +717,7 @@ void PokerMgr::DealHoleCards()
     }
 
     std::ostringstream msg4;
-    msg4 << POKER_PREFIX << "flop0";
+    msg4 << "flop0";
     SendMessageToTable(msg4.str());
 
     SetupBets();
@@ -732,7 +732,7 @@ void PokerMgr::ShowFlopCards()
         deck.pop_front();
     }
     std::ostringstream msg;
-    msg << POKER_PREFIX << "flop1_" << flop[0] << "_" << flop[1] << "_" << flop[2];        
+    msg << "flop1_" << flop[0] << "_" << flop[1] << "_" << flop[2];        
     SendMessageToTable(msg.str());
     BroadcastToTableHand();
 
@@ -747,7 +747,7 @@ void PokerMgr::DealTurn()
     deck.pop_front();
 
     std::ostringstream msg;
-    msg << POKER_PREFIX << "turn_" << flop[3];        
+    msg << "turn_" << flop[3];        
     SendMessageToTable(msg.str());
     BroadcastToTableHand();
 
@@ -762,7 +762,7 @@ void PokerMgr::DealRiver()
     deck.pop_front();
 
     std::ostringstream msg;
-    msg << POKER_PREFIX << "river_" << flop[4];        
+    msg << "river_" << flop[4];        
     SendMessageToTable(msg.str());
     BroadcastToTableHand();
 
@@ -875,7 +875,7 @@ void PokerMgr::ShowDown()
                 if (sPokerHandMgr->HandRankCompare(it->second->GetHandRank(), best) == 0)
                     winners.push_back(it->first);
         std::ostringstream text;
-        text << POKER_PREFIX << "showdown_0_";
+        text << "showdown_0_";
         if (winners.size() > 0)
         {
             if (winners.size() == 1)
