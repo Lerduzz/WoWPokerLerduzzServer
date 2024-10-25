@@ -126,7 +126,7 @@ void PokerMgr::SendMessageToTable(std::string msgStart, std::string msgEnd, uint
         {
             std::ostringstream resp;
             resp << POKER_PREFIX << msgStart;
-            if (seat > 0) resp << "_" << GetFakeSeat(it->first, seat) << "_";
+            if (seat > 0) resp << "_" << GetFakeSeat(it->first, seat);
             resp << msgEnd;
             if (sendHand) resp << "_" << sPokerHandMgr->GetHandRankDescription(FindHandForPlayer(seat > 0 ? GetFakeSeat(it->first, seat) : it->first));
             if (alpha > 0) resp << "_" << alpha;
@@ -576,7 +576,9 @@ void PokerMgr::GoNextPlayerTurn()
         NextLevel();
         return;
     }
-    SendMessageToTable("go", std::to_string(HighestBet()), 0, turn);
+    std::ostringstream hB;
+    hB << "_" << HighestBet();
+    SendMessageToTable("go", hB.str(), 0, turn);
 }
 
 PokerHandRank PokerMgr::FindHandForPlayer(uint32 seat)
