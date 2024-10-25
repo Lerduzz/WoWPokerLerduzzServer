@@ -117,7 +117,7 @@ public:
     /**
      * Informa a la mesa que un jugador ha mostrado sus cartas.
      */
-    void BroadcastToTableShowCards(uint32 seat, std::string status);
+    void BroadcastToTableShowCards(uint32 seat);
 
     /**
      * Informa a la mesa sobre el estado del jugador que se ha retirado.
@@ -253,7 +253,7 @@ private:
     /**
      * Hace que un jugador muestre sus cartas.
      */
-    void ShowCards(uint32 seat, std::string status);
+    void ShowCards(uint32 seat);
 
     /**
      * Nivel 1: POKER_STATUS_PRE_FLOP.

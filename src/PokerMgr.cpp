@@ -238,13 +238,13 @@ void PokerMgr::BroadcastToTablePlayerStatus(uint32 seat, std::string status)
                 fakeseat += POKER_MAX_SEATS;
             std::ostringstream resp;
             resp << POKER_PREFIX << "st_" << fakeseat << "_" << table[seat]->GetMoney();
-            resp << "_" << table[seat]->GetBet() << "_" << status << "_1";
+            resp << "_" << table[seat]->GetBet() << "_" << (fakeseat == 5 ? sPokerHandMgr->GetHandRankDescription(FindHandForPlayer(seat)) : status) << "_1";
             it->second->GetPlayer()->Whisper(resp.str(), LANG_ADDON, it->second->GetPlayer());
         }
     }
 }
 
-void PokerMgr::BroadcastToTableShowCards(uint32 seat, std::string status)
+void PokerMgr::BroadcastToTableShowCards(uint32 seat)
 {
     for (PokerTable::iterator it = table.begin(); it != table.end(); ++it)
     {
@@ -258,7 +258,7 @@ void PokerMgr::BroadcastToTableShowCards(uint32 seat, std::string status)
                 fakeseat += POKER_MAX_SEATS;
             std::ostringstream resp;
             resp << POKER_PREFIX << "show_" << table[seat]->GetHole1() << "_";
-            resp << table[seat]->GetHole2() << "_" << fakeseat << "_" << status;
+            resp << table[seat]->GetHole2() << "_" << fakeseat << "_" << sPokerHandMgr->GetHandRankDescription(FindHandForPlayer(seat));
             it->second->GetPlayer()->Whisper(resp.str(), LANG_ADDON, it->second->GetPlayer());
         }
     }
@@ -687,16 +687,13 @@ PokerHandRank PokerMgr::FindHandForPlayer(uint32 seat)
     return hand;
 }
 
-void PokerMgr::ShowCards(uint32 seat, std::string status)
+void PokerMgr::ShowCards(uint32 seat)
 {
     if (table.find(seat) == table.end())
         return;
-
 	if (table[seat]->GetHole1() == 0 || table[seat]->GetHole2() == 0) 
         return;
-
-	// FHS_BroadCastToTable("show_"..Seats[j].hole1 .."_"..Seats[j].hole2.."_"..j.."_"..status,j);
-    BroadcastToTableShowCards(seat, status);
+    BroadcastToTableShowCards(seat);
 }
 
 void PokerMgr::DealHoleCards()
@@ -812,7 +809,6 @@ void PokerMgr::ShowDown()
     uint32 totalPot = GetTotalPot();
     SidePot tmpPot;
     uint32 pot;
-
     if (sidepots.size() == 0)
     {
         tmpPot = SidePot();
@@ -820,7 +816,6 @@ void PokerMgr::ShowDown()
         tmpPot.pot = totalPot;
         sidepots.push_back(tmpPot);
     }
-
     bool found = false;
     for (std::list<SidePot>::iterator it = sidepots.begin(); it != sidepots.end(); ++it)
         if (it->bet == maxBet)
@@ -832,9 +827,7 @@ void PokerMgr::ShowDown()
         tmpPot.pot = totalPot;
         sidepots.push_back(tmpPot);
     }
-
     sidepots.sort([](SidePot a, SidePot b){ return a.bet < b.bet; });
-
     uint32 tmpTotal;
     uint32 tmpPrev;
     for (std::list<SidePot>::iterator it = sidepots.begin(); it != sidepots.end(); ++it)
@@ -848,7 +841,6 @@ void PokerMgr::ShowDown()
             tmpTotal = tmpPrev;
         }
     }
-
     if (GetPlayingPlayers() == 1)
     {
         for (PokerTable::iterator it = table.begin(); it != table.end(); ++it)
@@ -856,14 +848,12 @@ void PokerMgr::ShowDown()
             if (it->second && it->second->GetPlayer() && it->second->IsDealt())
                 winners.push_back(it->first);
         }
-
         for (std::list<SidePot>::iterator it = sidepots.begin(); it != sidepots.end(); ++it)
         {
             uint32 winnerCount = 0;
             for (std::list<uint32>::iterator itw = winners.begin(); itw != winners.end(); ++itw)
                 if (table[*itw]->GetBet() >= it->bet)
                     winnerCount++;
-
             if (winnerCount > 0)
             {
                 pot = it->pot / winnerCount;
@@ -889,10 +879,8 @@ void PokerMgr::ShowDown()
                     {
                         itt->second->SetMoney(itt->second->GetMoney() + pot);
                         itt->second->SetDealt(false);
-                        // FHS_BroadCastToTable("st_"..j.."_"..Seats[j].chips.."_"..Seats[j].bet.."_"..Seats[j].status.."_0.5")
                         BroadcastToTablePlayerStatus(itt->first, "Returned");
-                        // FHS_ShowCard(j,pot.." returned")
-                        ShowCards(itt->first, "Returned");
+                        ShowCards(itt->first);
                     }
                 }
             }
@@ -932,7 +920,6 @@ void PokerMgr::ShowDown()
                 for (std::list<uint32>::iterator itw = winners.begin(); itw != winners.end(); ++itw)
                     if (table[*itw]->GetBet() >= it->bet)
                         winnerCount++;
-
                 if (winnerCount > 0)
                 {
                     pot = it->pot / winnerCount;
@@ -942,10 +929,8 @@ void PokerMgr::ShowDown()
                         {
                             table[*itw]->SetMoney(table[*itw]->GetMoney() + pot);
                             table[*itw]->SetDealt(false);
-                            // TODO: FHS_BroadCastToTable("st_"..Winners[j].."_"..ThisSeat.chips.."_"..ThisSeat.bet.."_"..ThisSeat.status.."_1")
-							BroadcastToTablePlayerStatus(*itw, "Winner!");
-                            // TODO: FHS_ShowCard(Winners[j],"Winner!")
-                            ShowCards(*itw, "Winner!");
+                            BroadcastToTablePlayerStatus(*itw, "Winner!");
+                            ShowCards(*itw);
                         }
                     }
                 }
@@ -962,10 +947,8 @@ void PokerMgr::ShowDown()
                         {
                             itt->second->SetMoney(itt->second->GetMoney() + pot);
                             itt->second->SetDealt(false);
-                            // FHS_BroadCastToTable("st_"..j.."_"..Seats[j].chips.."_"..Seats[j].bet.."_"..Seats[j].status.."_0.5")
                             BroadcastToTablePlayerStatus(itt->first, "Returned");
-                            // FHS_ShowCard(j,pot.." returned")
-                            ShowCards(itt->first, "Returned");
+                            ShowCards(itt->first);
                         }
                     }
                 }
@@ -979,14 +962,13 @@ void PokerMgr::ShowDown()
                 {
                     it->second->SetMoney(it->second->GetMoney() + it->second->GetBet());
                     it->second->SetDealt(false);
-                    // TODO: FHS_BroadCastToTable("st_"..j.."_"..Seats[j].chips.."_"..Seats[j].bet.."_"..Seats[j].status.."_1")
                     BroadcastToTablePlayerStatus(it->first, "Returned");
                 }
         }
         BroadcastToTable(text.str());
         for (PokerTable::iterator it = table.begin(); it != table.end(); ++it)
             if (it->second && it->second->GetPlayer() && it->second->IsDealt())
-                ShowCards(it->first, "Showdown");
+                ShowCards(it->first);
         CleanBets();
     }
 }

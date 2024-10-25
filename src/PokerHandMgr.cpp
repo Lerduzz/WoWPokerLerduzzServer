@@ -125,7 +125,7 @@ std::string PokerHandMgr::GetHandRankDescription(PokerHandRank hand)
         case POKER_HAND_THREE_OF_A_KIND:
             return "Three of a Kind";
         case POKER_HAND_TWO_PAIR:
-            return "Two Pair";
+            return "Two Pairs";
         case POKER_HAND_ONE_PAIR:
             return "One Pair";
         default:
