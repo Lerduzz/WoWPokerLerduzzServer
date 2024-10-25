@@ -95,11 +95,6 @@ public:
     void BroadcastToTableJoined(uint32 seat);
 
     /**
-     * Informa a la mesa que un jugador ha mostrado sus cartas.
-     */
-    void BroadcastToTableShowCards(uint32 seat);
-
-    /**
      * Informa a la mesa sobre el estado del jugador que se ha retirado.
      */
     void BroadcastToTablePlayerStatusFolded(uint32 seat);
