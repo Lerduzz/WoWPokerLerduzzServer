@@ -131,6 +131,7 @@ void PokerMgr::SendMessageToTable(std::string msgStart, std::string msgEnd, uint
             if (sendHand) resp << "_" << sPokerHandMgr->GetHandRankDescription(FindHandForPlayer(seat > 0 ? GetFakeSeat(it->first, seat) : it->first));
             if (alpha > 0) resp << "_" << alpha;
             it->second->GetPlayer()->Whisper(resp.str(), LANG_ADDON, it->second->GetPlayer());
+            LOG_ERROR("poker", "[DEBUG] SendMessageToTable: ({}) \"{}\".", it->second->GetPlayer()->GetName(), resp.str());
         }
     }
 }
@@ -151,16 +152,10 @@ void PokerMgr::InformPlayerJoined(uint32 seat)
 
 void PokerMgr::BroadcastToTableJoined(uint32 seat)
 {
-    for (PokerTable::iterator it = table.begin(); it != table.end(); ++it)
-    {
-        if (it->second && it->second->GetPlayer() && it->first != seat)
-        {
-            std::ostringstream resp;
-            resp << POKER_PREFIX << "s_" << GetFakeSeat(it->first, seat) << "_" << table[seat]->GetPlayer()->GetName() << "_";
-            resp << table[seat]->GetMoney() << "_" << table[seat]->GetBet() << "_" << (table[seat]->GetPlayer()->GetFaction() == 1 ? "A" : "H");
-            it->second->GetPlayer()->Whisper(resp.str(), LANG_ADDON, it->second->GetPlayer());
-        }
-    }
+    std::ostringstream resp;
+    resp << table[seat]->GetPlayer()->GetName() << "_" << table[seat]->GetMoney();
+    resp << "_" << table[seat]->GetBet() << "_" << (table[seat]->GetPlayer()->GetFaction() == 1 ? "A" : "H");
+    SendMessageToTable("s", resp.str(), seat, seat);
 }
 
 void PokerMgr::BroadcastToTableLeaved(uint32 seat, bool logout)
