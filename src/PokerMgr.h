@@ -95,11 +95,6 @@ public:
     void BroadcastToTableJoined(uint32 seat);
 
     /**
-     * Informa a la mesa sobre carta repartida.
-     */
-    void BroadcastToTableDeal(uint32 seat);
-
-    /**
      * Informa a cada jugador sobre la mano que tiene.
      */
     void BroadcastToTableHand();

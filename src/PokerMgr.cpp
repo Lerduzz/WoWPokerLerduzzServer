@@ -159,19 +159,6 @@ void PokerMgr::BroadcastToTableJoined(uint32 seat)
     SendMessageToTable("s", resp.str(), seat, seat);
 }
 
-void PokerMgr::BroadcastToTableDeal(uint32 seat)
-{
-    for (PokerTable::iterator it = table.begin(); it != table.end(); ++it)
-    {
-        if (it->second && it->second->GetPlayer() && it->first != seat)
-        {
-            std::ostringstream resp;
-            resp << POKER_PREFIX << "deal_" << GetFakeSeat(it->first, seat);
-            it->second->GetPlayer()->Whisper(resp.str(), LANG_ADDON, it->second->GetPlayer());
-        }
-    }
-}
-
 void PokerMgr::BroadcastToTableHand()
 {
     for (PokerTable::iterator it = table.begin(); it != table.end(); ++it)
@@ -694,7 +681,7 @@ void PokerMgr::DealHoleCards()
                 std::ostringstream msg3;
                 msg3 << POKER_PREFIX << "hole_" << table[j]->GetHole1() << "_" << table[j]->GetHole2() << "_" << sPokerHandMgr->GetHandRankDescription(FindHandForPlayer(j));
                 table[j]->GetPlayer()->Whisper(msg3.str(), LANG_ADDON, table[j]->GetPlayer());
-                BroadcastToTableDeal(j);
+                SendMessageToTable("deal", "", j, j);
             }
         }
     }
