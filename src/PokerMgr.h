@@ -80,6 +80,11 @@ public:
     PokerPlayer *GetSeatInfo(uint32 seat);
 
     /**
+     * Funcion principal para mantener las mesas actualizadas.
+     */
+    void SendMessageToTable(std::string msgStart, std::string msgEnd, uint32 exclude, uint32 seat = 0, bool sendHand, float alpha);
+
+    /**
      * Informa al jugador sobre el estado de todos los jugadores de la mesa.
      */
     void InformPlayerJoined(uint32 seat);
