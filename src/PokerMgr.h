@@ -95,11 +95,6 @@ public:
     void BroadcastToTableJoined(uint32 seat);
 
     /**
-     * Informa a la mesa sobre la salida de un jugador.
-     */
-    void BroadcastToTableLeaved(uint32 seat, bool logout = false);
-
-    /**
      * Informa a la mesa sobre carta repartida.
      */
     void BroadcastToTableDeal(uint32 seat);

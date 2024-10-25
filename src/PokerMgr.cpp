@@ -94,7 +94,7 @@ void PokerMgr::PlayerLeave(Player *player, bool logout)
                 CharacterDatabase.CommitTransaction(trans);
             }
         }
-        BroadcastToTableLeaved(seat, logout);
+        SendMessageToTable("q", "", logout ? seat : 0, seat);
         table.erase(seat);
         if (turn == seat)
             GoNextPlayerTurn();
@@ -152,23 +152,11 @@ void PokerMgr::InformPlayerJoined(uint32 seat)
 
 void PokerMgr::BroadcastToTableJoined(uint32 seat)
 {
+    // TODO: Eliminar esta funcion y unificar la logica de cuando un jugador se une a la mesa.
     std::ostringstream resp;
     resp << table[seat]->GetPlayer()->GetName() << "_" << table[seat]->GetMoney();
     resp << "_" << table[seat]->GetBet() << "_" << (table[seat]->GetPlayer()->GetFaction() == 1 ? "A" : "H");
     SendMessageToTable("s", resp.str(), seat, seat);
-}
-
-void PokerMgr::BroadcastToTableLeaved(uint32 seat, bool logout)
-{
-    for (PokerTable::iterator it = table.begin(); it != table.end(); ++it)
-    {
-        if (it->second && it->second->GetPlayer() && (!logout || it->first != seat))
-        {
-            std::ostringstream resp;
-            resp << POKER_PREFIX << "q_" << GetFakeSeat(it->first, seat);
-            it->second->GetPlayer()->Whisper(resp.str(), LANG_ADDON, it->second->GetPlayer());
-        }
-    }
 }
 
 void PokerMgr::BroadcastToTableDeal(uint32 seat)
