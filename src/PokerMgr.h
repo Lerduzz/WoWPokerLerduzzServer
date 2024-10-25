@@ -82,17 +82,12 @@ public:
     /**
      * Funcion principal para mantener las mesas actualizadas.
      */
-    void SendMessageToTable(std::string msgStart, std::string msgEnd, uint32 exclude, uint32 seat = 0, bool sendHand, float alpha);
+    void SendMessageToTable(std::string msgStart, std::string msgEnd = "", uint32 exclude = 0, uint32 seat = 0, bool sendHand = false, float alpha = 0);
 
     /**
      * Informa al jugador sobre el estado de todos los jugadores de la mesa.
      */
     void InformPlayerJoined(uint32 seat);
-
-    /**
-     * Envia mensaje a todos los jugadores.
-     */
-    void BroadcastToTable(std::string msg);
 
     /**
      * Informa a la mesa sobre la llegada de un nuevo jugador.
