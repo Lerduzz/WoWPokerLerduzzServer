@@ -159,19 +159,6 @@ void PokerMgr::BroadcastToTableJoined(uint32 seat)
     SendMessageToTable("s", resp.str(), seat, seat);
 }
 
-void PokerMgr::BroadcastToTableButton()
-{
-    for (PokerTable::iterator it = table.begin(); it != table.end(); ++it)
-    {
-        if (it->second && it->second->GetPlayer())
-        {
-            std::ostringstream resp;
-            resp << POKER_PREFIX << "b_" << GetFakeSeat(it->first, button);
-            it->second->GetPlayer()->Whisper(resp.str(), LANG_ADDON, it->second->GetPlayer());
-        }
-    }
-}
-
 void PokerMgr::NextLevel()
 {
     status = static_cast<PokerStatus>(static_cast<int>(status) + 1);
@@ -565,7 +552,7 @@ void PokerMgr::ShowCards(uint32 seat)
 void PokerMgr::DealHoleCards()
 {
     button = WhosButtonAfter(button);
-    BroadcastToTableButton();
+    SendMessageToTable("b", "", 0, button);
 
     deck.clear();
     std::array<uint32, 52> deck_arr;

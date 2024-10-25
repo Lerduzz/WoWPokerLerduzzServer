@@ -95,11 +95,6 @@ public:
     void BroadcastToTableJoined(uint32 seat);
 
     /**
-     * Informa a la mesa sobre quien es el del boton.
-     */
-    void BroadcastToTableButton();
-
-    /**
      * Logica principal del juego.
      */
     void NextLevel();
