@@ -205,6 +205,19 @@ void PokerMgr::BroadcastToTableDeal(uint32 seat)
     }
 }
 
+void PokerMgr::BroadcastToTableHand()
+{
+    for (PokerTable::iterator it = table.begin(); it != table.end(); ++it)
+    {
+        if (it->second && it->second->GetPlayer() && it->second->IsDealt())
+        {
+            std::ostringstream resp;
+            resp << POKER_PREFIX << "hand_" << sPokerHandMgr->GetHandRankDescription(FindHandForPlayer(it->first));
+            it->second->GetPlayer()->Whisper(resp.str(), LANG_ADDON, it->second->GetPlayer());
+        }
+    }
+}
+
 void PokerMgr::BroadcastToTablePlayerTurn(uint32 seat, uint32 maxBet)
 {
     for (PokerTable::iterator it = table.begin(); it != table.end(); ++it)
@@ -704,15 +717,11 @@ void PokerMgr::DealHoleCards()
     deck.clear();
     std::array<uint32, 52> deck_arr;
     for (uint32 i = 1; i <= 52; i++)
-    {
         deck_arr[i - 1] = i;
-    }
     unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
     std::shuffle(deck_arr.begin(), deck_arr.end(), std::default_random_engine(seed));
     for (uint32 i = 1; i <= 52; i++)
-    {
         deck.push_back(deck_arr[i - 1]);
-    }
 
     std::ostringstream msg1;
     msg1 << POKER_PREFIX << "betsize_" << POKER_BET_SIZE;
@@ -728,8 +737,7 @@ void PokerMgr::DealHoleCards()
     for (uint32 i = 1; i <= 9; i++)
     {
         uint32 j = i + button + 1;
-        if (j > 9) j -= 9;
-        if (j > 9) j -= 9;
+        while (j > 9) j -= 9;
         if (table.find(j) != table.end())
         {
             table[j]->SetBet(0);
@@ -743,7 +751,7 @@ void PokerMgr::DealHoleCards()
                 table[j]->SetDealt(true);
 
                 std::ostringstream msg3;
-                msg3 << POKER_PREFIX << "hole_" << table[j]->GetHole1() << "_" << table[j]->GetHole2();
+                msg3 << POKER_PREFIX << "hole_" << table[j]->GetHole1() << "_" << table[j]->GetHole2() << "_" << sPokerHandMgr->GetHandRankDescription(FindHandForPlayer(j));
                 table[j]->GetPlayer()->Whisper(msg3.str(), LANG_ADDON, table[j]->GetPlayer());
                 BroadcastToTableDeal(j);
             }
@@ -768,6 +776,7 @@ void PokerMgr::ShowFlopCards()
     std::ostringstream msg;
     msg << POKER_PREFIX << "flop1_" << flop[0] << "_" << flop[1] << "_" << flop[2];        
     BroadcastToTable(msg.str());
+    BroadcastToTableHand();
 
     SetupBets();
     turn = button;
@@ -782,6 +791,7 @@ void PokerMgr::DealTurn()
     std::ostringstream msg;
     msg << POKER_PREFIX << "turn_" << flop[3];        
     BroadcastToTable(msg.str());
+    BroadcastToTableHand();
 
     SetupBets();
     turn = button;
@@ -796,6 +806,7 @@ void PokerMgr::DealRiver()
     std::ostringstream msg;
     msg << POKER_PREFIX << "river_" << flop[4];        
     BroadcastToTable(msg.str());
+    BroadcastToTableHand();
 
     SetupBets();
     turn = button;

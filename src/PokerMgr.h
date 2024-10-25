@@ -105,6 +105,11 @@ public:
     void BroadcastToTableDeal(uint32 seat);
 
     /**
+     * Informa a cada jugador sobre la mano que tiene.
+     */
+    void BroadcastToTableHand();
+
+    /**
      * Informa a la mesa sobre el jugador a quien le toca.
      */
     void BroadcastToTablePlayerTurn(uint32 seat, uint32 maxBet);
