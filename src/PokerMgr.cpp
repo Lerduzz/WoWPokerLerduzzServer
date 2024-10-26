@@ -154,7 +154,7 @@ void PokerMgr::BroadcastToTableJoined(uint32 seat)
 {
     // TODO: Eliminar esta funcion y unificar la logica de cuando un jugador se une a la mesa.
     std::ostringstream resp;
-    resp << table[seat]->GetPlayer()->GetName() << "_" << table[seat]->GetMoney();
+    resp << "_" << table[seat]->GetPlayer()->GetName() << "_" << table[seat]->GetMoney();
     resp << "_" << table[seat]->GetBet() << "_" << (table[seat]->GetPlayer()->GetFaction() == 1 ? "A" : "H");
     SendMessageToTable("s", resp.str(), seat, seat);
 }
