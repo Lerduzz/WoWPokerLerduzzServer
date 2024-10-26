@@ -23,26 +23,6 @@ public:
             resp << "ping!";
             msg = resp.str();
         }
-        else if (strcmp(message.c_str(), "pong!") == 0)
-        {
-            uint32 seat = sPokerMgr->GetSeat(player);
-            if (seat > 0 || sPokerMgr->PlayerJoin(player, 1000) == POKER_JOIN_OK)
-            {
-                if (seat == 0)
-                    seat = sPokerMgr->GetSeat(player);
-                resp << "seat_5";
-                player->Whisper(resp.str(), LANG_ADDON, player);
-                sPokerMgr->InformPlayerJoined(seat);
-                sPokerMgr->BroadcastToTableJoined(seat);
-                NullMsg(msg);
-            }
-            else
-            {
-                // TODO: Informar el problema real de no union.
-                resp << "noseats!";
-                msg = resp.str();
-            }
-        }
         else if (strcmp(message.c_str(), "quit") == 0)
         {
             sPokerMgr->PlayerLeave(player);
@@ -53,7 +33,29 @@ public:
             std::string tok = message;
             char *tab;
             tab = strtok(tok.data(), "_");
-            if (strcmp(tab, "call") == 0)
+            if (strcmp(tab, "join") == 0)
+            {
+                tab = strtok(nullptr, "_");
+                uint32 gold = (uint32) atoi(tab);
+                uint32 seat = sPokerMgr->GetSeat(player);
+                if (seat > 0 || sPokerMgr->PlayerJoin(player, gold) == POKER_JOIN_OK)
+                {
+                    if (seat == 0)
+                        seat = sPokerMgr->GetSeat(player);
+                    resp << "seat_5";
+                    player->Whisper(resp.str(), LANG_ADDON, player);
+                    sPokerMgr->InformPlayerJoined(seat);
+                    sPokerMgr->BroadcastToTableJoined(seat);
+                    NullMsg(msg);
+                }
+                else
+                {
+                    // TODO: Informar el problema real de no union.
+                    resp << "noseats!";
+                    msg = resp.str();
+                }
+            }
+            else if (strcmp(tab, "call") == 0)
             {
                 uint32 seat = sPokerMgr->GetSeat(player);
                 if (seat > 0)
