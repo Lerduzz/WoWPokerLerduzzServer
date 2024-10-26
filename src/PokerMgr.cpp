@@ -128,7 +128,7 @@ void PokerMgr::SendMessageToTable(std::string msgStart, std::string msgEnd, uint
             resp << POKER_PREFIX << msgStart;
             if (seat > 0) resp << "_" << GetFakeSeat(it->first, seat);
             resp << msgEnd;
-            if (sendHand) resp << "_" << sPokerHandMgr->GetHandRankDescription(FindHandForPlayer(seat > 0 ? GetFakeSeat(it->first, seat) : it->first));
+            if (sendHand) resp << "_" << sPokerHandMgr->GetHandRankDescription(FindHandForPlayer(seat > 0 ? seat : it->first));
             if (alpha > 0) resp << "_" << alpha;
             it->second->GetPlayer()->Whisper(resp.str(), LANG_ADDON, it->second->GetPlayer());
             LOG_ERROR("poker", "[DEBUG] SendMessageToTable: ({}) \"{}\".", it->second->GetPlayer()->GetName(), resp.str());
