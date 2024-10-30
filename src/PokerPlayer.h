@@ -20,6 +20,8 @@ public:
     bool IsForcedBet();
     bool IsDealt();
 
+    uint32 GetTurnCountdown();
+
     PokerHandRank GetHandRank();
 
     void SetMoney(uint32 money);
@@ -30,6 +32,8 @@ public:
 
     void SetForcedBet(bool forcedBet);
     void SetDealt(bool dealt);
+
+    void SetTurnCountdown(uint32 turnCountdown);
 
     void SetHandRank(PokerHandRank handRank);
 
@@ -47,6 +51,8 @@ private:
 
     bool _forcedBet;
     bool _dealt;
+
+    uint32 _turnCountdown;
 
     PokerHandRank _handRank;
 
