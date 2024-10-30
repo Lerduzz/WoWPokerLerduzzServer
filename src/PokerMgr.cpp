@@ -95,6 +95,34 @@ void PokerMgr::PlayerLeave(Player *player, bool logout)
             }
         }
         SendMessageToTable("q", "", logout ? seat : 0, seat);
+        if (table[seat]->GetBet() > 0 && status > POKER_STATUS_INACTIVE)
+        {
+            SidePot tmpPot;
+            if (sidepots.size() == 0)
+            {
+                tmpPot = SidePot();
+                tmpPot.bet = 0;
+                tmpPot.pot = 0;
+                sidepots.push_back(tmpPot);
+            }
+            bool found = false;
+            for (std::list<SidePot>::iterator it = sidepots.begin(); it != sidepots.end(); ++it)
+                if (it->bet == 0)
+                    found = true;
+            if (!found)
+            {
+                tmpPot = SidePot();
+                tmpPot.bet = 0;
+                tmpPot.pot = 0;
+                sidepots.push_back(tmpPot);
+            }
+            for (std::list<SidePot>::iterator it = sidepots.begin(); it != sidepots.end(); ++it)
+                if (it->bet == 0)
+                {
+                    it->pot += table[seat]->GetBet();
+                    break;
+                }
+        }
         table.erase(seat);
         if (turn == seat)
             GoNextPlayerTurn();
@@ -465,6 +493,16 @@ uint32 PokerMgr::HighestBet()
 uint32 PokerMgr::GetSidePot(uint32 bet)
 {
     uint32 total = 0;
+    if (bet == 0)
+    {
+        for (std::list<SidePot>::iterator it = sidepots.begin(); it != sidepots.end(); ++it)
+            if (it->bet == bet)
+            {
+                total = it->pot;
+                break;
+            }
+        return total;
+    }
     uint32 r;
     for (PokerTable::iterator it = table.begin(); it != table.end(); ++it)
     {
@@ -603,6 +641,8 @@ void PokerMgr::DealHoleCards()
 
     SetupBets();
     PostBlinds();
+
+    SendMessageToTable("hand", "", 0, 0, true);
 }
 
 void PokerMgr::ShowFlopCards()
@@ -615,11 +655,12 @@ void PokerMgr::ShowFlopCards()
     std::ostringstream msg;
     msg << "flop1_" << flop[0] << "_" << flop[1] << "_" << flop[2];        
     SendMessageToTable(msg.str());
-    SendMessageToTable("hand", "", 0, 0, true);
 
     SetupBets();
     turn = button;
     GoNextPlayerTurn();
+
+    SendMessageToTable("hand", "", 0, 0, true);
 }
 
 void PokerMgr::DealTurn()
@@ -630,11 +671,12 @@ void PokerMgr::DealTurn()
     std::ostringstream msg;
     msg << "turn_" << flop[3];        
     SendMessageToTable(msg.str());
-    SendMessageToTable("hand", "", 0, 0, true);
 
     SetupBets();
     turn = button;
     GoNextPlayerTurn();
+
+    SendMessageToTable("hand", "", 0, 0, true);
 }
 
 void PokerMgr::DealRiver()
@@ -645,11 +687,12 @@ void PokerMgr::DealRiver()
     std::ostringstream msg;
     msg << "river_" << flop[4];        
     SendMessageToTable(msg.str());
-    SendMessageToTable("hand", "", 0, 0, true);
 
     SetupBets();
     turn = button;
     GoNextPlayerTurn();
+
+    SendMessageToTable("hand", "", 0, 0, true);
 }
 
 void PokerMgr::ShowDown()
@@ -827,6 +870,8 @@ void PokerMgr::ShowDown()
         for (PokerTable::iterator it = table.begin(); it != table.end(); ++it)
             if (it->second && it->second->GetPlayer() && it->second->IsDealt())
                 ShowCards(it->first);
-        CleanBets();
     }
+    CleanBets();
+
+    SendMessageToTable("hand", "", 0, 0, true);
 }
