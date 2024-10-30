@@ -435,17 +435,17 @@ void PokerMgr::OnWorldUpdate(uint32 diff)
         {
             if (table[turn]->GetTurnCountdown() == 0)
             {
+                table[turn]->AddAFK();
+                if (table[turn]->IsAFK())
+                    PlayerLeave(table[turn]->GetPlayer());
                 if (table[turn]->GetBet() >= HighestBet())
                     PlayerAction(turn, 0);
                 else
                     FoldPlayer(turn);
-                table[turn]->AddAFK();
-                if (table[turn]->IsAFK())
-                    PlayerLeave(table[turn]->GetPlayer());
             }
             else
             {
-                LOG_ERROR("poker", "TODO: Notificar al cliente del tiempo que le queda para jugar {}.", table[turn]->GetTurnCountdown());
+                LOG_ERROR("poker", "TODO: Notificar al cliente {} del tiempo que le queda para jugar {}.", table[turn]->GetPlayer()->GetName(), table[turn]->GetTurnCountdown());
                 table[turn]->SetTurnCountdown(table[turn]->GetTurnCountdown() - 1);
             }
         }
