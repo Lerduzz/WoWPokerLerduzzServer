@@ -215,33 +215,42 @@ void PokerMgr::InformPlayerJoined(uint32 seat, JoinResult jR)
                         msg05 << POKER_PREFIX << "hole_" << table[seat]->GetHole1() << "_" << table[seat]->GetHole2() << "_" << sPokerHandMgr->GetHandRankDescription(FindHandForPlayer(seat));
                         table[seat]->GetPlayer()->Whisper(msg05.str(), LANG_ADDON, table[seat]->GetPlayer());
                     }
+                    std::ostringstream msg06;
+                    msg06 << POKER_PREFIX << "st_" << GetFakeSeat(seat, j) << "_" << table[j]->GetMoney() << "_" << table[j]->GetBet() << "_Playing_1";
+                    table[seat]->GetPlayer()->Whisper(msg06.str(), LANG_ADDON, table[seat]->GetPlayer());
+                }
+                else
+                {
+                    std::ostringstream msg07;
+                    msg07 << POKER_PREFIX << "st_" << GetFakeSeat(seat, j) << "_" << table[j]->GetMoney() << "_" << table[j]->GetBet() << "_Default_0.5";
+                    table[seat]->GetPlayer()->Whisper(msg07.str(), LANG_ADDON, table[seat]->GetPlayer());
                 }
             }
         }
-        std::ostringstream msg06;
-        msg06 << POKER_PREFIX << "flop0";
-        table[seat]->GetPlayer()->Whisper(msg06.str(), LANG_ADDON, table[seat]->GetPlayer());
+        std::ostringstream msg08;
+        msg08 << POKER_PREFIX << "flop0";
+        table[seat]->GetPlayer()->Whisper(msg08.str(), LANG_ADDON, table[seat]->GetPlayer());
         if (status > POKER_STATUS_PRE_FLOP)
         {
-            std::ostringstream msg07;
-            msg07 << POKER_PREFIX << "flop1_" << flop[0] << "_" << flop[1] << "_" << flop[2];        
-            table[seat]->GetPlayer()->Whisper(msg07.str(), LANG_ADDON, table[seat]->GetPlayer());
+            std::ostringstream msg09;
+            msg09 << POKER_PREFIX << "flop1_" << flop[0] << "_" << flop[1] << "_" << flop[2];        
+            table[seat]->GetPlayer()->Whisper(msg09.str(), LANG_ADDON, table[seat]->GetPlayer());
             if (status > POKER_STATUS_FLOP)
             {
-                std::ostringstream msg08;
-                msg08 << POKER_PREFIX << "turn_" << flop[3];        
-                table[seat]->GetPlayer()->Whisper(msg08.str(), LANG_ADDON, table[seat]->GetPlayer());
+                std::ostringstream msg10;
+                msg10 << POKER_PREFIX << "turn_" << flop[3];        
+                table[seat]->GetPlayer()->Whisper(msg10.str(), LANG_ADDON, table[seat]->GetPlayer());
                 if (status > POKER_STATUS_TURN)
                 {
-                    std::ostringstream msg09;
-                    msg09 << POKER_PREFIX << "river_" << flop[4];        
+                    std::ostringstream msg11;
+                    msg11 << POKER_PREFIX << "river_" << flop[4];        
                     table[seat]->GetPlayer()->Whisper(msg09.str(), LANG_ADDON, table[seat]->GetPlayer());
                 }
             }
         }
-        std::ostringstream msg10;
-        msg10 << POKER_PREFIX << "go_" << GetFakeSeat(seat, turn) << "_" << HighestBet();
-        table[seat]->GetPlayer()->Whisper(msg10.str(), LANG_ADDON, table[seat]->GetPlayer());
+        std::ostringstream msg12;
+        msg12 << POKER_PREFIX << "go_" << GetFakeSeat(seat, turn) << "_" << HighestBet();
+        table[seat]->GetPlayer()->Whisper(msg12.str(), LANG_ADDON, table[seat]->GetPlayer());
     }
 }
 
