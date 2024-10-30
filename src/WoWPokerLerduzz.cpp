@@ -59,16 +59,13 @@ public:
             {
                 tab = strtok(nullptr, "_");
                 uint32 gold = (uint32) atoi(tab);
-                uint32 seat = sPokerMgr->GetSeat(player);
                 JoinResult jR = sPokerMgr->PlayerJoin(player, gold);
-                if (seat > 0 || jR == POKER_JOIN_OK)
+                if (jR == POKER_JOIN_OK || jR == POKER_JOIN_SEATED)
                 {
-                    if (seat == 0)
-                        seat = sPokerMgr->GetSeat(player);
+                    uint32 seat = sPokerMgr->GetSeat(player);
                     resp << "seat";
                     player->Whisper(resp.str(), LANG_ADDON, player);
-                    sPokerMgr->InformPlayerJoined(seat);
-                    sPokerMgr->BroadcastToTableJoined(seat);
+                    sPokerMgr->InformPlayerJoined(seat, jR);
                     NullMsg(msg);
                 }
                 else

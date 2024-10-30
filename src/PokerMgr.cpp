@@ -32,7 +32,7 @@ JoinResult PokerMgr::PlayerJoin(Player *player, uint32 gold)
     if (!player)
         return POKER_JOIN_ERROR_NO_PLAYER;
     if (GetSeat(player) > 0)
-        return POKER_JOIN_ERROR_SEATED;
+        return POKER_JOIN_SEATED;
     if (player->GetMoney() < gold * GOLD)
         return POKER_JOIN_ERROR_NO_ENOUGH_MONEY;
     if (gold < POKER_MIN_GOLD || gold > POKER_MAX_GOLD)
@@ -165,7 +165,7 @@ void PokerMgr::SendMessageToTable(std::string msgStart, std::string msgEnd, uint
     }
 }
 
-void PokerMgr::InformPlayerJoined(uint32 seat)
+void PokerMgr::InformPlayerJoined(uint32 seat, JoinResult jR)
 {
     for (PokerTable::iterator it = table.begin(); it != table.end(); ++it)
     {
@@ -177,15 +177,13 @@ void PokerMgr::InformPlayerJoined(uint32 seat)
             table[seat]->GetPlayer()->Whisper(resp.str(), LANG_ADDON, table[seat]->GetPlayer());
         }
     }
-}
-
-void PokerMgr::BroadcastToTableJoined(uint32 seat)
-{
-    // TODO: Eliminar esta funcion y unificar la logica de cuando un jugador se une a la mesa.
-    std::ostringstream resp;
-    resp << "_" << table[seat]->GetPlayer()->GetName() << "_" << table[seat]->GetMoney();
-    resp << "_" << table[seat]->GetBet() << "_" << (table[seat]->GetPlayer()->GetFaction() == 1 ? "A" : "H");
-    SendMessageToTable("s", resp.str(), seat, seat);
+    if (jR == POKER_JOIN_OK)
+    {
+        std::ostringstream resp;
+        resp << "_" << table[seat]->GetPlayer()->GetName() << "_" << table[seat]->GetMoney();
+        resp << "_" << table[seat]->GetBet() << "_" << (table[seat]->GetPlayer()->GetFaction() == 1 ? "A" : "H");
+        SendMessageToTable("s", resp.str(), seat, seat);
+    }
 }
 
 void PokerMgr::NextLevel()

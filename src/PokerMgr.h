@@ -23,7 +23,7 @@ enum JoinResult
     POKER_JOIN_ERROR_MONEY_OUT_OF_RANGE,
     POKER_JOIN_ERROR_MONEY_TABLE_FULL,
     POKER_JOIN_ERROR_NO_ENOUGH_MONEY,
-    POKER_JOIN_ERROR_SEATED,
+    POKER_JOIN_SEATED,
     POKER_JOIN_ERROR_NO_SEATS
 };
 
@@ -85,14 +85,9 @@ public:
     void SendMessageToTable(std::string msgStart, std::string msgEnd = "", uint32 exclude = 0, uint32 seat = 0, bool sendHand = false, float alpha = 0);
 
     /**
-     * Informa al jugador sobre el estado de todos los jugadores de la mesa.
+     * Maneja la llegada de un nuevo jugador a la mesa.
      */
-    void InformPlayerJoined(uint32 seat);
-
-    /**
-     * Informa a la mesa sobre la llegada de un nuevo jugador.
-     */
-    void BroadcastToTableJoined(uint32 seat);
+    void InformPlayerJoined(uint32 seat, JoinResult jR);
 
     /**
      * Logica principal del juego.
