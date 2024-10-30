@@ -812,9 +812,9 @@ void PokerMgr::ShowDown()
         if (winners.size() > 0)
         {
             if (winners.size() == 1)
-				text << table[winners.front()]->GetPlayer()->GetName() << " ha ganado (" << sPokerHandMgr->GetHandRankDescription(table[winners.front()]->GetHandRank()) << ").";
+				text << "wins";
 			else
-				text << " Dividir (" << sPokerHandMgr->GetHandRankDescription(table[winners.front()]->GetHandRank()) << "). ";
+				text << "split";
 
             for (std::list<SidePot>::iterator it = sidepots.begin(); it != sidepots.end(); ++it)
             {
@@ -863,7 +863,7 @@ void PokerMgr::ShowDown()
         }
         else
         {
-            text << "No hubo ganadores.";
+            text << "No winners";
             for (PokerTable::iterator it = table.begin(); it != table.end(); ++it)
                 if (it->second && it->second->GetPlayer() && it->second->GetBet() > 0)
                 {
