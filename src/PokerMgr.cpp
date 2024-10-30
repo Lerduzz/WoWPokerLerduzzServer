@@ -726,7 +726,11 @@ void PokerMgr::ShowDown()
     for (std::list<SidePot>::iterator it = sidepots.begin(); it != sidepots.end(); ++it)
     {
         if (it == sidepots.begin())
+        {
+            if (it->bet == 0) it++;
+            if (it == sidepots.end()) break;
             tmpTotal = it->pot;
+        }
         else
         {
             tmpPrev = it->pot;
