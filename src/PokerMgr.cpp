@@ -711,6 +711,9 @@ void PokerMgr::DealHoleCards()
                 table[j]->SetDealt(false);
                 table[j]->SetHole1(0);
                 table[j]->SetHole2(0);
+                table[j]->AddAFK();
+                if (table[j]->IsAFK())
+                    PlayerLeave(table[j]->GetPlayer(), false);
             }
         }
     }
