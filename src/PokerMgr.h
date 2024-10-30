@@ -115,6 +115,11 @@ public:
     void FoldPlayer(uint32 seat);
 
     /**
+     * Hace que un jugador muestre sus cartas.
+     */
+    void ShowCards(uint32 seat);
+
+    /**
      * Gestionar actualizacion del mundo.
      */
     void OnWorldUpdate(uint32 diff);
@@ -216,11 +221,6 @@ private:
      * @return Rango y cartas de la mano.
      */
     PokerHandRank FindHandForPlayer(uint32 seat);
-
-    /**
-     * Hace que un jugador muestre sus cartas.
-     */
-    void ShowCards(uint32 seat);
 
     /**
      * Nivel 1: POKER_STATUS_PRE_FLOP.

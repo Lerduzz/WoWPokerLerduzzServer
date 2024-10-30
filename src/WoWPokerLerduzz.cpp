@@ -28,6 +28,13 @@ public:
             sPokerMgr->PlayerLeave(player);
             NullMsg(msg);
         }
+        else if (strcmp(message.c_str(), "showcards") == 0)
+        {
+            uint32 seat = sPokerMgr->GetSeat(player);
+            if (seat > 0)
+                sPokerMgr->ShowCards(seat);
+            NullMsg(msg);
+        }
         else
         {
             std::string tok = message;

@@ -328,6 +328,19 @@ void PokerMgr::FoldPlayer(uint32 seat)
     }
 }
 
+void PokerMgr::ShowCards(uint32 seat)
+{
+    if (status != POKER_STATUS_SHOW && status != POKER_STATUS_INACTIVE)
+        return;
+    if (table.find(seat) == table.end())
+        return;
+	if (table[seat]->GetHole1() == 0 || table[seat]->GetHole2() == 0) 
+        return;
+    std::ostringstream resp;
+    resp << "show_" << table[seat]->GetHole1() << "_" << table[seat]->GetHole2();
+    SendMessageToTable(resp.str(), "", seat, seat, true);
+}
+
 void PokerMgr::OnWorldUpdate(uint32 diff)
 {
     if (delay >= diff)
@@ -573,17 +586,6 @@ PokerHandRank PokerMgr::FindHandForPlayer(uint32 seat)
         hand = sPokerHandMgr->BestRank(inCards);
     }
     return hand;
-}
-
-void PokerMgr::ShowCards(uint32 seat)
-{
-    if (table.find(seat) == table.end())
-        return;
-	if (table[seat]->GetHole1() == 0 || table[seat]->GetHole2() == 0) 
-        return;
-    std::ostringstream resp;
-    resp << "show_" << table[seat]->GetHole1() << "_" << table[seat]->GetHole2();
-    SendMessageToTable(resp.str(), "", seat, seat, true);
 }
 
 void PokerMgr::DealHoleCards()
