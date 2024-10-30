@@ -960,6 +960,4 @@ void PokerMgr::ShowDown()
                 ShowCards(it->first);
     }
     CleanTable();
-
-    SendMessageToTable("hand", "", 0, 0, true);
 }
