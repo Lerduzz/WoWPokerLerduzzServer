@@ -489,12 +489,18 @@ uint32 PokerMgr::WhosBetAfter(uint32 start)
     return 0;
 }
 
-void PokerMgr::CleanBets()
+void PokerMgr::CleanTable()
 {
     for (PokerTable::iterator it = table.begin(); it != table.end(); ++it)
     {
-        if (it->second && it->second->GetPlayer() && it->second->GetBet() > 0)
+        if (it->second && it->second->GetPlayer())
+        {
             it->second->SetBet(0);
+            it->second->SetDealt(false);
+            it->second->SetForcedBet(false);
+            it->second->SetHole1(0);
+            it->second->SetHole2(0);
+        }
     }
 }
 
@@ -705,6 +711,12 @@ void PokerMgr::DealHoleCards()
                 msg3 << POKER_PREFIX << "hole_" << table[j]->GetHole1() << "_" << table[j]->GetHole2() << "_" << sPokerHandMgr->GetHandRankDescription(FindHandForPlayer(j));
                 table[j]->GetPlayer()->Whisper(msg3.str(), LANG_ADDON, table[j]->GetPlayer());
                 SendMessageToTable("deal", "", j, j);
+            }
+            else
+            {
+                table[j]->SetDealt(false);
+                table[j]->SetHole1(0);
+                table[j]->SetHole2(0);
             }
         }
     }
@@ -950,7 +962,7 @@ void PokerMgr::ShowDown()
             if (it->second && it->second->GetPlayer() && it->second->IsDealt())
                 ShowCards(it->first);
     }
-    CleanBets();
+    CleanTable();
 
     SendMessageToTable("hand", "", 0, 0, true);
 }

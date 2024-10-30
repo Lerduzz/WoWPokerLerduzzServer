@@ -151,7 +151,7 @@ private:
     /**
      * Limpia todas las apuestas, no devuelve el oro ni anuncia a los clientes.
      */
-    void CleanBets();
+    void CleanTable();
 
     /**
      * Marca para que todos los jugadores tengan turno.
