@@ -365,6 +365,7 @@ void PokerMgr::PlayerAction(uint32 seat, uint32 delta)
     }
 
     table[seat]->SetForcedBet(false);
+    table[seat]->SetTurnCountdown(0);
     GoNextPlayerTurn();
 }
 
