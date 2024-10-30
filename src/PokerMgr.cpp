@@ -720,6 +720,8 @@ void PokerMgr::ShowDown()
         tmpPot.pot = totalPot;
         sidepots.push_back(tmpPot);
     }
+    for (std::list<SidePot>::iterator it = sidepots.begin(); it != sidepots.end(); ++it)
+        it->pot = GetSidePot(it->bet);
     sidepots.sort([](SidePot a, SidePot b){ return a.bet < b.bet; });
     uint32 tmpTotal;
     uint32 tmpPrev;
@@ -767,19 +769,20 @@ void PokerMgr::ShowDown()
                 for (PokerTable::iterator itt = table.begin(); itt != table.end(); ++itt)
                     if (itt->second && itt->second->GetPlayer() && itt->second->GetBet() >= it->bet)
                         winnerCount++;
-                for (PokerTable::iterator itt = table.begin(); itt != table.end(); ++itt)
-                {
-                    pot = it->pot / winnerCount;
-                    if (itt->second && itt->second->GetPlayer() && itt->second->GetBet() >= it->bet)
+                if (winnerCount > 0)
+                    for (PokerTable::iterator itt = table.begin(); itt != table.end(); ++itt)
                     {
-                        itt->second->SetMoney(itt->second->GetMoney() + pot);
-                        itt->second->SetDealt(false);
-                        std::ostringstream respSt;
-                        respSt << "_" << itt->second->GetMoney() << "_" << itt->second->GetBet() << "_Returned";
-                        SendMessageToTable("st", respSt.str(), 0, itt->first, false, 0.5f);
-                        ShowCards(itt->first);
+                        pot = it->pot / winnerCount;
+                        if (itt->second && itt->second->GetPlayer() && itt->second->GetBet() >= it->bet)
+                        {
+                            itt->second->SetMoney(itt->second->GetMoney() + pot);
+                            itt->second->SetDealt(false);
+                            std::ostringstream respSt;
+                            respSt << "_" << itt->second->GetMoney() << "_" << itt->second->GetBet() << "_Returned";
+                            SendMessageToTable("st", respSt.str(), 0, itt->first, false, 0.5f);
+                            ShowCards(itt->first);
+                        }
                     }
-                }
             }
         }
         std::ostringstream respSt;
@@ -841,19 +844,20 @@ void PokerMgr::ShowDown()
                     for (PokerTable::iterator itt = table.begin(); itt != table.end(); ++itt)
                         if (itt->second && itt->second->GetPlayer() && itt->second->GetBet() >= it->bet)
                             winnerCount++;
-                    for (PokerTable::iterator itt = table.begin(); itt != table.end(); ++itt)
-                    {
-                        pot = it->pot / winnerCount;
-                        if (itt->second && itt->second->GetPlayer() && itt->second->GetBet() >= it->bet)
+                    if (winnerCount > 0)
+                        for (PokerTable::iterator itt = table.begin(); itt != table.end(); ++itt)
                         {
-                            itt->second->SetMoney(itt->second->GetMoney() + pot);
-                            itt->second->SetDealt(false);
-                            std::ostringstream respSt;
-                            respSt << "_" << itt->second->GetMoney() << "_" << itt->second->GetBet() << "_Returned";
-                            SendMessageToTable("st", respSt.str(), 0, itt->first, false, 0.5f);
-                            ShowCards(itt->first);
+                            pot = it->pot / winnerCount;
+                            if (itt->second && itt->second->GetPlayer() && itt->second->GetBet() >= it->bet)
+                            {
+                                itt->second->SetMoney(itt->second->GetMoney() + pot);
+                                itt->second->SetDealt(false);
+                                std::ostringstream respSt;
+                                respSt << "_" << itt->second->GetMoney() << "_" << itt->second->GetBet() << "_Returned";
+                                SendMessageToTable("st", respSt.str(), 0, itt->first, false, 0.5f);
+                                ShowCards(itt->first);
+                            }
                         }
-                    }
                 }
             }
         }
