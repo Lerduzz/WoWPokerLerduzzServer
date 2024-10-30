@@ -17,14 +17,8 @@ PokerMgr::PokerMgr()
 PokerMgr::~PokerMgr()
 {
     table.clear();
-    status = POKER_STATUS_INACTIVE;
+    sidepots.clear();
     deck.clear();
-    round = 0;
-    button = 1;
-    turn = 0;
-    flop = {0, 0, 0, 0, 0};
-    delay = 1000;
-    nextRoundCountdown = 0;
 }
 
 JoinResult PokerMgr::PlayerJoin(Player *player, uint32 gold)

@@ -11,6 +11,8 @@ PokerPlayer::PokerPlayer(Player *player)
 
     _forcedBet = false;
     _dealt = false;
+
+    _afkCount = 0;
 }
 
 Player *PokerPlayer::GetPlayer()

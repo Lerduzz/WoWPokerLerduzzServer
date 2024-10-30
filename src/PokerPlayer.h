@@ -33,6 +33,10 @@ public:
 
     void SetHandRank(PokerHandRank handRank);
 
+    inline void ResetAFK() { _afkCount = 0; };
+    inline void AddAFK() { _afkCount += _afkCount < 3 ? 1 : 0; };
+    inline bool IsAFK() { return _afkCount >= 3; };
+
 private:
     Player *_player;
     uint32 _money;
@@ -45,6 +49,8 @@ private:
     bool _dealt;
 
     PokerHandRank _handRank;
+
+    uint32 _afkCount;
 
 };
 
