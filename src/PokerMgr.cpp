@@ -662,7 +662,7 @@ void PokerMgr::GoNextPlayerTurn()
     std::ostringstream hB;
     hB << "_" << HighestBet();
     SendMessageToTable("go", hB.str(), 0, turn);
-    table[turn]->SetTurnCountdown(30);
+    table[turn]->SetTurnCountdown(15);
 }
 
 PokerHandRank PokerMgr::FindHandForPlayer(uint32 seat)
