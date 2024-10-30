@@ -11,6 +11,9 @@ PokerPlayer::PokerPlayer(Player *player)
 
     _forcedBet = false;
     _dealt = false;
+
+    _afkCount = 0;
+    _turnCountdown = 0;
 }
 
 Player *PokerPlayer::GetPlayer()
@@ -48,6 +51,11 @@ bool PokerPlayer::IsDealt()
     return _dealt;
 }
 
+uint32 PokerPlayer::GetTurnCountdown()
+{
+    return _turnCountdown;
+}
+
 PokerHandRank PokerPlayer::GetHandRank()
 {
     return _handRank;
@@ -81,6 +89,11 @@ void PokerPlayer::SetForcedBet(bool forcedBet)
 void PokerPlayer::SetDealt(bool dealt)
 {
     _dealt = dealt;
+}
+
+void PokerPlayer::SetTurnCountdown(uint32 turnCountdown)
+{
+    _turnCountdown = turnCountdown;
 }
 
 void PokerPlayer::SetHandRank(PokerHandRank handRank)

@@ -109,7 +109,6 @@ public:
                     PokerPlayer *pp = sPokerMgr->GetSeatInfo(seat);
                     if (pp && pp->IsDealt())
                     {
-                        tab = strtok(nullptr, "_"); // TODO: No enviar el numero de asiento ya que siempre llega 5.
                         tab = strtok(nullptr, "_");
                         uint32 delta = (uint32) atoi(tab);
                         sPokerMgr->PlayerAction(seat, delta);
