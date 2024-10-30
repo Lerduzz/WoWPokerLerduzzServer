@@ -11,6 +11,7 @@ PokerMgr::PokerMgr()
     turn = 0;
     flop = {0, 0, 0, 0, 0};
     delay = 1000;
+    nextRoundCountdown = 0;
 }
 
 PokerMgr::~PokerMgr()
@@ -23,6 +24,7 @@ PokerMgr::~PokerMgr()
     turn = 0;
     flop = {0, 0, 0, 0, 0};
     delay = 1000;
+    nextRoundCountdown = 0;
 }
 
 JoinResult PokerMgr::PlayerJoin(Player *player, uint32 gold)
@@ -330,7 +332,7 @@ void PokerMgr::FoldPlayer(uint32 seat)
 
 void PokerMgr::ShowCards(uint32 seat)
 {
-    if (status != POKER_STATUS_SHOW && status != POKER_STATUS_INACTIVE)
+    if (status != POKER_STATUS_SHOW)
         return;
     if (table.find(seat) == table.end())
         return;
@@ -348,16 +350,20 @@ void PokerMgr::OnWorldUpdate(uint32 diff)
         delay -= diff;
         return;
     }
-    if (status == POKER_STATUS_SHOW)
+    if (status == POKER_STATUS_SHOW && nextRoundCountdown == 0)
+        nextRoundCountdown = 10;
+    if (nextRoundCountdown > 0)
     {
-        status = POKER_STATUS_INACTIVE;
-        delay = 10000;
-        return;
+        nextRoundCountdown--;
+        if (nextRoundCountdown == 0)
+        {
+            status = POKER_STATUS_INACTIVE;
+            SendMessageToTable("round0_0");
+        }
     }
     if (status == POKER_STATUS_INACTIVE)
         if (GetPlayablePlayers() > 1)
             sPokerMgr->NextLevel();
-        // TODO: else {Mandar a limpiar la mesa y poner al jugador que esta sentado en espera}.
     delay = 1000;
 }
 

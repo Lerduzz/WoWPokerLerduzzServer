@@ -260,6 +260,7 @@ private:
     uint32 turn;
 
     uint32 delay;
+    uint32 nextRoundCountdown;
 
 };
 
