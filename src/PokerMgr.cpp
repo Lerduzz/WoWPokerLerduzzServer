@@ -445,7 +445,7 @@ void PokerMgr::OnWorldUpdate(uint32 diff)
             }
             else
             {
-                LOG_ERROR("poker", "TODO: Notificar al cliente {} del tiempo que le queda para jugar {}.", table[turn]->GetPlayer()->GetName(), table[turn]->GetTurnCountdown());
+                SendMessageToTable("countdown_", std::to_string(table[turn]->GetTurnCountdown()));
                 table[turn]->SetTurnCountdown(table[turn]->GetTurnCountdown() - 1);
             }
         }
