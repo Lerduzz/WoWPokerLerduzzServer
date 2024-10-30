@@ -18,7 +18,22 @@ public:
         std::string message = msg.substr(prefix_length, msg_length - prefix_length);
         std::ostringstream resp;
         resp << POKER_PREFIX;
-        if (strcmp(message.c_str(), "!seat") == 0)
+        if (strcmp(message.c_str(), "!init") == 0)
+        {
+            uint32 seat = sPokerMgr->GetSeat(player);
+            if (seat > 0)
+                resp << "ping!";
+            else
+            {
+                uint32 gold = player->GetMoney() / GOLD;
+                if (gold >= 500)
+                    resp << "init!_" << (gold <= 200000 ? gold : 200000);
+                else
+                    resp << "nogold!";
+            }
+            msg = resp.str();
+        }
+        else if (strcmp(message.c_str(), "!seat") == 0)
         {
             resp << "ping!";
             msg = resp.str();
@@ -45,11 +60,12 @@ public:
                 tab = strtok(nullptr, "_");
                 uint32 gold = (uint32) atoi(tab);
                 uint32 seat = sPokerMgr->GetSeat(player);
-                if (seat > 0 || sPokerMgr->PlayerJoin(player, gold) == POKER_JOIN_OK)
+                JoinResult jR = sPokerMgr->PlayerJoin(player, gold);
+                if (seat > 0 || jR == POKER_JOIN_OK)
                 {
                     if (seat == 0)
                         seat = sPokerMgr->GetSeat(player);
-                    resp << "seat_5";
+                    resp << "seat";
                     player->Whisper(resp.str(), LANG_ADDON, player);
                     sPokerMgr->InformPlayerJoined(seat);
                     sPokerMgr->BroadcastToTableJoined(seat);
@@ -57,8 +73,34 @@ public:
                 }
                 else
                 {
-                    // TODO: Informar el problema real de no union.
-                    resp << "noseats!";
+                    switch (jR)
+                    {
+                        case POKER_JOIN_ERROR_NO_PLAYER:
+                        {
+                            resp << "noplayer!";
+                            break;
+                        }
+                        case POKER_JOIN_ERROR_NO_ENOUGH_MONEY:
+                        {
+                            resp << "nogold!";
+                            break;
+                        }
+                        case POKER_JOIN_ERROR_MONEY_OUT_OF_RANGE:
+                        {
+                            resp << "goldrange!";
+                            break;
+                        }
+                        case POKER_JOIN_ERROR_MONEY_TABLE_FULL:
+                        {
+                            resp << "tablegold!";
+                            break;
+                        }
+                        default:
+                        {
+                            resp << "noseats!";
+                            break;
+                        }
+                    }
                     msg = resp.str();
                 }
             }
