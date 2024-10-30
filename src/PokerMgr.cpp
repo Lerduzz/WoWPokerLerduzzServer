@@ -122,6 +122,9 @@ void PokerMgr::PlayerLeave(Player *player, bool logout)
         table.erase(seat);
         if (turn == seat)
             GoNextPlayerTurn();
+        else
+            if (GetPlayingPlayers() == 1)
+                GoNextPlayerTurn();
     }
 }
 
@@ -319,6 +322,8 @@ void PokerMgr::PlayerAction(uint32 seat, uint32 delta)
     if (seat != turn)
         return;
 
+    if (table[seat]->GetTurnCountdown() > 0) table[seat]->ResetAFK();
+
     uint32 maxBet = HighestBet();
 
     if (table[seat]->GetBet() + delta < maxBet)
@@ -374,6 +379,8 @@ void PokerMgr::FoldPlayer(uint32 seat)
     if (seat != turn)
         return;
 
+    if (table[seat]->GetTurnCountdown() > 0) table[seat]->ResetAFK();
+
     PokerPlayer *pp = sPokerMgr->GetSeatInfo(seat);
     if (pp && pp->IsDealt())
     {
@@ -383,11 +390,8 @@ void PokerMgr::FoldPlayer(uint32 seat)
         pp->SetDealt(false);
         pp->SetForcedBet(false);
 
-        if (turn == seat)
+        if (GetPlayingPlayers() == 1)
             GoNextPlayerTurn();
-        else
-            if (GetPlayingPlayers() == 1)
-                GoNextPlayerTurn();
     }
 }
 
@@ -425,6 +429,27 @@ void PokerMgr::OnWorldUpdate(uint32 diff)
     if (status == POKER_STATUS_INACTIVE)
         if (GetPlayablePlayers() > 1)
             sPokerMgr->NextLevel();
+    if (status > POKER_STATUS_INACTIVE && status < POKER_STATUS_SHOW)
+    {
+        if (table.find(turn) != table.end())
+        {
+            if (table[turn]->GetTurnCountdown() == 0)
+            {
+                if (table[turn]->GetBet() >= HighestBet())
+                    PlayerAction(turn, 0);
+                else
+                    FoldPlayer(turn);
+                table[turn]->AddAFK();
+                if (table[turn]->IsAFK())
+                    PlayerLeave(table[turn]->GetPlayer());
+            }
+            else
+            {
+                LOG_ERROR("poker", "TODO: Notificar al cliente del tiempo que le queda para jugar {}.", table[turn]->GetTurnCountdown());
+                table[turn]->SetTurnCountdown(table[turn]->GetTurnCountdown() - 1);
+            }
+        }
+    }
     delay = 1000;
 }
 
@@ -715,7 +740,7 @@ void PokerMgr::DealHoleCards()
                 table[j]->SetHole2(0);
                 table[j]->AddAFK();
                 if (table[j]->IsAFK())
-                    PlayerLeave(table[j]->GetPlayer(), false);
+                    PlayerLeave(table[j]->GetPlayer());
             }
         }
     }
