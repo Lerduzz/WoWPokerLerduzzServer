@@ -244,7 +244,7 @@ void PokerMgr::InformPlayerJoined(uint32 seat, JoinResult jR)
                 {
                     std::ostringstream msg11;
                     msg11 << POKER_PREFIX << "river_" << flop[4];        
-                    table[seat]->GetPlayer()->Whisper(msg09.str(), LANG_ADDON, table[seat]->GetPlayer());
+                    table[seat]->GetPlayer()->Whisper(msg11.str(), LANG_ADDON, table[seat]->GetPlayer());
                 }
             }
         }
