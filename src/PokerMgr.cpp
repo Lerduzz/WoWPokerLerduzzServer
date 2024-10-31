@@ -12,6 +12,14 @@ PokerMgr::PokerMgr()
     flop = {0, 0, 0, 0, 0};
     delay = 1000;
     nextRoundCountdown = 0;
+
+    confBetSize = 20;
+    confMinGold = 500;
+    confMaxGoldJoin = 200000;
+    confMaxGoldTable = 2000000;
+    confMaxGoldReward = 200000;
+    confCountdownTurn = 15;
+    confCountdownRound = 10;
 }
 
 PokerMgr::~PokerMgr()
