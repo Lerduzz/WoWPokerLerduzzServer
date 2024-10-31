@@ -4,6 +4,7 @@ PokerHandRank PokerHandMgr::BestRank(std::list<uint32> cards)
 {
     std::list<PokerCard> cardList;
     for (uint32 card : cards) {
+        if (card == 0) continue;
         PokerCard tmp = PokerCard();
         tmp.suit = GetCardSuit(card);
         tmp.rank = GetCardRank(card);

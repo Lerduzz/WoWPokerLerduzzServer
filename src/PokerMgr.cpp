@@ -423,6 +423,7 @@ void PokerMgr::OnWorldUpdate(uint32 diff)
         if (nextRoundCountdown == 0)
         {
             status = POKER_STATUS_INACTIVE;
+            CleanTable();
             SendMessageToTable("round0_0");
         }
     }
@@ -511,6 +512,9 @@ uint32 PokerMgr::WhosBetAfter(uint32 start)
 
 void PokerMgr::CleanTable()
 {
+    deck.clear();
+    sidepots.clear();
+    flop = {0, 0, 0, 0, 0};
     for (PokerTable::iterator it = table.begin(); it != table.end(); ++it)
     {
         if (it->second && it->second->GetPlayer())
@@ -689,10 +693,10 @@ PokerHandRank PokerMgr::FindHandForPlayer(uint32 seat)
 
 void PokerMgr::DealHoleCards()
 {
+    CleanTable();
     button = WhosButtonAfter(button);
     SendMessageToTable("b", "", 0, button);
 
-    deck.clear();
     std::array<uint32, 52> deck_arr;
     for (uint32 i = 1; i <= 52; i++)
         deck_arr[i - 1] = i;
@@ -704,8 +708,6 @@ void PokerMgr::DealHoleCards()
     std::ostringstream msg1;
     msg1 << "betsize_" << POKER_BET_SIZE;
     SendMessageToTable(msg1.str());
-
-    sidepots.clear();
 
     round++;
     std::ostringstream msg2;
@@ -725,7 +727,6 @@ void PokerMgr::DealHoleCards()
                 deck.pop_front();
                 table[j]->SetHole2(deck.front());
                 deck.pop_front();
-
                 table[j]->SetDealt(true);
 
                 std::ostringstream msg3;
@@ -735,9 +736,6 @@ void PokerMgr::DealHoleCards()
             }
             else
             {
-                table[j]->SetDealt(false);
-                table[j]->SetHole1(0);
-                table[j]->SetHole2(0);
                 table[j]->AddAFK();
                 if (table[j]->IsAFK())
                     PlayerLeave(table[j]->GetPlayer());
@@ -986,5 +984,4 @@ void PokerMgr::ShowDown()
             if (it->second && it->second->GetPlayer() && it->second->IsDealt())
                 ShowCards(it->first);
     }
-    CleanTable();
 }
