@@ -1,0 +1,10 @@
+[worldserver]
+
+WPL.BetSize = 20
+WPL.MinGold = 500
+WPL.MaxGold.Join = 200000
+WPL.MaxGold.Table = 2000000
+WPL.MaxGold.Reward = 200000
+
+WPL.Countdown.Turn = 15
+WPL.Countdown.Round = 10
