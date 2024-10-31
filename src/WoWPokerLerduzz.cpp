@@ -26,8 +26,10 @@ public:
             else
             {
                 uint32 gold = player->GetMoney() / GOLD;
-                if (gold >= 500)
-                    resp << "init!_" << (gold <= 200000 ? gold : 200000);
+                uint32 minGold = sPokerMgr->GetConfMinGold();
+                uint32 maxGold = sPokerMgr->GetConfMaxGold();
+                if (gold >= minGold)
+                    resp << "init!_" << minGold << "_" << (gold <= maxGold ? gold : maxGold);
                 else
                     resp << "nogold!";
             }

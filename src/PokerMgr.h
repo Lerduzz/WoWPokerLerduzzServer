@@ -125,6 +125,16 @@ public:
      */
     void LoadConfig(bool reload);
 
+    /**
+     * Obtener configuracion de oro minimo.
+     */
+    uint32 GetConfMinGold();
+
+    /**
+     * Obtener configuracion de oro maximo.
+     */
+    uint32 GetConfMaxGold();
+
 private:
     /**
      * Obtiene un asiento disponible en la mesa.

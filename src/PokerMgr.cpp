@@ -509,6 +509,16 @@ void PokerMgr::LoadConfig(bool reload)
         table[turn]->SetTurnCountdown(confCountdownTurn);
 }
 
+uint32 PokerMgr::GetConfMinGold()
+{
+    return confMinGold;
+}
+
+uint32 PokerMgr::GetConfMaxGold()
+{
+    return confMaxGoldJoin;
+}
+
 uint32 PokerMgr::GetSeatAvailable()
 {
     if (table.size() == POKER_MAX_SEATS)
