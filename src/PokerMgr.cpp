@@ -1017,4 +1017,10 @@ void PokerMgr::ShowDown()
             if (it->second && it->second->GetPlayer() && it->second->IsDealt())
                 ShowCards(it->first);
     }
+    for (PokerTable::iterator it = table.begin(); it != table.end(); ++it)
+        if (it->second && it->second->GetPlayer())
+            if (it->second->GetMoney() > 0)
+                CharacterDatabase.Execute("REPLACE INTO `wpl_gold_backup` (`guid`, `gold`) VALUES ({}, {})", it->second->GetPlayer()->GetGUID().GetCounter(), it->second->GetMoney());
+            else
+                CharacterDatabase.Execute("DELETE FROM `wpl_gold_backup` WHERE `guid` = {}", it->second->GetPlayer()->GetGUID().GetCounter());
 }
