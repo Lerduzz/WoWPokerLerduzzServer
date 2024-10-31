@@ -2,6 +2,7 @@
 #define SC_POKER_MGR_H
 
 #include "PokerPlayer.h"
+#include "Config.h"
 #include <random>
 
 typedef std::map<uint32, PokerPlayer *> PokerTable;
@@ -123,6 +124,11 @@ public:
      * Verifica el oro pendiente para entregarlo por correo.
      */
     void SendPendingMoney(Player *player);
+
+    /**
+     * Carga la configuracion del poker.
+     */
+    void LoadConfig(bool reload);
 
 private:
     /**
@@ -261,6 +267,14 @@ private:
 
     uint32 delay;
     uint32 nextRoundCountdown;
+
+    uint32 confBetSize;
+    uint32 confMinGold;
+    uint32 confMaxGoldJoin;
+    uint32 confMaxGoldTable;
+    uint32 confMaxGoldReward;
+    uint32 confCountdownTurn;
+    uint32 confCountdownRound;
 
 };
 

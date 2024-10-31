@@ -149,6 +149,11 @@ class WPL_World : public WorldScript
 public:
     WPL_World() : WorldScript("WPL_World") { }
 
+    void OnAfterConfigLoad(bool reload) override
+    {
+        sPokerMgr->LoadConfig(reload);
+    }
+
     void OnUpdate(uint32 diff) override
     {
         sPokerMgr->OnWorldUpdate(diff);

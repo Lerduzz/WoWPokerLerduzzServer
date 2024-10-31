@@ -487,6 +487,20 @@ void PokerMgr::SendPendingMoney(Player * player)
     }
 }
 
+void PokerMgr::LoadConfig(bool reload)
+{
+    confBetSize = sConfigMgr->GetOption<uint32>("WPL.BetSize", 20);
+    confMinGold = sConfigMgr->GetOption<uint32>("WPL.MinGold", 500);
+    confMaxGoldJoin = sConfigMgr->GetOption<uint32>("WPL.MaxGold.Join", 200000);
+    confMaxGoldTable = sConfigMgr->GetOption<uint32>("WPL.MaxGold.Table", 2000000);
+    confMaxGoldReward = sConfigMgr->GetOption<uint32>("WPL.MaxGold.Reward", 200000);
+    confCountdownTurn = sConfigMgr->GetOption<uint32>("WPL.Countdown.Turn", 15);
+    confCountdownRound = sConfigMgr->GetOption<uint32>("WPL.Countdown.Round", 10);
+
+    if (reload && status > POKER_STATUS_INACTIVE && status < POKER_STATUS_SHOW && table.find(turn) != table.end() && table[turn]->GetTurnCountdown() > confCountdownTurn)
+        table[turn]->SetTurnCountdown(confCountdownTurn);
+}
+
 uint32 PokerMgr::GetSeatAvailable()
 {
     if (table.size() == POKER_MAX_SEATS)
