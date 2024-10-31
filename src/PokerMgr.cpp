@@ -454,6 +454,37 @@ void PokerMgr::OnWorldUpdate(uint32 diff)
     delay = 1000;
 }
 
+void PokerMgr::SendPendingMoney(Player * player)
+{
+    QueryResult result = CharacterDatabase.Query("SELECT `gold` FROM `wpl_gold_backup` WHERE `guid` = {}", player->GetGUID().GetCounter());
+    if (result)
+    {
+        uint32 gold = (*result)[0].Get<uint32>();
+        CharacterDatabaseTransaction trans = CharacterDatabase.BeginTransaction();
+        MailSender sender(MAIL_NORMAL, player->GetGUID().GetCounter(), MAIL_STATIONERY_GM);
+        MailReceiver receiver(player, player->GetGUID().GetCounter());
+        std::string subject = "WoW Poker Lerduzz";
+        std::string body = "La mesa de poker ha cerrado de forma inesperada.\n\nEn este correo te enviamos el dinero que no se te pudo entregar directamente.";
+        while (gold > 0)
+        {
+            MailDraft draft(subject, body);
+            if (gold > POKER_MAX_GOLD_REWARD)
+            {
+                draft.AddMoney(POKER_MAX_GOLD_REWARD * GOLD);
+                gold -= POKER_MAX_GOLD_REWARD;
+            }
+            else
+            {
+                draft.AddMoney(gold * GOLD);
+                gold = 0;
+            }
+            draft.SendMailTo(trans, receiver, sender);
+        }
+        CharacterDatabase.CommitTransaction(trans);
+        CharacterDatabase.Execute("DELETE FROM `wpl_gold_backup` WHERE `guid` = {}", player->GetGUID().GetCounter());
+    }
+}
+
 uint32 PokerMgr::GetSeatAvailable()
 {
     if (table.size() == POKER_MAX_SEATS)

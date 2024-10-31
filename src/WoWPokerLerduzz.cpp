@@ -126,6 +126,11 @@ public:
         }
     }
 
+    void OnLogin(Player* player) override
+    {
+        sPokerMgr->SendPendingMoney(player);
+    }
+
     void OnLogout(Player* player) override
     {
         sPokerMgr->PlayerLeave(player, true);

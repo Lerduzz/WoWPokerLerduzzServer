@@ -119,6 +119,11 @@ public:
      */
     void OnWorldUpdate(uint32 diff);
 
+    /**
+     * Verifica el oro pendiente para entregarlo por correo.
+     */
+    void SendPendingMoney(Player *player);
+
 private:
     /**
      * Obtiene un asiento disponible en la mesa.
