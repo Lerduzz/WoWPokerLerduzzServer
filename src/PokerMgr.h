@@ -34,11 +34,6 @@ struct SidePot
     uint32 pot;
 };
 
-const uint32 POKER_BET_SIZE = 20;
-const uint32 POKER_MIN_GOLD = 500;
-const uint32 POKER_MAX_GOLD = 200000;
-const uint32 POKER_MAX_GOLD_TABLE = 2000000;
-const uint32 POKER_MAX_GOLD_REWARD = 200000;
 const uint32 POKER_MAX_SEATS = 9;
 const std::string POKER_PREFIX = "WoWPokerLerduzz\tWPL_v1.0.0_";
 

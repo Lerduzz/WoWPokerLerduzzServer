@@ -37,9 +37,9 @@ JoinResult PokerMgr::PlayerJoin(Player *player, uint32 gold)
         return POKER_JOIN_SEATED;
     if (player->GetMoney() < gold * GOLD)
         return POKER_JOIN_ERROR_NO_ENOUGH_MONEY;
-    if (gold < POKER_MIN_GOLD || gold > POKER_MAX_GOLD)
+    if (gold < confMinGold || gold > confMaxGoldJoin)
         return POKER_JOIN_ERROR_MONEY_OUT_OF_RANGE;
-    if (POKER_MAX_GOLD_TABLE - GetTotalMoney() < gold)
+    if (confMaxGoldTable - GetTotalMoney() < gold)
         return POKER_JOIN_ERROR_MONEY_TABLE_FULL;
     uint32 seat = GetSeatAvailable();
     if (seat == 0)
@@ -58,9 +58,9 @@ void PokerMgr::PlayerLeave(Player *player, bool logout)
     {
         if (table[seat]->GetMoney() > 0)
         {
-            if (!logout && player->GetMoney() < POKER_MAX_GOLD_REWARD * GOLD)
+            if (!logout && player->GetMoney() < confMaxGoldReward * GOLD)
             {
-                uint32 allowedMoney = POKER_MAX_GOLD_REWARD - player->GetMoney() / GOLD;
+                uint32 allowedMoney = confMaxGoldReward - player->GetMoney() / GOLD;
                 if (table[seat]->GetMoney() <= allowedMoney)
                 {
                     player->SetMoney(player->GetMoney() + table[seat]->GetMoney() * GOLD);
@@ -68,7 +68,7 @@ void PokerMgr::PlayerLeave(Player *player, bool logout)
                 }
                 else
                 {
-                    player->SetMoney(POKER_MAX_GOLD_REWARD * GOLD);
+                    player->SetMoney(confMaxGoldReward * GOLD);
                     table[seat]->SetMoney(table[seat]->GetMoney() - allowedMoney);
                 }
             }
@@ -84,10 +84,10 @@ void PokerMgr::PlayerLeave(Player *player, bool logout)
                 while (table[seat]->GetMoney() > 0)
                 {
                     MailDraft draft(subject, body.str().c_str());
-                    if (table[seat]->GetMoney() > POKER_MAX_GOLD_REWARD)
+                    if (table[seat]->GetMoney() > confMaxGoldReward)
                     {
-                        draft.AddMoney(POKER_MAX_GOLD_REWARD * GOLD);
-                        table[seat]->SetMoney(table[seat]->GetMoney() - POKER_MAX_GOLD_REWARD);
+                        draft.AddMoney(confMaxGoldReward * GOLD);
+                        table[seat]->SetMoney(table[seat]->GetMoney() - confMaxGoldReward);
                     }
                     else
                     {
@@ -197,7 +197,7 @@ void PokerMgr::InformPlayerJoined(uint32 seat, JoinResult jR)
         msg01 << POKER_PREFIX << "b_" << button;
         table[seat]->GetPlayer()->Whisper(msg01.str(), LANG_ADDON, table[seat]->GetPlayer());
         std::ostringstream msg02;
-        msg02 << POKER_PREFIX << "betsize_" << POKER_BET_SIZE;
+        msg02 << POKER_PREFIX << "betsize_" << confBetSize;
         table[seat]->GetPlayer()->Whisper(msg02.str(), LANG_ADDON, table[seat]->GetPlayer());
         std::ostringstream msg03;
         msg03 << POKER_PREFIX << "round0_" << round;
@@ -426,7 +426,7 @@ void PokerMgr::OnWorldUpdate(uint32 diff)
         return;
     }
     if (status == POKER_STATUS_SHOW && nextRoundCountdown == 0)
-        nextRoundCountdown = 10;
+        nextRoundCountdown = confCountdownRound;
     if (nextRoundCountdown > 0)
     {
         nextRoundCountdown--;
@@ -478,10 +478,10 @@ void PokerMgr::SendPendingMoney(Player * player)
         while (gold > 0)
         {
             MailDraft draft(subject, body);
-            if (gold > POKER_MAX_GOLD_REWARD)
+            if (gold > confMaxGoldReward)
             {
-                draft.AddMoney(POKER_MAX_GOLD_REWARD * GOLD);
-                gold -= POKER_MAX_GOLD_REWARD;
+                draft.AddMoney(confMaxGoldReward * GOLD);
+                gold -= confMaxGoldReward;
             }
             else
             {
@@ -595,8 +595,8 @@ void PokerMgr::SetupBets()
 void PokerMgr::PostBlinds()
 {
     uint32 pc = GetPlayingPlayers();
-    uint32 smallBlind = POKER_BET_SIZE / 2;
-    uint32 bigBlind = POKER_BET_SIZE;
+    uint32 smallBlind = confBetSize / 2;
+    uint32 bigBlind = confBetSize;
 
     uint32 next = button;
 
@@ -721,7 +721,7 @@ void PokerMgr::GoNextPlayerTurn()
     std::ostringstream hB;
     hB << "_" << HighestBet();
     SendMessageToTable("go", hB.str(), 0, turn);
-    table[turn]->SetTurnCountdown(15);
+    table[turn]->SetTurnCountdown(confCountdownTurn);
 }
 
 PokerHandRank PokerMgr::FindHandForPlayer(uint32 seat)
@@ -761,7 +761,7 @@ void PokerMgr::DealHoleCards()
         deck.push_back(deck_arr[i - 1]);
 
     std::ostringstream msg1;
-    msg1 << "betsize_" << POKER_BET_SIZE;
+    msg1 << "betsize_" << confBetSize;
     SendMessageToTable(msg1.str());
 
     round++;
