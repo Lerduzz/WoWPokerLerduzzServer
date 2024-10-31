@@ -39,6 +39,7 @@ JoinResult PokerMgr::PlayerJoin(Player *player, uint32 gold)
     table[seat] = new PokerPlayer(player);
     player->SetMoney(player->GetMoney() - gold * GOLD);
     table[seat]->SetMoney(gold);
+    CharacterDatabase.Execute("INSERT INTO `wpl_gold_backup` (`guid`, `gold`) VALUES ({}, {})", player->GetGUID().GetCounter(), gold);
     return POKER_JOIN_OK;
 }
 
