@@ -126,6 +126,7 @@ void PokerMgr::PlayerLeave(Player *player, bool logout)
             if (GetPlayingPlayers() == 1)
                 GoNextPlayerTurn();
     }
+    CharacterDatabase.Execute("DELETE FROM `wpl_gold_backup` WHERE `guid` = {}", player->GetGUID().GetCounter());
 }
 
 uint32 PokerMgr::GetSeat(Player *player)
